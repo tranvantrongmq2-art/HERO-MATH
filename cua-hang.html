@@ -2,29 +2,37 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>HỆ THỐNG THƯƠNG MẠI CHIẾN BINH - MATH HERO</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         body { 
             background: radial-gradient(circle at center, #0a0e1a 0%, #05080f 100%) !important; 
-            color: #ffffff; padding: 20px; min-height: 100vh; margin: 0; overflow-x: hidden;
+            color: #ffffff; padding: 10px; min-height: 100vh; margin: 0; overflow-x: hidden;
         }
-        .container { max-width: 1150px; margin: 0 auto; }
+        .container { max-width: 1150px; margin: 0 auto; padding: 0 4px; }
         
         /* Navigation Top Bar */
         .header-box { 
             display: flex; justify-content: space-between; align-items: center; 
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
-            padding: 15px 25px; border-radius: 14px; margin-bottom: 25px; 
+            padding: 12px 16px; border-radius: 12px; margin-bottom: 18px; 
             border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            flex-wrap: wrap; gap: 10px;
+            flex-wrap: wrap; gap: 8px;
         }
-        .shop-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.4rem; color: #f1c40f; display: flex; align-items: center; gap: 10px; text-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
-        .nav-buttons { display: flex; gap: 10px; }
-        .btn-home, .btn-teacher { border: none; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: 0.2s; color: white; }
+        .shop-title { 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.1rem; 
+            color: #f1c40f; display: flex; align-items: center; gap: 8px; 
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.3); 
+        }
+        .nav-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-home, .btn-teacher { 
+            border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; 
+            gap: 6px; font-size: 0.8rem; transition: 0.2s; color: white; 
+        }
         .btn-home { background: linear-gradient(135deg, #e74c3c, #c0392b); }
         .btn-home:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(231,76,60,0.4); }
         .btn-teacher { background: #34495e; }
@@ -35,36 +43,35 @@
             position: relative; overflow: hidden;
             background: linear-gradient(135deg, #0d0f1a 0%, #0a0c16 50%, #0f0d1a 100%);
             border: 1px solid #4a0a0a;
-            border-radius: 16px; padding: 20px 28px; margin-bottom: 25px;
+            border-radius: 14px; padding: 14px 18px; margin-bottom: 20px;
             display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 0 0 1px rgba(139,0,0,0.2), 0 0 30px rgba(139,0,0,0.15), inset 0 0 40px rgba(0,0,0,0.5);
-            flex-wrap: wrap; gap: 15px;
+            flex-wrap: wrap; gap: 12px;
             animation: borderGlow 4s infinite alternate;
         }
         @keyframes borderGlow {
             0% { border-color: #4a0a0a; box-shadow: 0 0 0 1px rgba(139,0,0,0.2), 0 0 20px rgba(139,0,0,0.1), inset 0 0 40px rgba(0,0,0,0.5); }
             100% { border-color: #8b1a1a; box-shadow: 0 0 0 1px rgba(180,30,30,0.4), 0 0 35px rgba(139,0,0,0.25), inset 0 0 40px rgba(0,0,0,0.5); }
         }
-        /* Góc trang trí */
         .user-status-card::before {
             content: ''; position: absolute; top: 0; left: 0;
-            width: 60px; height: 60px;
+            width: 40px; height: 40px;
             border-top: 2px solid #8b0000; border-left: 2px solid #8b0000;
-            border-radius: 14px 0 0 0; pointer-events: none;
+            border-radius: 10px 0 0 0; pointer-events: none;
         }
         .user-status-card::after {
             content: ''; position: absolute; bottom: 0; right: 0;
-            width: 60px; height: 60px;
+            width: 40px; height: 40px;
             border-bottom: 2px solid #8b0000; border-right: 2px solid #8b0000;
-            border-radius: 0 0 14px 0; pointer-events: none;
+            border-radius: 0 0 10px 0; pointer-events: none;
         }
-        .warrior-card-left { display: flex; align-items: center; gap: 18px; }
+        .warrior-card-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
         .warrior-avatar {
-            width: 64px; height: 64px; border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 50%;
             background: radial-gradient(circle at 35% 35%, #3d0000, #0d0208);
             border: 2px solid #8b0000;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem;
+            font-size: 1.4rem;
             box-shadow: 0 0 12px rgba(139,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.4);
             flex-shrink: 0;
             animation: avatarPulse 3s infinite alternate;
@@ -73,219 +80,458 @@
             0% { box-shadow: 0 0 10px rgba(139,0,0,0.4), inset 0 0 10px rgba(0,0,0,0.4); }
             100% { box-shadow: 0 0 20px rgba(200,20,20,0.6), inset 0 0 10px rgba(0,0,0,0.4); }
         }
-        .warrior-meta { display: flex; flex-direction: column; gap: 3px; }
+        .warrior-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
         .warrior-label {
-            font-size: 0.7rem; font-weight: 700; color: #6b1a1a; text-transform: uppercase;
-            letter-spacing: 2px; display: flex; align-items: center; gap: 5px;
+            font-size: 0.6rem; font-weight: 700; color: #6b1a1a; text-transform: uppercase;
+            letter-spacing: 1.5px; display: flex; align-items: center; gap: 4px;
         }
         .warrior-name {
             font-family: 'Cinzel Decorative', serif; font-weight: 700;
-            font-size: 1.25rem; color: #f0e0d0;
+            font-size: 1rem; color: #f0e0d0;
             text-shadow: 0 0 8px rgba(200,100,50,0.3);
             line-height: 1.2; margin: 0;
         }
         .warrior-class-row {
-            display: flex; align-items: center; gap: 8px; margin-top: 2px; flex-wrap: wrap;
+            display: flex; align-items: center; gap: 5px; margin-top: 2px; flex-wrap: wrap;
         }
         .warrior-class-tag {
             background: rgba(139,0,0,0.2); border: 1px solid rgba(139,0,0,0.5);
-            color: #e88; font-size: 0.75rem; font-weight: 700;
-            padding: 2px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;
-            display: flex; align-items: center; gap: 4px;
+            color: #e88; font-size: 0.6rem; font-weight: 700;
+            padding: 1px 8px; border-radius: 16px; text-transform: uppercase; letter-spacing: 0.3px;
+            display: flex; align-items: center; gap: 3px;
         }
         .warrior-classroom-tag {
             background: rgba(30,60,120,0.25); border: 1px solid rgba(52,152,219,0.35);
-            color: #7ab8e8; font-size: 0.75rem; font-weight: 700;
-            padding: 2px 10px; border-radius: 20px; text-transform: uppercase;
-            display: flex; align-items: center; gap: 4px;
+            color: #7ab8e8; font-size: 0.6rem; font-weight: 700;
+            padding: 1px 8px; border-radius: 16px; text-transform: uppercase;
+            display: flex; align-items: center; gap: 3px;
         }
-        .warrior-card-right { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+        .warrior-card-right { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; flex-shrink: 0; }
         .user-exp-badge { 
             background: rgba(241, 196, 15, 0.08); border: 1px solid rgba(241,196,15,0.5); 
-            padding: 8px 18px; border-radius: 10px; font-weight: 900; color: #f1c40f; 
-            font-size: 1.2rem; display: flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 8px; font-weight: 900; color: #f1c40f; 
+            font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
             text-shadow: 0 0 10px rgba(241,196,15,0.4);
             box-shadow: 0 0 12px rgba(241,196,15,0.08);
         }
         .user-coin-badge { 
             background: rgba(255, 235, 59, 0.06); border: 1px solid rgba(255,235,59,0.4); 
-            padding: 8px 18px; border-radius: 10px; font-weight: 900; color: #ffeb3b; 
-            font-size: 1.2rem; display: flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 8px; font-weight: 900; color: #ffeb3b; 
+            font-size: 0.9rem; display: flex; align-items: center; gap: 6px;
             text-shadow: 0 0 10px rgba(255,235,59,0.3);
         }
-        .user-info p { margin: 3px 0; }
 
-        /* Khung Đăng nhập nhanh sửa lỗi danh tính */
-        .quick-login-form { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 10px; border: 1px dashed #3498db; }
-        .quick-login-form input { padding: 8px; background: #0b111e; border: 1px solid #233354; color: white; border-radius: 6px; font-weight: bold; }
-        .quick-login-form button { background: #3498db; color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        /* Khung Đăng nhập nhanh */
+        .quick-login-form { 
+            display: flex; align-items: center; gap: 8px; 
+            background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 8px; 
+            border: 1px dashed #3498db; flex-wrap: wrap; 
+        }
+        .quick-login-form input { 
+            padding: 6px 10px; background: #0b111e; border: 1px solid #233354; 
+            color: white; border-radius: 6px; font-weight: bold; font-size: 0.85rem; 
+            min-width: 120px; flex: 1;
+        }
+        .quick-login-form button { 
+            background: #3498db; color: white; border: none; 
+            padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; 
+            font-size: 0.8rem; 
+        }
 
         /* Thanh phân chia Tabs */
-        .tabs-container { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #1f2d4a; padding-bottom: 10px; flex-wrap: wrap; }
+        .tabs-container { 
+            display: flex; gap: 8px; margin-bottom: 20px; 
+            border-bottom: 2px solid #1f2d4a; padding-bottom: 10px; flex-wrap: wrap; 
+        }
         .tab-btn { 
-            background: #141d30; color: #a4b0be; border: 1px solid #233354; padding: 12px 24px; 
-            font-family: 'Montserrat', sans-serif; font-weight: 700; border-radius: 8px; cursor: pointer; 
-            transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
+            background: #141d30; color: #a4b0be; border: 1px solid #233354; 
+            padding: 8px 16px; font-family: 'Montserrat', sans-serif; font-weight: 700; 
+            border-radius: 8px; cursor: pointer; transition: all 0.3s; 
+            display: flex; align-items: center; gap: 6px; font-size: 0.8rem;
         }
         .tab-btn:hover { background: #1e2b47; color: #fff; }
-        .tab-btn.active { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border-color: #3498db; box-shadow: 0 5px 15px rgba(52,152,219,0.3); }
+        .tab-btn.active { 
+            background: linear-gradient(135deg, #3498db, #2980b9); color: white; 
+            border-color: #3498db; box-shadow: 0 5px 15px rgba(52,152,219,0.3); 
+        }
 
         .tab-content { display: none; animation: fadeIn 0.4s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Lưới hiển thị vật phẩm shop */
-        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+        /* Lưới hiển thị vật phẩm shop - TỐI GIẢN CHO MOBILE */
+        .shop-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 14px; 
+        }
         .item-card { 
-            background: rgba(20, 29, 48, 0.7); border: 1px solid #233354; border-radius: 16px; 
-            padding: 22px; text-align: center; transition: all 0.3s; display: flex; flex-direction: column; 
+            background: rgba(20, 29, 48, 0.7); border: 1px solid #233354; border-radius: 14px; 
+            padding: 16px; text-align: center; transition: all 0.3s; display: flex; flex-direction: column; 
             justify-content: space-between; position: relative;
         }
-        .item-card:hover { transform: translateY(-5px); border-color: #f1c40f; box-shadow: 0 10px 25px rgba(0,0,0,0.4); background: #141d30; }
+        .item-card:hover { transform: translateY(-4px); border-color: #f1c40f; box-shadow: 0 10px 25px rgba(0,0,0,0.4); background: #141d30; }
         
-        .item-icon { font-size: 3.2rem; margin-bottom: 12px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
-        .item-name { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 1.1rem; margin: 0 0 8px 0; color: #ecf0f1; text-transform: uppercase; }
-        .item-desc { font-size: 0.85rem; color: #95a5a6; margin: 0 0 15px 0; line-height: 1.4; flex-grow: 1; }
+        .item-icon { font-size: 2.4rem; margin-bottom: 8px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        .item-name { 
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem; 
+            margin: 0 0 6px 0; color: #ecf0f1; text-transform: uppercase; 
+        }
+        .item-desc { 
+            font-size: 0.75rem; color: #95a5a6; margin: 0 0 12px 0; line-height: 1.4; flex-grow: 1; 
+        }
         
-        .item-price { font-weight: 900; color: #f1c40f; font-size: 1.15rem; margin-bottom: 15px; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 8px; border: 1px dashed rgba(241,196,15,0.3); }
+        .item-price { 
+            font-weight: 900; color: #f1c40f; font-size: 0.95rem; margin-bottom: 12px; 
+            background: rgba(0,0,0,0.4); padding: 4px 8px; border-radius: 6px; 
+            border: 1px dashed rgba(241,196,15,0.3); 
+        }
         .btn-action { 
-            background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; border: none; padding: 10px; 
-            width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.2s; 
-            display: flex; align-items: center; justify-content: center; gap: 6px; text-transform: uppercase; font-size: 0.9rem;
+            background: linear-gradient(135deg, #2ecc71, #27ae60); color: #fff; border: none; 
+            padding: 8px; width: 100%; border-radius: 8px; font-weight: 800; cursor: pointer; 
+            transition: 0.2s; display: flex; align-items: center; justify-content: center; 
+            gap: 6px; text-transform: uppercase; font-size: 0.75rem;
         }
         .btn-action:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(46,204,113,0.3); }
         
-        /* Thẻ tag phân loại quà */
-        .tag { position: absolute; top: 10px; right: 10px; font-size: 0.65rem; font-weight: bold; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; }
+        /* Thẻ tag */
+        .tag { 
+            position: absolute; top: 8px; right: 8px; 
+            font-size: 0.55rem; font-weight: bold; padding: 2px 8px; 
+            border-radius: 10px; text-transform: uppercase; 
+        }
         .tag-real { background: #e67e22; color: white; }
         .tag-game { background: #9b59b6; color: white; }
         .tag-lambai { background: linear-gradient(135deg, #1d4ed8, #3498db); color: white; }
+        .tag-doikhang { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .tag-boss { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; }
 
-        /* Thẻ Đặc Quyền dành riêng cho "Nhiệm Vụ Hôm Nay" (lam-bai.html) - làm nổi bật để khuyến khích học sinh sử dụng */
         .item-card-lambai { border: 1px solid #1d4ed8 !important; background: linear-gradient(160deg, rgba(29,78,216,0.12) 0%, rgba(20,29,48,0.7) 60%) !important; box-shadow: 0 0 18px rgba(52,152,219,0.18); }
         .item-card-lambai:hover { border-color: #3498db !important; box-shadow: 0 10px 25px rgba(52,152,219,0.35); }
         .item-card-lambai .item-name { color: #7ab8e8; }
-        .lambai-target-note { font-size: 0.72rem; color: #5dade2; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin: -4px 0 10px 0; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .lambai-target-note { font-size: 0.6rem; color: #5dade2; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin: -2px 0 8px 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
 
-        /* Bảng rương đồ & Chợ */
-        .custom-table { width: 100%; border-collapse: collapse; margin-top: 15px; background: #141d30; border-radius: 12px; overflow: hidden; border: 1px solid #233354; }
-        .custom-table th { background: #1f2d4a; color: #3498db; text-align: left; padding: 14px; font-family: 'Montserrat'; font-weight: 700; font-size: 0.9rem; }
-        .custom-table td { padding: 14px; border-bottom: 1px solid #1f2d4a; font-size: 0.9rem; color: #e2e8f0; }
+        .item-card-doikhang { border: 1px solid #e74c3c !important; background: linear-gradient(160deg, rgba(231,76,60,0.12) 0%, rgba(20,29,48,0.7) 60%) !important; box-shadow: 0 0 18px rgba(231,76,60,0.18); }
+        .item-card-doikhang:hover { border-color: #ff6b6b !important; box-shadow: 0 10px 25px rgba(231,76,60,0.35); }
+        .item-card-doikhang .item-name { color: #ff8a7a; }
+        .doikhang-target-note { font-size: 0.6rem; color: #ff8a7a; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin: -2px 0 8px 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+        .item-card-boss { border: 1px solid #f1c40f !important; background: linear-gradient(160deg, rgba(241,196,15,0.10) 0%, rgba(20,29,48,0.7) 60%) !important; box-shadow: 0 0 18px rgba(241,196,15,0.18); }
+        .item-card-boss:hover { border-color: #f39c12 !important; box-shadow: 0 10px 25px rgba(241,196,15,0.35); }
+        .item-card-boss .item-name { color: #f1c40f; }
+        .boss-target-note { font-size: 0.6rem; color: #f1c40f; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; margin: -2px 0 8px 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+        /* Bảng rương đồ & Chợ - RESPONSIVE */
+        .custom-table { 
+            width: 100%; border-collapse: collapse; margin-top: 12px; 
+            background: #141d30; border-radius: 10px; overflow: hidden; 
+            border: 1px solid #233354; 
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .custom-table thead, .custom-table tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        .custom-table th { 
+            background: #1f2d4a; color: #3498db; text-align: left; 
+            padding: 10px 12px; font-family: 'Montserrat'; font-weight: 700; 
+            font-size: 0.75rem; white-space: nowrap;
+        }
+        .custom-table td { 
+            padding: 10px 12px; border-bottom: 1px solid #1f2d4a; 
+            font-size: 0.8rem; color: #e2e8f0; word-break: break-word;
+        }
         .custom-table tr:last-child td { border-bottom: none; }
         
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
+        .status-badge { 
+            padding: 2px 8px; border-radius: 16px; font-size: 0.65rem; 
+            font-weight: bold; display: inline-block; white-space: nowrap;
+        }
         .status-waiting { background: rgba(241, 196, 15, 0.15); color: #f1c40f; border: 1px solid #f1c40f; }
         .status-done { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
         .status-market { background: rgba(155, 89, 182, 0.15); color: #9b59b6; border: 1px solid #9b59b6; }
 
-        .btn-small { padding: 5px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; margin-right: 5px; transition: 0.2s; }
+        .btn-small { 
+            padding: 3px 10px; font-size: 0.65rem; border-radius: 6px; cursor: pointer; 
+            border: none; font-weight: bold; margin-right: 4px; transition: 0.2s; 
+            white-space: nowrap;
+        }
         .btn-sell-market { background: #9b59b6; color: white; }
         .btn-sell-market:hover { background: #8e44ad; }
         .btn-cancel-market { background: #7f8c8d; color: white; }
 
-        /* Giao diện Overlay/Modal */
-        .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-card { background: #141d30; border: 2px solid #3498db; border-radius: 16px; padding: 25px; width: 95%; max-width: 500px; text-align: center; }
-        .modal-input { width: 100%; padding: 10px; background: #0b111e; border: 1px solid #233354; color: white; border-radius: 8px; font-size: 1.1rem; text-align: center; font-weight: bold; margin: 15px 0; color: #f1c40f; }
+        /* Modal */
+        .modal-overlay { 
+            position: fixed; top:0; left:0; right:0; bottom:0; 
+            background: rgba(0,0,0,0.85); z-index: 1000; 
+            display: flex; justify-content: center; align-items: center; 
+            backdrop-filter: blur(4px); padding: 16px;
+        }
+        .modal-card { 
+            background: #141d30; border: 2px solid #3498db; border-radius: 14px; 
+            padding: 20px; width: 100%; max-width: 480px; text-align: center; 
+        }
+        .modal-input { 
+            width: 100%; padding: 8px 12px; background: #0b111e; border: 1px solid #233354; 
+            color: white; border-radius: 8px; font-size: 1rem; text-align: center; 
+            font-weight: bold; margin: 12px 0; color: #f1c40f; 
+        }
         
-        .price-edit-row { display: flex; justify-content: space-between; align-items: center; background: #0b111e; padding: 10px 15px; margin-bottom: 8px; border-radius: 8px; border: 1px solid #233354; text-align: left;}
-        .price-edit-input { width: 80px; padding: 8px; text-align: center; border-radius: 4px; border: 1px solid #3498db; background: #1a253c; color: #f1c40f; font-weight: bold; }
+        .price-edit-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #0b111e; padding: 8px 12px; margin-bottom: 6px; 
+            border-radius: 8px; border: 1px solid #233354; text-align: left; 
+            flex-wrap: wrap; gap: 6px;
+        }
+        .price-edit-input { 
+            width: 70px; padding: 6px; text-align: center; border-radius: 4px; 
+            border: 1px solid #3498db; background: #1a253c; color: #f1c40f; 
+            font-weight: bold; 
+        }
 
-        /* Form thêm vật phẩm mới */
-        .add-item-box { background: #1a253c; border: 1px dashed #e67e22; border-radius: 10px; padding: 15px; margin-bottom: 20px; text-align: left; }
-        .add-item-box label { font-size: 0.8rem; font-weight: bold; color: #a4b0be; display: block; margin-top: 8px; }
-        .add-item-box input, .add-item-box select, .add-item-box textarea { width: 100%; padding: 8px; margin-top: 4px; background: #0b111e; border: 1px solid #233354; color: white; border-radius: 6px; }
+        .add-item-box { 
+            background: #1a253c; border: 1px dashed #e67e22; border-radius: 10px; 
+            padding: 12px 14px; margin-bottom: 16px; text-align: left; 
+        }
+        .add-item-box label { 
+            font-size: 0.7rem; font-weight: bold; color: #a4b0be; display: block; margin-top: 6px; 
+        }
+        .add-item-box input, .add-item-box select, .add-item-box textarea { 
+            width: 100%; padding: 6px 10px; margin-top: 3px; background: #0b111e; 
+            border: 1px solid #233354; color: white; border-radius: 6px; font-size: 0.85rem; 
+        }
+        .add-item-box textarea { min-height: 50px; }
+
+        /* TOAST */
+        #toast-box { 
+            position: fixed; bottom: 16px; right: 16px; z-index: 2000; 
+            display: flex; flex-direction: column; gap: 8px; max-width: 90vw;
+            pointer-events: none;
+        }
+        #toast-box > div { pointer-events: auto; }
+
+        /* RESPONSIVE */
+        @media (min-width: 768px) {
+            body { padding: 20px; }
+            .container { padding: 0; }
+            .header-box { padding: 15px 25px; border-radius: 14px; }
+            .shop-title { font-size: 1.4rem; }
+            .btn-home, .btn-teacher { padding: 10px 18px; font-size: 0.9rem; }
+            .user-status-card { padding: 20px 28px; border-radius: 16px; }
+            .warrior-avatar { width: 64px; height: 64px; font-size: 1.8rem; }
+            .warrior-name { font-size: 1.25rem; }
+            .user-exp-badge, .user-coin-badge { padding: 8px 18px; font-size: 1.2rem; }
+            .shop-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+            .item-card { padding: 22px; }
+            .item-icon { font-size: 3.2rem; }
+            .item-name { font-size: 1.1rem; }
+            .item-desc { font-size: 0.85rem; }
+            .item-price { font-size: 1.15rem; }
+            .btn-action { padding: 10px; font-size: 0.9rem; }
+            .tab-btn { padding: 12px 24px; font-size: 0.95rem; }
+            .custom-table th { padding: 14px; font-size: 0.9rem; }
+            .custom-table td { padding: 14px; font-size: 0.9rem; }
+            .modal-card { padding: 25px; max-width: 500px; }
+        }
+
+        @media (max-width: 767px) {
+            .header-box { flex-direction: column; align-items: stretch; gap: 8px; }
+            .shop-title { font-size: 0.95rem; justify-content: center; }
+            .nav-buttons { justify-content: center; }
+            .btn-home, .btn-teacher { padding: 6px 12px; font-size: 0.7rem; }
+
+            .user-status-card { flex-direction: column; align-items: stretch; padding: 12px 14px; }
+            .warrior-card-left { flex-wrap: nowrap; }
+            .warrior-name { font-size: 0.9rem; }
+            .warrior-class-row { gap: 4px; }
+            .warrior-class-tag, .warrior-classroom-tag { font-size: 0.5rem; padding: 1px 6px; }
+            .warrior-card-right { flex-direction: row; justify-content: space-around; width: 100%; }
+            .user-exp-badge, .user-coin-badge { font-size: 0.75rem; padding: 3px 10px; }
+
+            .tabs-container { gap: 5px; padding-bottom: 6px; }
+            .tab-btn { padding: 6px 12px; font-size: 0.7rem; }
+            .tab-btn i { font-size: 0.7rem; }
+
+            .shop-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+            .item-card { padding: 12px; }
+            .item-icon { font-size: 1.8rem; margin-bottom: 4px; }
+            .item-name { font-size: 0.75rem; }
+            .item-desc { font-size: 0.65rem; margin-bottom: 8px; }
+            .item-price { font-size: 0.8rem; padding: 3px 6px; margin-bottom: 8px; }
+            .btn-action { padding: 6px; font-size: 0.65rem; }
+            .tag { font-size: 0.45rem; padding: 1px 5px; top: 4px; right: 4px; }
+            .lambai-target-note, .doikhang-target-note, .boss-target-note { font-size: 0.5rem; margin: -1px 0 4px 0; }
+
+            .custom-table th { padding: 6px 8px; font-size: 0.6rem; }
+            .custom-table td { padding: 6px 8px; font-size: 0.65rem; }
+            .status-badge { font-size: 0.55rem; padding: 1px 6px; }
+            .btn-small { font-size: 0.55rem; padding: 2px 6px; }
+
+            .modal-card { padding: 16px; }
+            .price-edit-row { padding: 6px 10px; }
+            .price-edit-input { width: 60px; padding: 4px; font-size: 0.8rem; }
+            .add-item-box { padding: 10px; }
+            .add-item-box input, .add-item-box select, .add-item-box textarea { font-size: 0.75rem; padding: 4px 8px; }
+            .add-item-box label { font-size: 0.6rem; }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 6px; }
+            .container { padding: 0; }
+            .header-box { padding: 8px 12px; border-radius: 10px; margin-bottom: 12px; }
+            .shop-title { font-size: 0.8rem; }
+            .nav-buttons { gap: 4px; }
+            .btn-home, .btn-teacher { font-size: 0.6rem; padding: 4px 8px; gap: 4px; }
+
+            .user-status-card { padding: 8px 10px; border-radius: 10px; }
+            .warrior-avatar { width: 36px; height: 36px; font-size: 1rem; }
+            .warrior-name { font-size: 0.75rem; }
+            .warrior-label { font-size: 0.5rem; }
+            .warrior-class-tag, .warrior-classroom-tag { font-size: 0.45rem; padding: 0px 5px; }
+            .user-exp-badge, .user-coin-badge { font-size: 0.65rem; padding: 2px 8px; }
+
+            .tab-btn { padding: 4px 8px; font-size: 0.6rem; }
+            .tab-btn i { font-size: 0.6rem; }
+
+            .shop-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+            .item-card { padding: 8px; border-radius: 10px; }
+            .item-icon { font-size: 1.4rem; margin-bottom: 2px; }
+            .item-name { font-size: 0.65rem; margin-bottom: 3px; }
+            .item-desc { font-size: 0.55rem; margin-bottom: 6px; }
+            .item-price { font-size: 0.7rem; padding: 2px 4px; margin-bottom: 6px; }
+            .btn-action { padding: 4px 6px; font-size: 0.55rem; gap: 4px; }
+            .tag { font-size: 0.4rem; padding: 1px 4px; top: 3px; right: 3px; }
+            .lambai-target-note, .doikhang-target-note, .boss-target-note { font-size: 0.45rem; margin: 0 0 2px 0; }
+
+            .custom-table th { padding: 4px 6px; font-size: 0.5rem; }
+            .custom-table td { padding: 4px 6px; font-size: 0.55rem; }
+            .status-badge { font-size: 0.45rem; padding: 1px 4px; }
+            .btn-small { font-size: 0.45rem; padding: 1px 4px; }
+
+            .modal-card { padding: 12px; border-radius: 10px; }
+            .modal-card h3 { font-size: 0.9rem !important; }
+            .modal-input { font-size: 0.8rem; padding: 6px 10px; margin: 8px 0; }
+            .price-edit-row { padding: 4px 8px; }
+            .price-edit-row b { font-size: 0.7rem; }
+            .price-edit-input { width: 50px; padding: 3px; font-size: 0.7rem; }
+            .add-item-box { padding: 8px; }
+            .add-item-box input, .add-item-box select, .add-item-box textarea { font-size: 0.65rem; padding: 3px 6px; }
+            .add-item-box label { font-size: 0.55rem; margin-top: 4px; }
+            .pwd-btn-action, .btn-action { font-size: 0.6rem; padding: 6px; }
+        }
+
+        @media (max-width: 360px) {
+            .shop-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+            .item-card { padding: 6px; }
+            .item-icon { font-size: 1.2rem; }
+            .item-name { font-size: 0.55rem; }
+            .item-desc { font-size: 0.5rem; }
+            .item-price { font-size: 0.6rem; }
+            .btn-action { font-size: 0.5rem; padding: 3px 4px; }
+            .user-exp-badge, .user-coin-badge { font-size: 0.55rem; padding: 1px 6px; }
+        }
+
+        /* Hỗ trợ màn hình cảm ứng */
+        @media (hover: none) {
+            .item-card:hover { transform: none; border-color: #233354; box-shadow: none; background: rgba(20, 29, 48, 0.7); }
+            .btn-home:hover, .btn-teacher:hover { transform: none; }
+            .btn-action:hover { transform: none; box-shadow: none; }
+            .btn-small:hover { transform: none; }
+        }
     </style>
 </head>
 <body>
 
     <div id="sell-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
-            <h3 style="font-family:'Montserrat'; margin-top:0; color:#3498db;"><i class="fa-solid fa-tags"></i> TREO BÁN LÊN CHỢ</h3>
-            <p id="sell-modal-text" style="font-size:0.9rem; color:#cbd5e1;"></p>
-            <label style="font-size:0.8rem; color:#94a3b8; text-transform: uppercase;">Nhập giá mong muốn (Xu):</label>
+            <h3 style="font-family:'Montserrat'; margin-top:0; color:#3498db; font-size:1.1rem;"><i class="fa-solid fa-tags"></i> TREO BÁN LÊN CHỢ</h3>
+            <p id="sell-modal-text" style="font-size:0.85rem; color:#cbd5e1;"></p>
+            <label style="font-size:0.75rem; color:#94a3b8; text-transform: uppercase;">Nhập giá mong muốn (Xu):</label>
             <input type="number" id="sell-price-input" class="modal-input" min="1" value="50">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-action" style="background:#475569;" onclick="dongModalBan()">Hủy bỏ</button>
-                <button class="btn-action" style="background:#9b59b6;" onclick="xacNhanTreoBan()">Đăng bán ngay</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-action" style="background:#475569; flex:1;" onclick="dongModalBan()">Hủy bỏ</button>
+                <button class="btn-action" style="background:#9b59b6; flex:1;" onclick="xacNhanTreoBan()">Đăng bán ngay</button>
             </div>
         </div>
     </div>
 
     <div id="teacher-login-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
-            <h3 style="font-family:'Montserrat'; margin-top:0; color:#e67e22;"><i class="fa-solid fa-lock"></i> XÁC THỰC GIÁO VIÊN</h3>
-            <p style="font-size:0.9rem; color:#cbd5e1;">Vui lòng nhập mật mã để vào Cổng Điều Hành:</p>
+            <h3 style="font-family:'Montserrat'; margin-top:0; color:#e67e22; font-size:1.1rem;"><i class="fa-solid fa-lock"></i> XÁC THỰC GIÁO VIÊN</h3>
+            <p style="font-size:0.85rem; color:#cbd5e1;">Vui lòng nhập mật mã để vào Cổng Điều Hành:</p>
             <input type="password" id="teacher-password-input" class="modal-input" placeholder="Mật mã Giáo viên" autocomplete="off" onkeydown="if(event.key==='Enter') xacNhanMatKhauGiaoVien()">
-            <div style="display:flex; gap:10px;">
-                <button class="btn-action" style="background:#475569;" onclick="dongModalDangNhapGiaoVien()">Hủy bỏ</button>
-                <button class="btn-action" style="background:#e67e22;" onclick="xacNhanMatKhauGiaoVien()">Xác Nhận</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-action" style="background:#475569; flex:1;" onclick="dongModalDangNhapGiaoVien()">Hủy bỏ</button>
+                <button class="btn-action" style="background:#e67e22; flex:1;" onclick="xacNhanMatKhauGiaoVien()">Xác Nhận</button>
             </div>
         </div>
     </div>
 
     <div id="teacher-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 650px;">
-            <h3 style="font-family:'Montserrat'; margin-top:0; color:#e67e22;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH CỦA GIÁO VIÊN</h3>
+            <h3 style="font-family:'Montserrat'; margin-top:0; color:#e67e22; font-size:1.1rem;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH CỦA GIÁO VIÊN</h3>
             
             <div class="add-item-box">
-                <strong style="color: #e67e22;"><i class="fa-solid fa-plus-circle"></i> Thêm Vật Phẩm Mới Vào Kệ Hàng</strong>
-                <div style="display: grid; grid-template-columns: 80px 1fr; gap: 10px;">
+                <strong style="color: #e67e22; font-size:0.9rem;"><i class="fa-solid fa-plus-circle"></i> Thêm Vật Phẩm Mới</strong>
+                <div style="display: grid; grid-template-columns: 70px 1fr; gap: 8px;">
                     <div>
-                        <label>Icon Emoji</label>
+                        <label>Icon</label>
                         <input type="text" id="new-item-icon" placeholder="🎁" style="text-align: center; font-size: 1.2rem;">
                     </div>
                     <div>
                         <label>Tên Vật Phẩm</label>
-                        <input type="text" id="new-item-name" placeholder="Ví dụ: Bùa Cộng Điểm Giữa Kỳ">
+                        <input type="text" id="new-item-name" placeholder="Ví dụ: Bùa Cộng Điểm">
                     </div>
                 </div>
                 <label>Mô tả công dụng</label>
-                <textarea id="new-item-desc" rows="2" placeholder="Ghi rõ đặc quyền hoặc quà tặng vật lý nhận được..."></textarea>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <textarea id="new-item-desc" rows="2" placeholder="Ghi rõ đặc quyền hoặc quà tặng vật lý..."></textarea>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                     <div>
                         <label>Giá Bán (Xu)</label>
                         <input type="number" id="new-item-price" min="1" value="100">
                     </div>
                     <div>
-                        <label>Phân Loại Vật Phẩm</label>
+                        <label>Phân Loại</label>
                         <select id="new-item-type">
-                            <option value="game">Đặc Quyền (Cộng điểm/Game)</option>
-                            <option value="real">Quà Tặng Vật Lý (Đồ dùng thực tế)</option>
+                            <option value="game">Đặc Quyền</option>
+                            <option value="real">Quà Tặng Vật Lý</option>
                         </select>
                     </div>
                 </div>
-                <button class="btn-action" style="background: linear-gradient(135deg, #e67e22, #d35400); margin-top: 12px; padding: 8px;" onclick="themVatPhamMoi()"><i class="fa-solid fa-plus"></i> Kích Hoạt Thêm Vật Phẩm</button>
+                <button class="btn-action" style="background: linear-gradient(135deg, #e67e22, #d35400); margin-top: 10px; padding: 6px;" onclick="themVatPhamMoi()"><i class="fa-solid fa-plus"></i> Thêm Vật Phẩm</button>
             </div>
 
-            <label style="font-weight: bold; color:#fff; display:block; text-align:left; margin-bottom: 5px;"><i class="fa-solid fa-sliders"></i> Điều Chỉnh Giá Vật Phẩm Hiện Tại:</label>
-            <div id="price-edit-list" style="max-height: 35vh; overflow-y: auto; margin-bottom: 20px; padding-right: 5px;"></div>
+            <label style="font-weight: bold; color:#fff; display:block; text-align:left; margin-bottom: 5px; font-size:0.85rem;"><i class="fa-solid fa-sliders"></i> Điều Chỉnh Giá:</label>
+            <div id="price-edit-list" style="max-height: 35vh; overflow-y: auto; margin-bottom: 16px; padding-right: 4px;"></div>
             
-            <div style="display:flex; gap:10px;">
-                <button class="btn-action" style="background:#475569;" onclick="dongModalTeacher()">Đóng lại</button>
-                <button class="btn-action" style="background:#2ecc71;" onclick="luuBangGiaMoi()"><i class="fa-solid fa-floppy-disk"></i> Lưu Bảng Giá Chỉnh Sửa</button>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-action" style="background:#475569; flex:1;" onclick="dongModalTeacher()">Đóng lại</button>
+                <button class="btn-action" style="background:#2ecc71; flex:1;" onclick="luuBangGiaMoi()"><i class="fa-solid fa-floppy-disk"></i> Lưu Bảng Giá</button>
             </div>
         </div>
     </div>
 
-    <div id="toast-box" style="position:fixed; bottom:20px; right:20px; z-index:2000; display:flex; flex-direction:column; gap:10px;"></div>
+    <div id="toast-box" style="position:fixed; bottom:16px; right:16px; z-index:2000; display:flex; flex-direction:column; gap:8px; max-width:90vw; pointer-events:none;"></div>
 
     <div class="container">
         <div class="header-box">
-            <div class="shop-title"><i class="fa-solid fa-shield-halved"></i> TRUNG TÂM GIAO THƯƠNG MATH HERO</div>
+            <div class="shop-title"><i class="fa-solid fa-shield-halved"></i> TRUNG TÂM GIAO THƯƠNG</div>
             <div class="nav-buttons">
-                <button class="btn-teacher" onclick="xacThucGiaoVien()"><i class="fa-solid fa-user-tie"></i> Cổng Giáo Viên</button>
+                <button class="btn-teacher" onclick="xacThucGiaoVien()"><i class="fa-solid fa-user-tie"></i> Cổng GV</button>
                 <a href="index.html" class="btn-home"><i class="fa-solid fa-door-open"></i> Sảnh Chính</a>
             </div>
         </div>
 
         <div class="user-status-card" id="user-status-area">
-            </div>
+        </div>
 
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="chuyenTab('tab-shop', this)"><i class="fa-solid fa-store"></i> Cửa Hàng Thầy Trong</button>
-            <button class="tab-btn" onclick="chuyenTab('tab-inventory', this)"><i class="fa-solid fa-box-open"></i> Rương Đồ Cá Nhân</button>
-            <button class="tab-btn" onclick="chuyenTab('tab-market', this)"><i class="fa-solid fa-comments-dollar"></i> Chợ Giao Dịch Tự Do</button>
+            <button class="tab-btn active" onclick="chuyenTab('tab-shop', this)"><i class="fa-solid fa-store"></i> Cửa Hàng</button>
+            <button class="tab-btn" onclick="chuyenTab('tab-inventory', this)"><i class="fa-solid fa-box-open"></i> Rương Đồ</button>
+            <button class="tab-btn" onclick="chuyenTab('tab-market', this)"><i class="fa-solid fa-comments-dollar"></i> Chợ</button>
         </div>
 
         <div id="tab-shop" class="tab-content active">
@@ -293,36 +539,46 @@
         </div>
 
         <div id="tab-inventory" class="tab-content">
-            <h3 style="font-family:'Montserrat'; border-bottom:1px solid #233354; padding-bottom:8px; margin:0;"><i class="fa-solid fa-vault"></i> Vật phẩm bạn đang sở hữu</h3>
-            <p style="font-size:0.85rem; color:#94a3b8; margin:5px 0 15px 0;">Vật phẩm <b style="color:#e67e22;">Quà Tặng Vật Lý</b> "Chưa sử dụng" có thể đưa lên Chợ trao đổi. Vật phẩm <b style="color:#9b59b6;">Đặc Quyền</b> chỉ có thể Sử Dụng và mang đến gặp Thầy/Cô để nhận hiệu lực — <i>ngoại trừ</i> các thẻ <b style="color:#3498db;">Nhiệm Vụ Hôm Nay</b> (Bùa Nhân Đôi Tri Thức, Kính Lúp Thần Kỳ, Thẻ Rút Gọn Nhiệm Vụ, Bùa Cơ Hội Thứ Hai, Bùa Phục Hận, Linh Đan Đầy Năng Lượng) sẽ <b>tự động</b> có hiệu lực ngay trong lượt làm bài tiếp theo ở mục Nhiệm Vụ Hôm Nay, không cần gặp Thầy/Cô.</p>
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Tên Vật Phẩm</th>
-                        <th>Ngày Sở Hữu</th>
-                        <th>Trạng Thái</th>
-                        <th>Hành Động</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-table-body"></tbody>
-            </table>
+            <h3 style="font-family:'Montserrat'; border-bottom:1px solid #233354; padding-bottom:6px; margin:0; font-size:0.95rem;"><i class="fa-solid fa-vault"></i> Vật phẩm bạn đang sở hữu</h3>
+            <p style="font-size:0.75rem; color:#94a3b8; margin:4px 0 12px 0; line-height:1.4;">
+                Vật phẩm <b style="color:#e67e22;">Quà Tặng Vật Lý</b> "Chưa dùng" có thể đưa lên Chợ trao đổi. 
+                Vật phẩm <b style="color:#9b59b6;">Đặc Quyền</b> cần vào đúng màn hình sử dụng — 
+                <i style="color:#5dade2;">Nhiệm Vụ Hôm Nay</i> (tự động), 
+                <i style="color:#ff8a7a;">Thi Đấu Đối Kháng</i> (chọn trong khung), 
+                <i style="color:#f1c40f;">Boss Cuối Tuần</i> (chọn trong chiến đấu).
+            </p>
+            <div class="custom-table">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:30%;">Tên Vật Phẩm</th>
+                            <th style="width:20%;">Ngày</th>
+                            <th style="width:25%;">Trạng Thái</th>
+                            <th style="width:25%;">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="tab-market" class="tab-content">
-            <h3 style="font-family:'Montserrat'; border-bottom:1px solid #233354; padding-bottom:8px; margin:0;"><i class="fa-solid fa-scale-balanced"></i> Sàn giao dịch vật phẩm giữa các học sinh</h3>
-            <p style="font-size:0.85rem; color:#94a3b8; margin:5px 0 15px 0;">Nơi các chiến binh trao đổi vật phẩm <b style="color:#e67e22;">Quà Tặng Vật Lý</b> dư thừa để lấy Xu tự do! (Vật phẩm Đặc Quyền không được trao đổi trên Chợ).</p>
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>Vật Phẩm Treo Bán</th>
-                        <th>Người Bán</th>
-                        <th>Lớp</th>
-                        <th>Giá Yêu Cầu</th>
-                        <th>Thao Tác Giao Dịch</th>
-                    </tr>
-                </thead>
-                <tbody id="market-table-body"></tbody>
-            </table>
+            <h3 style="font-family:'Montserrat'; border-bottom:1px solid #233354; padding-bottom:6px; margin:0; font-size:0.95rem;"><i class="fa-solid fa-scale-balanced"></i> Sàn giao dịch học sinh</h3>
+            <p style="font-size:0.75rem; color:#94a3b8; margin:4px 0 12px 0;">Nơi các chiến binh trao đổi vật phẩm <b style="color:#e67e22;">Quà Tặng Vật Lý</b> dư thừa để lấy Xu!</p>
+            <div class="custom-table">
+                <table style="width:100%; border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="width:25%;">Vật Phẩm</th>
+                            <th style="width:18%;">Người Bán</th>
+                            <th style="width:15%;">Lớp</th>
+                            <th style="width:20%;">Giá</th>
+                            <th style="width:22%;">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="market-table-body"></tbody>
+                </table>
+            </div>
         </div>
 
     </div>
@@ -335,8 +591,6 @@
         let indexItemBan = null;
 
         // ========================== 5 THẺ ĐẶC QUYỀN DÀNH RIÊNG CHO "NHIỆM VỤ HÔM NAY" (lam-bai.html) ==========================
-        // 5 vật phẩm này có hiệu lực TỰ ĐỘNG (không cần gặp Thầy/Cô) và CHỈ tác động lên file lam-bai.html.
-        // Không liên quan đến Thi Đấu Đối Kháng, Thử Thách Tự Luận, Boss Cuối Tuần hay Vòng Quay May Mắn.
         const LAM_BAI_PRIVILEGE_ITEMS = [
             { id: "sp_x2exp", icon: "💎", name: "Bùa Nhân Đôi Tri Thức", desc: "Kích hoạt để NHÂN ĐÔI (x2) EXP và Xu nhận được trong lượt làm bài TIẾP THEO ở mục Nhiệm Vụ Hôm Nay!", price: 250, type: "game" },
             { id: "sp_5050", icon: "🔍", name: "Kính Lúp Thần Kỳ", desc: "Tự động loại bỏ 1 đáp án sai ở MỖI câu hỏi trong lượt làm bài TIẾP THEO ở mục Nhiệm Vụ Hôm Nay, giúp tăng cơ hội chọn đúng!", price: 200, type: "game" },
@@ -345,39 +599,55 @@
             { id: "sp_linhdan", icon: "🔋", name: "Linh Đan Đầy Năng Lượng", desc: "Kích hoạt để LÀM ĐẦY NGAY toàn bộ số lượt làm bài còn lại hôm nay (mục Nhiệm Vụ Hôm Nay) lên mức tối đa, không cần chờ đợi!", price: 220, type: "game" }
         ];
 
-        // BẢNG VẬT PHẨM MẶC ĐỊNH
+        const DOI_KHANG_PRIVILEGE_ITEMS = [
+            { id: "dk_tangthoigian", icon: "⏱️", name: "Bùa Tăng Giờ Suy Nghĩ", desc: "Chọn thẻ này ngay trong khung Tham Gia Đối Kháng để TĂNG thời gian suy nghĩ mỗi câu hỏi từ 15 giây lên 20 giây trong suốt trận Thi Đấu Đối Kháng sắp tới!", price: 200, type: "game" },
+            { id: "dk_khientrumloi", icon: "🎯", name: "Khiên Miễn Trừ Sai Lầm", desc: "Chọn thẻ này ngay trong khung Tham Gia Đối Kháng để được MIỄN trừ hậu quả (không bị trừ điểm, không bị khóa lượt) cho LẦN trả lời sai ĐẦU TIÊN của bạn trong trận đối kháng sắp tới!", price: 220, type: "game" },
+            { id: "dk_khoidau", icon: "🚀", name: "Bùa Khởi Đầu Thần Tốc", desc: "Chọn thẻ này ngay trong khung Tham Gia Đối Kháng để được CỘNG NGAY +1 điểm khởi đầu trước khi trận đối kháng sắp tới bắt đầu!", price: 180, type: "game" },
+            { id: "dk_nhandoicuoc", icon: "💰", name: "Bùa Nhân Đôi Tiền Cược", desc: "Chọn thẻ này ngay trong khung Tham Gia Đối Kháng để NHÂN ĐÔI (x2) số Xu bạn nhận được nếu CHIẾN THẮNG trận đối kháng sắp tới!", price: 260, type: "game" },
+            { id: "dk_freetoken", icon: "🎫", name: "Thẻ Thách Đấu Tự Do", desc: "Chọn thẻ này ngay trong khung Tham Gia Đối Kháng để trận đối kháng sắp tới KHÔNG bị trừ vào số Lượt Thách Đấu còn lại trong ngày của bạn!", price: 150, type: "game" }
+        ];
+
+        const DOI_KHANG_PRIVILEGE_NAMES = DOI_KHANG_PRIVILEGE_ITEMS.map(it => it.name);
+
+        const BOSS_PRIVILEGE_ITEMS = [
+            { id: "boss_giaphomenh", icon: "🛡️", name: "Giáp Hộ Mệnh", desc: "Bấm thẻ này trong trận Boss: được phép sai 1 câu mà vẫn giữ nguyên lượng máu để tiếp tục chiến đấu. (Mỗi thẻ chỉ dùng 1 lần/trận)", price: 280, type: "game" },
+            { id: "boss_cuonsachtrithu", icon: "⚡", name: "Cuộn Sách Tri Thức", desc: "Bấm thẻ này trong trận Boss: tăng tỷ lệ chọn đúng từ 25% (1/4) lên đến 50% (1/2) bằng cách loại bỏ 2 đáp án sai, rất chí mạng ở những câu hỏi cấp độ cuối. (Mỗi thẻ chỉ dùng 1 lần/trận)", price: 300, type: "game" },
+            { id: "boss_donghocat", icon: "⏳", name: "Đồng Hồ Cát", desc: "Bấm thẻ này trong trận Boss: loại bỏ áp lực thời gian trong 3 câu tiếp theo, giúp em bình tĩnh nháp bài để tìm ra đáp án chính xác nhất. (Mỗi thẻ chỉ dùng 1 lần/trận)", price: 250, type: "game" },
+            { id: "boss_chimangsamset", icon: "☄️", name: "Chí Mạng Sấm Sét", desc: "Bấm thẻ này trong trận Boss: câu trả lời đúng tiếp theo sẽ gây GẤP ĐÔI sát thương, giúp rút ngắn trận đấu và hạ gục Boss nhanh hơn. (Mỗi thẻ chỉ dùng 1 lần/trận)", price: 320, type: "game" },
+            { id: "boss_binhhoimau", icon: "🧪", name: "Bình Hồi Máu", desc: "Bấm thẻ này trong trận Boss khi lượng máu xuống quá thấp: hồi ngay 50% lượng máu tối đa, cứu nguy trong gang tấc khi lỡ trả lời sai vài câu liên tiếp. (Mỗi thẻ chỉ dùng 1 lần/trận)", price: 350, type: "game" }
+        ];
+
+        const BOSS_PRIVILEGE_NAMES = BOSS_PRIVILEGE_ITEMS.map(it => it.name);
+
+        const DANH_SACH_ID_BI_GO_BO = ["sp1", "sp2", "sp3", "sp4", "sp5", "sp6", "sp10", "sp11", "sp12"];
+
         const DEFAULT_ITEMS = [
             ...LAM_BAI_PRIVILEGE_ITEMS,
-            { id: "sp1", icon: "💡", name: "Phao Gợi Ý Tối Thượng", desc: "Được quyền hỏi Thầy Trong hướng đi giải bài khó cho 1 câu hỏi bất kỳ.", price: 80, type: "game" },
             { id: "sp_phuchan", icon: "🔥", name: "Bùa Phục Hận", desc: "Khi đã dùng hết 3 lượt làm bài trong ngày, dùng bùa này để được cộng thêm 1 lượt làm bài ngay lập tức!", price: 60, type: "game" },
-            { id: "sp2", icon: "🛡️", name: "Bùa Hộ Mệnh Trừ Điểm", desc: "Miễn trừ hình phạt trừ điểm 1 lần duy nhất khi làm sai bài tập hoặc kiểm tra.", price: 100, type: "game" },
-            { id: "sp3", icon: "🎫", name: "Thẻ Đặc Xá BTVN", desc: "Đặc quyền miễn làm 1 bài tập về nhà tùy chọn. Cần thông báo cho Thầy.", price: 150, type: "game" },
-            { id: "sp4", icon: "➕", name: "Thẻ Cộng Điểm Miệng", desc: "Cộng trực tiếp +1 Điểm vào bài kiểm tra miệng (hoặc bài hệ số 1).", price: 180, type: "game" },
-            { id: "sp5", icon: "✨", name: "Thẻ Cộng Điểm 15 Phút", desc: "Cộng +0.5 Điểm vào bài kiểm tra 15 phút (Bài hệ số 1 nâng cao).", price: 200, type: "game" },
-            { id: "sp6", icon: "🪑", name: "Vé VIP Chọn Chỗ Ngồi", desc: "Quyền lực tự chọn chỗ ngồi tùy thích trong vòng 1 tuần học.", price: 250, type: "game" },
+            ...DOI_KHANG_PRIVILEGE_ITEMS,
+            ...BOSS_PRIVILEGE_ITEMS,
             { id: "sp7", icon: "🍬", name: "Kẹo Mút Trí Tuệ", desc: "Bổ sung đường Glucozo lập tức cho các pha tính nhẩm cân não.", price: 300, type: "real" },
             { id: "sp8", icon: "✏️", name: "Bút Bi Chiến Binh", desc: "Bút thần tốc chuyên vẽ sơ đồ tư duy và hình học chuẩn xác.", price: 400, type: "real" },
-            { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học", desc: "Cuốn sổ mini thần thánh ghi chép toàn bộ công thức cốt lõi.", price: 500, type: "real" },
-            { id: "sp10", icon: "🔑", name: "Móc Khóa Math Hero", desc: "Móc khóa khắc biểu tượng chiến binh toán học độc quyền.", price: 600, type: "real" },
-            { id: "sp11", icon: "🧋", name: "Trà Sữa Năng Lượng", desc: "Một ly trà sữa full topping hồi máu sau chuỗi bài tập khó.", price: 800, type: "real" },
-            { id: "sp12", icon: "🍕", name: "Vé Tiệc Pizza Cuối Khóa", desc: "Suất ăn liên hoan Pizza vinh danh những chiến binh cực xuất sắc.", price: 1500, type: "real" }
+            { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học", desc: "Cuốn sổ mini thần thánh ghi chép toàn bộ công thức cốt lõi.", price: 500, type: "real" }
         ];
 
         window.addEventListener('DOMContentLoaded', () => {
             danhSachSanPham = JSON.parse(localStorage.getItem('math_hero_shop_items')) || DEFAULT_ITEMS;
 
-            // Đảm bảo vật phẩm "Bùa Phục Hận" luôn tồn tại trên kệ hàng, dù shop đã từng được Thầy/Cô
-            // chỉnh sửa và lưu trước khi tính năng này được bổ sung (không làm mất dữ liệu giá đã chỉnh).
+            let soLuongTruoc = danhSachSanPham.length;
+            danhSachSanPham = danhSachSanPham.filter(sp => !DANH_SACH_ID_BI_GO_BO.includes(sp.id));
+            if (danhSachSanPham.length !== soLuongTruoc) {
+                localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            }
+
             let daCoBuaPhucHan = danhSachSanPham.some(sp => sp.id === "sp_phuchan");
             if (!daCoBuaPhucHan) {
                 danhSachSanPham.push({ id: "sp_phuchan", icon: "🔥", name: "Bùa Phục Hận", desc: "Khi đã dùng hết 3 lượt làm bài trong ngày, dùng bùa này để được cộng thêm 1 lượt làm bài ngay lập tức!", price: 60, type: "game" });
                 localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
             }
 
-            // Đảm bảo 5 thẻ Đặc Quyền dành riêng cho "Nhiệm Vụ Hôm Nay" (lam-bai.html) luôn tồn tại trên kệ hàng,
-            // dù shop đã từng được Thầy/Cô chỉnh sửa và lưu trước khi 5 thẻ này được bổ sung (không làm mất giá đã chỉnh).
             let coThemVatPhamMoi = false;
-            LAM_BAI_PRIVILEGE_ITEMS.forEach(mauVatPham => {
+            [...LAM_BAI_PRIVILEGE_ITEMS, ...DOI_KHANG_PRIVILEGE_ITEMS, ...BOSS_PRIVILEGE_ITEMS].forEach(mauVatPham => {
                 if (!danhSachSanPham.some(sp => sp.id === mauVatPham.id)) {
                     danhSachSanPham.push({ ...mauVatPham });
                     coThemVatPhamMoi = true;
@@ -390,7 +660,6 @@
             kiemTraVaNapDanhTinh();
         });
 
-        // Hàm cập nhật hiển thị EXP dùng chung cho toàn hệ thống
         function updateGlobalExp() { 
             let n = sessionStorage.getItem("hoc_school_student_name"); 
             if(n) { 
@@ -405,13 +674,11 @@
             } 
         }
 
-        // 🔧 XỬ LÝ LỖI ĐĂNG NHẬP VÀ ĐỒNG BỘ EXP
         function kiemTraVaNapDanhTinh() {
             studentName = sessionStorage.getItem('hoc_school_student_name');
             studentClass = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
             studentClassroom = sessionStorage.getItem('hoc_school_student_classroom') || '';
 
-            // Nếu không có trong phiên hiện tại, thử tìm trong nhật ký đăng nhập chung
             if (!studentName) {
                 let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
                 if (nhatKy.length > 0) {
@@ -425,7 +692,6 @@
                 }
             }
 
-            // Nếu classroom vẫn trống, thử lấy từ dữ liệu users localStorage
             if (studentName && !studentClassroom) {
                 let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
                 if (users[studentName] && typeof users[studentName] === 'object') {
@@ -434,21 +700,19 @@
             }
 
             if (!studentName) {
-                // Hiển thị form điền tên đăng nhập nhanh ngay tại shop
                 document.getElementById('user-status-area').innerHTML = `
-                    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <div>
-                            <p style="color: #e74c3c; font-weight:bold; margin:0;"><i class="fa-solid fa-circle-exclamation"></i> Phát hiện lỗi danh tính (Chưa đăng nhập từ sảnh chính)!</p>
-                            <p style="font-size:0.85rem; color:#cbd5e1; margin:3px 0 0 0;">Nhập tên của con để đồng bộ EXP mua đồ nhanh:</p>
+                            <p style="color: #e74c3c; font-weight:bold; margin:0; font-size:0.8rem;"><i class="fa-solid fa-circle-exclamation"></i> Chưa đăng nhập!</p>
+                            <p style="font-size:0.7rem; color:#cbd5e1; margin:2px 0 0 0;">Nhập tên để đồng bộ:</p>
                         </div>
                         <div class="quick-login-form">
-                            <input type="text" id="quick-name-input" placeholder="Nhập Họ và Tên...">
+                            <input type="text" id="quick-name-input" placeholder="Họ và Tên...">
                             <button onclick="kichHoatDangNhapNhanh()">Vào Shop</button>
                         </div>
                     </div>
                 `;
             } else {
-                // Xác định avatar emoji theo khối
                 const avatarMap = { 'Khối 6': '🐉', 'Khối 7': '⚔️', 'Khối 8': '🔥', 'Khối 9': '💀' };
                 const avatar = avatarMap[studentClass] || '🛡️';
 
@@ -456,7 +720,6 @@
                     ? `<span class="warrior-classroom-tag"><i class="fa-solid fa-users-rectangle"></i> Lớp ${studentClassroom}</span>`
                     : '';
 
-                // Khôi phục giao diện chiến binh khi đã có thông tin
                 document.getElementById('user-status-area').innerHTML = `
                     <div class="warrior-card-left">
                         <div class="warrior-avatar">${avatar}</div>
@@ -487,7 +750,6 @@
             sessionStorage.setItem('hoc_school_student_name', inputName);
             sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
             
-            // Nếu học sinh mới hoàn toàn, khởi tạo thử 100 EXP để các em trải nghiệm
             if (localStorage.getItem('exp_' + inputName) === null) {
                 localStorage.setItem('exp_' + inputName, 100);
             }
@@ -503,21 +765,20 @@
             updateGlobalExp();
         }
 
-        // ========================== QUẢN LÝ VÀ HIỂN THỊ CỬA HÀNG ==========================
         function renderOfficialShop() {
             const grid = document.getElementById('official-shop-grid');
             if(!grid) return;
             grid.innerHTML = "";
 
-            // Thứ tự ưu tiên CỐ ĐỊNH cho 5 thẻ Đặc Quyền dành riêng cho "Nhiệm Vụ Hôm Nay" (lam-bai.html):
-            // luôn hiển thị ở 5 vị trí ĐẦU TIÊN của kệ hàng, dù vật phẩm được Thầy/Cô thêm/sửa giá sau này.
             const THU_TU_UU_TIEN_LAM_BAI = LAM_BAI_PRIVILEGE_ITEMS.map(it => it.id);
+            const THU_TU_UU_TIEN_DOI_KHANG = DOI_KHANG_PRIVILEGE_ITEMS.map(it => it.id);
+            const THU_TU_UU_TIEN_BOSS = BOSS_PRIVILEGE_ITEMS.map(it => it.id);
+            const THU_TU_UU_TIEN_GOP = [...THU_TU_UU_TIEN_LAM_BAI, ...THU_TU_UU_TIEN_DOI_KHANG, ...THU_TU_UU_TIEN_BOSS];
             function layThuTuUuTien(item) {
-                let idx = THU_TU_UU_TIEN_LAM_BAI.indexOf(item.id);
+                let idx = THU_TU_UU_TIEN_GOP.indexOf(item.id);
                 return idx === -1 ? 999 : idx;
             }
 
-            // Sắp xếp: 5 thẻ ưu tiên "Nhiệm Vụ Hôm Nay" trước, rồi các đặc quyền (game) khác, rồi vật lý (real) sau
             let danhSachSapXep = [...danhSachSanPham].sort((a, b) => {
                 let uuTienA = layThuTuUuTien(a);
                 let uuTienB = layThuTuUuTien(b);
@@ -529,18 +790,29 @@
 
             danhSachSapXep.forEach(item => {
                 let laLamBaiPrivilege = THU_TU_UU_TIEN_LAM_BAI.includes(item.id);
-                const tagClass = laLamBaiPrivilege ? 'tag-lambai' : (item.type === 'real' ? 'tag-real' : 'tag-game');
-                const tagText = laLamBaiPrivilege ? 'Nhiệm Vụ Hôm Nay' : (item.type === 'real' ? 'Quà Vật Lý' : 'Đặc Quyền');
-                const ghiChuLamBai = laLamBaiPrivilege
-                    ? `<div class="lambai-target-note"><i class="fa-solid fa-bolt"></i> Tác dụng tự động trong "Nhiệm Vụ Hôm Nay"</div>`
-                    : '';
+                let laDoiKhangPrivilege = THU_TU_UU_TIEN_DOI_KHANG.includes(item.id);
+                let laBossPrivilege = THU_TU_UU_TIEN_BOSS.includes(item.id);
+                let tagClass = item.type === 'real' ? 'tag-real' : 'tag-game';
+                let tagText = item.type === 'real' ? 'Quà Vật Lý' : 'Đặc Quyền';
+                let cardExtraClass = '';
+                let ghiChu = '';
+                if (laLamBaiPrivilege) {
+                    tagClass = 'tag-lambai'; tagText = 'Nhiệm Vụ'; cardExtraClass = 'item-card-lambai';
+                    ghiChu = `<div class="lambai-target-note"><i class="fa-solid fa-bolt"></i> Tác dụng tự động trong "Nhiệm Vụ Hôm Nay"</div>`;
+                } else if (laDoiKhangPrivilege) {
+                    tagClass = 'tag-doikhang'; tagText = 'Đối Kháng'; cardExtraClass = 'item-card-doikhang';
+                    ghiChu = `<div class="doikhang-target-note"><i class="fa-solid fa-swords"></i> Chọn trong khung "Tham Gia Đối Kháng"</div>`;
+                } else if (laBossPrivilege) {
+                    tagClass = 'tag-boss'; tagText = 'Boss'; cardExtraClass = 'item-card-boss';
+                    ghiChu = `<div class="boss-target-note"><i class="fa-solid fa-skull-crossbones"></i> Chọn trong khung chiến đấu Boss</div>`;
+                }
                 grid.innerHTML += `
-                    <div class="item-card ${laLamBaiPrivilege ? 'item-card-lambai' : ''}">
+                    <div class="item-card ${cardExtraClass}">
                         <span class="tag ${tagClass}">${tagText}</span>
                         <div>
                             <div class="item-icon">${item.icon || '🎁'}</div>
                             <h3 class="item-name">${item.name}</h3>
-                            ${ghiChuLamBai}
+                            ${ghiChu}
                             <p class="item-desc">${item.desc}</p>
                         </div>
                         <div>
@@ -580,7 +852,6 @@
             }
         }
 
-        // ========================== CỔNG GIÁO VIÊN: CHỈNH SỬA & THÊM MỚI ==========================
         function xacThucGiaoVien() {
             document.getElementById('teacher-password-input').value = "";
             document.getElementById('teacher-login-modal').style.display = 'flex';
@@ -608,12 +879,12 @@
                 listHtml += `
                     <div class="price-edit-row">
                         <div>
-                            <span style="font-size: 1.1rem; margin-right:5px;">${item.icon || '🎁'}</span> 
-                            <b>${item.name}</b> ${badgeType}
+                            <span style="font-size: 1rem; margin-right:4px;">${item.icon || '🎁'}</span> 
+                            <b style="font-size:0.85rem;">${item.name}</b> ${badgeType}
                         </div>
                         <div>
                             <input type="number" id="edit-price-${index}" class="price-edit-input" value="${item.price}">
-                            <span style="color: #a4b0be; font-size: 0.8rem; margin-left: 5px;">Xu</span>
+                            <span style="color: #a4b0be; font-size: 0.7rem; margin-left: 4px;">Xu</span>
                         </div>
                     </div>
                 `;
@@ -670,7 +941,6 @@
 
         function dongModalTeacher() { document.getElementById('teacher-modal').style.display = 'none'; }
 
-        // ========================== CÁC CHỨC NĂNG PHỤ TRỢ (RƯƠNG ĐỒ, CHỢ TỰ DO) ==========================
         function chuyenTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -684,7 +954,7 @@
             let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
 
             if(myRuong.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#7f8c8d;">Rương đồ đang trống. Tích lũy thêm EXP nhé!</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#7f8c8d; padding:12px; font-size:0.8rem;">Rương đồ đang trống. Tích lũy thêm EXP nhé!</td></tr>`;
                 return;
             }
 
@@ -694,27 +964,23 @@
                 if(item.status === 'cho_nhan') {
                     statusLabel = `<span class="status-badge status-waiting"><i class="fa-solid fa-clock"></i> Chưa dùng</span>`;
                     let nutTreoCho = laVatLy
-                        ? `<button class="btn-small btn-sell-market" onclick="moModalBan(${index})"><i class="fa-solid fa-tags"></i> Treo Chợ</button>`
+                        ? `<button class="btn-small btn-sell-market" onclick="moModalBan(${index})"><i class="fa-solid fa-tags"></i> Treo</button>`
                         : '';
                     actionButton = `
                         ${nutTreoCho}
-                        <button class="btn-small" style="background:#27ae60; color:white;" onclick="suDungHoacNhanQua(${index})"><i class="fa-solid fa-check"></i> Sử Dụng</button>
+                        <button class="btn-small" style="background:#27ae60; color:white;" onclick="suDungHoacNhanQua(${index})"><i class="fa-solid fa-check"></i> Dùng</button>
                     `;
                 } else if (item.status === 'da_nhan') {
                     statusLabel = `<span class="status-badge status-done"><i class="fa-solid fa-circle-check"></i> Đã dùng</span>`;
-                    actionButton = `<span style="color:#7f8c8d; font-size:0.85rem;">Xóa lịch sử</span>`;
+                    actionButton = `<span style="color:#7f8c8d; font-size:0.7rem;">Xóa</span>`;
                 } else if (item.status === 'dang_ban') {
-                    statusLabel = `<span class="status-badge status-market"><i class="fa-solid fa-store-slash"></i> Treo chợ</span>`;
+                    statusLabel = `<span class="status-badge status-market"><i class="fa-solid fa-store-slash"></i> Treo</span>`;
                     actionButton = `<button class="btn-small btn-cancel-market" onclick="huyTreoBanChao(${index})">Thu hồi</button>`;
                 }
                 tbody.innerHTML += `<tr><td><span>${item.icon}</span> <b>${item.name}</b></td><td>${item.date}</td><td>${statusLabel}</td><td>${actionButton}</td></tr>`;
             });
         }
 
-        // Bản đồ hiệu ứng TỰ ĐỘNG cho các thẻ Đặc Quyền dành riêng cho "Nhiệm Vụ Hôm Nay" (file lam-bai.html).
-        // Mỗi thẻ (trừ Bùa Phục Hận / Linh Đan Đầy Năng Lượng vốn có hiệu lực NGAY) chỉ ghi lại 1 "cờ hiệu lực"
-        // (flag) vào localStorage theo đúng tên học sinh; file lam-bai.html sẽ tự đọc và áp dụng cờ này
-        // ngay khi học sinh bắt đầu lượt làm bài TIẾP THEO, sau đó xoá cờ đi (chỉ dùng được 1 lần).
         const HIEU_UNG_DAC_QUYEN_LAM_BAI = {
             "Bùa Nhân Đôi Tri Thức": { key: "hero_x2exp_", thongBao: `Lượt làm bài TIẾP THEO ở mục "Nhiệm Vụ Hôm Nay" sẽ được NHÂN ĐÔI (x2) EXP và Xu nhận được!` },
             "Kính Lúp Thần Kỳ": { key: "hero_5050_", thongBao: `Lượt làm bài TIẾP THEO ở mục "Nhiệm Vụ Hôm Nay" sẽ tự động loại 1 đáp án sai ở mỗi câu hỏi!` },
@@ -728,6 +994,18 @@
             let laBuaPhucHan = tenVatPham === "Bùa Phục Hận";
             let laLinhDan = tenVatPham === "Linh Đan Đầy Năng Lượng";
             let hieuUngLamBai = HIEU_UNG_DAC_QUYEN_LAM_BAI[tenVatPham];
+            let laDoiKhangPrivilege = DOI_KHANG_PRIVILEGE_NAMES.includes(tenVatPham);
+            let laBossPrivilege = BOSS_PRIVILEGE_NAMES.includes(tenVatPham);
+
+            if (laDoiKhangPrivilege) {
+                hienThiToast(`Thẻ "${tenVatPham}" cần được chọn trực tiếp trong khung "Tham Gia Đối Kháng" ở màn hình Thi Đấu Đối Kháng, không dùng nút Sử Dụng ở đây!`, "error");
+                return;
+            }
+
+            if (laBossPrivilege) {
+                hienThiToast(`Thẻ "${tenVatPham}" cần được chọn trực tiếp trong KHUNG CHIẾN ĐẤU ở màn hình Boss Cuối Tuần, không dùng nút Sử Dụng ở đây!`, "error");
+                return;
+            }
 
             let noiDungXacNhan;
             if (laBuaPhucHan) {
@@ -760,7 +1038,6 @@
             }
         }
 
-        // Cộng thêm 1 lượt làm bài cho học sinh trong ngày hôm nay (đồng bộ với hệ thống lượt làm bài ở file lam-bai.html)
         function congThemLuotLamBaiChoHocSinh(ten) {
             if (!ten) return;
             const SO_LUOT_MAC_DINH_MOI_NGAY = 3;
@@ -769,15 +1046,12 @@
             let duLieu = JSON.parse(localStorage.getItem(key)) || null;
 
             if (!duLieu || duLieu.date !== homNay) {
-                // Nếu chưa có dữ liệu hôm nay (hoặc sang ngày mới), cấp lại số lượt mặc định trước khi cộng bonus
                 duLieu = { date: homNay, soLuotConLai: SO_LUOT_MAC_DINH_MOI_NGAY };
             }
             duLieu.soLuotConLai += 1;
             localStorage.setItem(key, JSON.stringify(duLieu));
         }
 
-        // Làm đầy NGAY toàn bộ lượt làm bài còn lại hôm nay lên mức tối đa (dùng cho Linh Đan Đầy Năng Lượng).
-        // Đồng bộ với cùng hệ thống lượt làm bài ở file lam-bai.html (key 'luot_lam_bai_' + tên học sinh).
         function lamDayLuotLamBaiChoHocSinh(ten) {
             if (!ten) return;
             const soLuotToiDa = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3;
@@ -792,7 +1066,6 @@
             }
             localStorage.setItem(key, JSON.stringify(duLieu));
         }
-
 
         function moModalBan(index) {
             let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
@@ -842,16 +1115,19 @@
             const tbody = document.getElementById('market-table-body');
             if(!tbody) return; tbody.innerHTML = "";
             let cho = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
-            if(cho.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#7f8c8d;">Chợ đang trống.</td></tr>`; return; }
+            if(cho.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#7f8c8d; padding:12px; font-size:0.8rem;">Chợ đang trống.</td></tr>`; 
+                return; 
+            }
             cho.forEach(item => {
                 let laVatLy = item.type === 'real';
                 let btn;
                 if (item.seller === studentName) {
-                    btn = `<i>Của bạn</i>`;
+                    btn = `<i style="font-size:0.7rem;">Của bạn</i>`;
                 } else if (!laVatLy) {
-                    btn = `<span style="color:#7f8c8d; font-size:0.8rem;" title="Vật phẩm Đặc Quyền không được trao đổi"><i class="fa-solid fa-ban"></i> Không khả dụng</span>`;
+                    btn = `<span style="color:#7f8c8d; font-size:0.6rem;" title="Vật phẩm Đặc Quyền không được trao đổi"><i class="fa-solid fa-ban"></i></span>`;
                 } else {
-                    btn = `<button class="btn-small" style="background:#f1c40f; color:#000;" onclick="muaDoChoP2P('${item.id_market}')">Mua lại</button>`;
+                    btn = `<button class="btn-small" style="background:#f1c40f; color:#000;" onclick="muaDoChoP2P('${item.id_market}')">Mua</button>`;
                 }
                 tbody.innerHTML += `<tr><td>${item.icon} <b>${item.name}</b></td><td style="color:#3498db;">${item.seller}</td><td>${item.seller_class}</td><td style="color:#ffeb3b; font-weight:bold;">${item.price} Xu</td><td>${btn}</td></tr>`;
             });
@@ -889,8 +1165,8 @@
         function hienThiToast(msg, type = 'success') {
             const box = document.getElementById('toast-box');
             const toast = document.createElement('div');
-            toast.style.cssText = `background:#141d30; border-left:4px solid ${type==='success'?'#2ecc71':'#e74c3c'}; color:#fff; padding:12px 20px; border-radius:6px; font-weight:bold; font-size:0.9rem; box-shadow:0 5px 15px rgba(0,0,0,0.4); min-width:250px;`;
-            toast.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-triangle-exclamation'}" style="color:${type==='success'?'#2ecc71':'#e74c3c'}; margin-right:8px;"></i> ${msg}`;
+            toast.style.cssText = `background:#141d30; border-left:4px solid ${type==='success'?'#2ecc71':'#e74c3c'}; color:#fff; padding:8px 14px; border-radius:6px; font-weight:bold; font-size:0.8rem; box-shadow:0 5px 15px rgba(0,0,0,0.4); min-width:180px; max-width:90vw; pointer-events:auto; word-break:break-word;`;
+            toast.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-triangle-exclamation'}" style="color:${type==='success'?'#2ecc71':'#e74c3c'}; margin-right:6px;"></i> ${msg}`;
             box.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3500);
         }
