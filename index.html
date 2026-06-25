@@ -57,53 +57,51 @@
         .header-signpost:hover { transform: scale(1.06) translateY(-2px); color: #cc0000; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5)); }
         .header-signpost.logo { color: #f1c40f; font-size: 1.2rem; }
 
-        /* THÔNG TIN CHIẾN BINH */
+        /* ===== CARD THÔNG TIN CHIẾN BINH – TỐI GIẢN CHO MOBILE ===== */
         .student-status-card { 
             display: flex; 
+            flex-direction: column;
             background: linear-gradient(135deg, #0d111a 0%, #050811 100%); 
             border: 1px solid #3f000f; 
             border-left: 4px solid #b91c1c; 
             border-radius: 10px; 
             padding: 10px 14px; 
             margin-bottom: 18px; 
-            justify-content: space-between; 
-            align-items: center; 
             box-shadow: 0 4px 20px rgba(185, 28, 28, 0.15); 
-            gap: 10px; 
+            gap: 8px;
+        }
+        /* Hàng trên: avatar + tên + lớp + nút thoát */
+        .student-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
             flex-wrap: wrap;
         }
         .student-left-profile { 
             display: flex; 
             align-items: center; 
             gap: 10px; 
-            flex: 1; 
-            min-width: 0; 
-            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
         }
         .dynamic-avatar { 
-            width: 40px; 
-            height: 40px; 
+            width: 38px; 
+            height: 38px; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             font-family: 'Montserrat', sans-serif; 
             font-weight: 900; 
-            font-size: 1rem; 
+            font-size: 0.9rem; 
             color: white; 
             border: 2px solid #b91c1c; 
             flex-shrink: 0; 
             box-shadow: 0 0 10px rgba(185, 28, 28, 0.5); 
         }
-        .student-info-box { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px; 
-            min-width: 0; 
-            flex: 1;
-        }
         .student-meta { 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             font-weight: bold; 
             color: #f1f5f9; 
             white-space: nowrap; 
@@ -114,7 +112,6 @@
             align-items: center;
             gap: 2px 6px;
         }
-        
         .mystic-label {
             font-family: 'Averia Serif Libre', Georgia, serif; 
             color: #ff4d4d; 
@@ -122,86 +119,18 @@
             font-weight: 700; 
             letter-spacing: 0.3px; 
             text-transform: uppercase;
-            font-size: 0.7rem;
-        }
-
-        /* HÀNG BADGE THỐNG KÊ */
-        .stats-badge-row {
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 4px; 
-            align-items: center;
-        }
-        .stat-badge {
-            display: inline-flex; 
-            align-items: center; 
-            gap: 3px;
-            border-radius: 6px; 
-            padding: 2px 8px;
-            font-weight: 700; 
-            font-size: 0.7rem; 
-            white-space: nowrap;
-        }
-        .stat-badge.exp {
-            background: linear-gradient(135deg, #2a0808 0%, #1a0202 100%);
-            border: 1px solid #560707; color: white;
-            box-shadow: 0 0 8px rgba(86,7,7,0.4);
-        }
-        .stat-badge.coin {
-            background: linear-gradient(135deg, #1b1c02 0%, #0d0e01 100%);
-            border: 1px solid #565407; color: white;
-            box-shadow: 0 0 8px rgba(86,84,7,0.4);
-        }
-        .stat-badge.luot-lam {
-            background: linear-gradient(135deg, #0a2a1a 0%, #051008 100%);
-            border: 1px solid #1a5c30; color: white;
-            box-shadow: 0 0 8px rgba(26,92,48,0.4);
-        }
-        .stat-badge.luot-boss {
-            background: linear-gradient(135deg, #2a0808 0%, #1a0202 100%);
-            border: 1px solid #7f1010; color: white;
-            box-shadow: 0 0 8px rgba(127,16,16,0.35);
-        }
-        .stat-badge.luot-vq {
-            background: linear-gradient(135deg, #1c1200 0%, #100a00 100%);
-            border: 1px solid #5c3a00; color: white;
-            box-shadow: 0 0 8px rgba(92,58,0,0.4);
-        }
-        .stat-badge.luot-td {
-            background: linear-gradient(135deg, #1c0e00 0%, #100800 100%);
-            border: 1px solid #7d3f00; color: white;
-            box-shadow: 0 0 8px rgba(125,63,0,0.4);
-        }
-        .stat-badge.the-card {
-            background: linear-gradient(135deg, #1a0d2e 0%, #0d0618 100%);
-            border: 1px solid #5b2d8a; color: white;
-            box-shadow: 0 0 8px rgba(91,45,138,0.4);
-        }
-        .stat-val { color: white; font-size: 0.8rem; }
-        .stat-badge.zero .stat-val { color: #e74c3c; }
-        .stat-badge .label-text {
-            font-family: 'Averia Serif Libre', serif;
             font-size: 0.65rem;
-            color: #ff4d4d;
         }
-        .stat-badge.coin .label-text { color: #ffeb3b; }
-        .stat-badge.luot-lam .label-text { color: #2ecc71; }
-        .stat-badge.luot-boss .label-text { color: #e07070; }
-        .stat-badge.luot-vq .label-text { color: #f0bb60; }
-        .stat-badge.luot-td .label-text { color: #f0a830; }
-        .stat-badge.the-card .label-text { color: #c9a0ff; }
-
-        /* NÚT THOÁT */
         .btn-logout { 
             background: linear-gradient(135deg, #4a0404, #2a0000); 
             color: #ff8a8a; 
             border: 1px solid #7f0000; 
-            padding: 6px 12px; 
+            padding: 5px 12px; 
             border-radius: 6px; 
             font-family: 'Averia Serif Libre', serif; 
             font-weight: bold; 
             cursor: pointer; 
-            font-size: 0.75rem; 
+            font-size: 0.7rem; 
             transition: all 0.3s; 
             text-transform: uppercase; 
             box-shadow: 0 0 10px rgba(127, 0, 0, 0.5); 
@@ -215,6 +144,62 @@
             border-color: #ff4d4d; 
             box-shadow: 0 0 15px rgba(255, 77, 77, 0.7); 
             transform: translateY(-2px); 
+        }
+
+        /* Hàng badge – hiển thị dạng lưới gọn */
+        .stats-badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 6px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .stat-badge {
+            display: inline-flex; 
+            align-items: center; 
+            gap: 3px;
+            border-radius: 6px; 
+            padding: 2px 8px;
+            font-weight: 700; 
+            font-size: 0.65rem; 
+            white-space: nowrap;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .stat-badge .label-text {
+            font-family: 'Averia Serif Libre', serif;
+            font-size: 0.55rem;
+            opacity: 0.7;
+        }
+        .stat-badge .stat-val {
+            font-weight: 900;
+            font-size: 0.7rem;
+            color: #fff;
+        }
+        /* Màu sắc đặc trưng cho từng loại */
+        .stat-badge.exp .stat-val { color: #f1c40f; }
+        .stat-badge.coin .stat-val { color: #ffeb3b; }
+        .stat-badge.luot-lam .stat-val { color: #2ecc71; }
+        .stat-badge.luot-boss .stat-val { color: #e74c3c; }
+        .stat-badge.luot-vq .stat-val { color: #f39c12; }
+        .stat-badge.luot-td .stat-val { color: #f0a830; }
+        .stat-badge.the-card .stat-val { color: #b983ff; }
+
+        /* Badge hết lượt sẽ hiển thị màu đỏ nhấn */
+        .stat-badge.zero .stat-val { color: #e74c3c; }
+
+        /* Ẩn label text trên mobile siêu nhỏ để tiết kiệm diện tích */
+        @media (max-width: 480px) {
+            .stat-badge .label-text {
+                display: none;
+            }
+            .stat-badge {
+                padding: 2px 6px;
+                font-size: 0.6rem;
+            }
+            .stat-badge .stat-val {
+                font-size: 0.65rem;
+            }
         }
 
         /* BẢN ĐỒ KHU VƯỜN */
@@ -419,19 +404,20 @@
         @media (min-width: 768px) {
             body { padding: 20px; }
             .container { padding: 0; }
-            .student-status-card { padding: 12px 18px; }
+            .student-status-card { padding: 12px 18px; gap: 10px; }
             .dynamic-avatar { width: 46px; height: 46px; font-size: 1.2rem; }
             .student-meta { font-size: 0.9rem; }
             .mystic-label { font-size: 0.8rem; }
-            .stat-badge { padding: 4px 10px; font-size: 0.8rem; }
-            .stat-badge .label-text { font-size: 0.72rem; }
+            .stat-badge { padding: 4px 12px; font-size: 0.75rem; }
+            .stat-badge .label-text { font-size: 0.65rem; }
+            .stat-badge .stat-val { font-size: 0.8rem; }
+            .btn-logout { padding: 8px 14px; font-size: 0.85rem; }
             .signpost-title { font-size: 1.15rem; }
             .signpost-sub { font-size: 0.52rem; padding: 2px 7px; }
             .lobby-section-title { font-size: 1.3rem; }
             .btn-toggle-music { padding: 10px 22px; font-size: 0.85rem; }
             .header-signpost { font-size: 1.05rem; }
             .header-signpost.logo { font-size: 1.5rem; }
-            .btn-logout { padding: 8px 14px; font-size: 0.85rem; }
             .pwd-card { padding: 35px 30px; }
         }
 
@@ -441,81 +427,71 @@
             .header-signpost { font-size: 0.8rem; padding: 3px 6px; }
             .header-signpost.logo { font-size: 1rem; justify-content: center; }
 
-            .student-status-card { flex-direction: column; align-items: stretch; gap: 8px; }
-            .student-left-profile { flex-wrap: nowrap; }
-            .student-meta { font-size: 0.7rem; white-space: normal; gap: 1px 4px; }
-            .mystic-label { font-size: 0.6rem; }
-            .stats-badge-row { gap: 3px; }
-            .stat-badge { font-size: 0.6rem; padding: 2px 5px; }
-            .stat-badge .label-text { font-size: 0.55rem; }
-            .stat-val { font-size: 0.7rem; }
-            .btn-logout { align-self: center; padding: 5px 12px; font-size: 0.7rem; }
-
+            .student-top-row {
+                flex-wrap: nowrap;
+            }
+            .student-meta {
+                font-size: 0.7rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .mystic-label {
+                font-size: 0.6rem;
+            }
+            .btn-logout {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+            .stat-badge {
+                font-size: 0.6rem;
+                padding: 2px 6px;
+            }
+            .stat-badge .label-text {
+                font-size: 0.5rem;
+            }
+            .stat-badge .stat-val {
+                font-size: 0.65rem;
+            }
             .lobby-section-title { font-size: 0.9rem; text-align: center; }
             .fairy-garden-map { border-radius: 12px; border-width: 2px; }
-
-            .signpost-title { font-size: 0.75rem !important; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; }
-            .signpost-sub { font-size: 0.38rem !important; padding: 1px 4px; letter-spacing: 0.3px; }
-
+            .signpost-title { font-size: 0.75rem !important; }
+            .signpost-sub { font-size: 0.38rem !important; padding: 1px 4px; }
             .sign-today-task .signpost-title { font-size: 0.7rem !important; }
             .sign-theory-vault .signpost-title { font-size: 0.65rem !important; }
             .sign-essay-challenge .signpost-title { font-size: 0.6rem !important; }
             .sign-boss-fight .signpost-title { font-size: 0.6rem !important; }
             .sign-lucky-wheel .signpost-title { font-size: 0.6rem !important; }
-
-            .btn-toggle-music { font-size: 0.7rem; padding: 6px 14px; gap: 6px; }
+            .btn-toggle-music { font-size: 0.7rem; padding: 6px 14px; }
             #sound-status-tip { font-size: 0.65rem; }
-
-            .pwd-card { padding: 20px 16px; }
-            .pwd-card h4 { font-size: 0.95rem; }
-            .pwd-input-glowing { font-size: 0.95rem; padding: 8px; }
-            .pwd-btn-action { font-size: 0.7rem; padding: 8px 0; }
         }
 
         @media (max-width: 480px) {
             body { padding: 6px; }
-            .header-navbar { padding: 6px 0; margin-bottom: 10px; }
-            .nav-buttons { gap: 4px; }
-            .header-signpost { font-size: 0.65rem; padding: 2px 4px; gap: 3px; }
-            .header-signpost.logo { font-size: 0.85rem; }
-            
-            .student-status-card { padding: 6px 10px; border-radius: 8px; margin-bottom: 12px; }
+            .student-status-card { padding: 6px 10px; gap: 6px; border-radius: 8px; }
             .dynamic-avatar { width: 32px; height: 32px; font-size: 0.8rem; border-width: 1.5px; }
-            .student-meta { font-size: 0.6rem; }
+            .student-meta { font-size: 0.6rem; gap: 1px 4px; }
             .mystic-label { font-size: 0.5rem; }
-            .stats-badge-row { gap: 2px; }
-            .stat-badge { font-size: 0.5rem; padding: 1px 4px; border-radius: 4px; }
-            .stat-badge .label-text { font-size: 0.45rem; }
-            .stat-val { font-size: 0.6rem; }
-            .btn-logout { font-size: 0.6rem; padding: 4px 8px; border-radius: 4px; }
-
+            .btn-logout { font-size: 0.55rem; padding: 3px 8px; }
+            .stat-badge { font-size: 0.5rem; padding: 1px 4px; border-radius: 4px; gap: 2px; }
+            .stat-badge .stat-val { font-size: 0.55rem; }
             .lobby-section-title { font-size: 0.75rem; margin-bottom: 8px; }
             .fairy-garden-map { border-radius: 8px; border-width: 1.5px; }
-
             .signpost-title { font-size: 0.55rem !important; margin-bottom: 1px; }
             .signpost-sub { display: none !important; }
-
             .btn-toggle-music { font-size: 0.6rem; padding: 4px 10px; border-radius: 20px; gap: 4px; }
             #sound-status-tip { font-size: 0.55rem; margin-top: 4px; }
-
             .pwd-card { padding: 16px 12px; border-width: 1.5px; }
             .pwd-card h4 { font-size: 0.8rem; }
             .pwd-input-glowing { font-size: 0.85rem; padding: 6px; margin: 8px 0; }
             .pwd-btn-action { font-size: 0.6rem; padding: 6px 0; }
-            .pwd-card .fa-3x { font-size: 2rem !important; margin-bottom: 8px !important; }
-
-            #toast-container { bottom: 10px; right: 10px; max-width: 95vw; }
-            #toast-container > div { font-size: 0.7rem; padding: 8px 12px !important; min-width: unset !important; }
         }
 
         @media (max-width: 360px) {
+            .student-meta { font-size: 0.5rem; }
+            .stat-badge { font-size: 0.45rem; padding: 1px 3px; }
+            .stat-badge .stat-val { font-size: 0.5rem; }
             .signpost-title { font-size: 0.45rem !important; }
-            .sign-today-task .signpost-title { font-size: 0.42rem !important; }
-            .sign-theory-vault .signpost-title { font-size: 0.4rem !important; }
-            .sign-essay-challenge .signpost-title { font-size: 0.38rem !important; }
-            .sign-boss-fight .signpost-title { font-size: 0.38rem !important; }
-            .sign-lucky-wheel .signpost-title { font-size: 0.38rem !important; }
-            
             .fairy-garden-map { border-radius: 6px; border-width: 1px; }
         }
 
@@ -547,10 +523,12 @@
             </div>
         </div>
 
+        <!-- ===== KHU THÔNG TIN TÀI KHOẢN ===== -->
         <div class="student-status-card" id="student-status-bar">
-            <div class="student-left-profile">
-                <div class="dynamic-avatar" id="player-avatar">?</div>
-                <div class="student-info-box">
+            <!-- Hàng trên: avatar + tên + lớp + nút thoát -->
+            <div class="student-top-row">
+                <div class="student-left-profile">
+                    <div class="dynamic-avatar" id="player-avatar">?</div>
                     <div class="student-meta">
                         <i class="fa-solid fa-user-shield" style="color:#ff4d4d;margin-right:2px;filter:drop-shadow(0 0 3px red);"></i>
                         <span class="mystic-label">Thám Hiểm:</span>
@@ -562,46 +540,48 @@
                         <span class="mystic-label">Lớp:</span>
                         <span id="txt-student-classroom" style="color:#2ecc71;text-shadow:0 0 4px rgba(46,204,113,0.5);font-weight:bold;"> —</span>
                     </div>
-                    <div class="stats-badge-row">
-                        <div class="stat-badge exp">
-                            <i class="fa-solid fa-gem" style="color:#f1c40f;filter:drop-shadow(0 0 3px gold);"></i>
-                            <span class="label-text">EXP:</span>
-                            <span class="stat-val" id="lbl-student-exp">20</span>
-                        </div>
-                        <div class="stat-badge coin">
-                            <i class="fa-solid fa-coins" style="color:#ffeb3b;filter:drop-shadow(0 0 3px gold);"></i>
-                            <span class="label-text">Xu:</span>
-                            <span class="stat-val" id="lbl-student-coin">50</span>
-                        </div>
-                        <div class="stat-badge luot-lam" id="badge-luot-lam">
-                            <i class="fa-solid fa-scroll" style="color:#2ecc71;"></i>
-                            <span class="label-text">NV:</span>
-                            <span class="stat-val" id="lbl-luot-lam">–</span>
-                        </div>
-                        <div class="stat-badge luot-boss" id="badge-luot-boss">
-                            <i class="fa-solid fa-skull-crossbones" style="color:#e74c3c;"></i>
-                            <span class="label-text">Boss:</span>
-                            <span class="stat-val" id="lbl-luot-boss">–</span>
-                        </div>
-                        <div class="stat-badge luot-vq" id="badge-luot-vq">
-                            <i class="fa-solid fa-rotate" style="color:#f39c12;"></i>
-                            <span class="label-text">Quay:</span>
-                            <span class="stat-val" id="lbl-luot-vq">–</span>
-                        </div>
-                        <div class="stat-badge luot-td" id="badge-luot-td">
-                            <i class="fa-solid fa-swords" style="color:#f39c12;"></i>
-                            <span class="label-text">Đấu:</span>
-                            <span class="stat-val" id="lbl-luot-td">–</span>
-                        </div>
-                        <div class="stat-badge the-card" id="badge-the" style="display:none;">
-                            <i class="fa-solid fa-hand-holding-magic" style="color:#b983ff;"></i>
-                            <span class="label-text">Thẻ:</span>
-                            <span class="stat-val" id="lbl-so-the">0</span>
-                        </div>
-                    </div>
+                </div>
+                <button class="btn-logout" onclick="xuLyDoiTaiKhoan()">Rời <i class="fa-solid fa-door-open" style="margin-left:3px;"></i></button>
+            </div>
+
+            <!-- Hàng badge – gọn gàng -->
+            <div class="stats-badge-row">
+                <div class="stat-badge exp">
+                    <i class="fa-solid fa-gem" style="color:#f1c40f;filter:drop-shadow(0 0 3px gold);font-size:0.7rem;"></i>
+                    <span class="label-text">EXP</span>
+                    <span class="stat-val" id="lbl-student-exp">20</span>
+                </div>
+                <div class="stat-badge coin">
+                    <i class="fa-solid fa-coins" style="color:#ffeb3b;filter:drop-shadow(0 0 3px gold);font-size:0.7rem;"></i>
+                    <span class="label-text">Xu</span>
+                    <span class="stat-val" id="lbl-student-coin">50</span>
+                </div>
+                <div class="stat-badge luot-lam" id="badge-luot-lam">
+                    <i class="fa-solid fa-scroll" style="color:#2ecc71;font-size:0.7rem;"></i>
+                    <span class="label-text">NV</span>
+                    <span class="stat-val" id="lbl-luot-lam">–</span>
+                </div>
+                <div class="stat-badge luot-boss" id="badge-luot-boss">
+                    <i class="fa-solid fa-skull-crossbones" style="color:#e74c3c;font-size:0.7rem;"></i>
+                    <span class="label-text">Boss</span>
+                    <span class="stat-val" id="lbl-luot-boss">–</span>
+                </div>
+                <div class="stat-badge luot-vq" id="badge-luot-vq">
+                    <i class="fa-solid fa-rotate" style="color:#f39c12;font-size:0.7rem;"></i>
+                    <span class="label-text">Quay</span>
+                    <span class="stat-val" id="lbl-luot-vq">–</span>
+                </div>
+                <div class="stat-badge luot-td" id="badge-luot-td">
+                    <i class="fa-solid fa-swords" style="color:#f39c12;font-size:0.7rem;"></i>
+                    <span class="label-text">Đấu</span>
+                    <span class="stat-val" id="lbl-luot-td">–</span>
+                </div>
+                <div class="stat-badge the-card" id="badge-the" style="display:none;">
+                    <i class="fa-solid fa-hand-holding-magic" style="color:#b983ff;font-size:0.7rem;"></i>
+                    <span class="label-text">Thẻ</span>
+                    <span class="stat-val" id="lbl-so-the">0</span>
                 </div>
             </div>
-            <button class="btn-logout" onclick="xuLyDoiTaiKhoan()">Rời Vùng Đất <i class="fa-solid fa-door-open" style="margin-left:4px;"></i></button>
         </div>
 
         <div id="main-lobby-area">
