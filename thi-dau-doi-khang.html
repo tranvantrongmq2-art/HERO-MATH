@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUYẾT ĐẤU ĐỐI KHÁNG - HERO MATH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@800;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        
+        body { 
+            background-color: #050811; color: #ffffff; margin: 0; padding: 15px; min-height: 100vh;
+            background: radial-gradient(circle at center, #0d1527 0%, #050811 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .container { width: 100%; max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; height: 95vh; }
+
+        /* HEADER */
+        .header-navbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #141d30; margin-bottom: 15px; flex-shrink: 0; }
+        .header-logo {
+            font-family: 'Averia Serif Libre', Georgia, serif; font-weight: 700; font-size: 1.5rem;
+            color: #f1c40f; text-shadow: 0px 2px 4px rgba(0,0,0,0.8);
+            text-decoration: none; display: flex; align-items: center; gap: 8px;
+        }
+        .btn-back-lobby {
+            background: linear-gradient(135deg, #1e293b, #0f172a); color: #cbd5e1;
+            border: 1px solid #334155; padding: 8px 16px; border-radius: 6px;
+            font-family: 'Averia Serif Libre', serif; font-weight: bold; cursor: pointer;
+            font-size: 0.9rem; transition: all 0.3s; text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); text-decoration: none;
+        }
+        .btn-back-lobby:hover {
+            background: #334155; color: white; border-color: #475569; transform: translateY(-2px);
+        }
+
+        /* SETUP SCREEN */
+        .setup-screen {
+            background: rgba(13, 21, 39, 0.85); border: 2px solid #1e293b; border-radius: 16px;
+            padding: 30px; max-width: 600px; margin: auto; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+            animation: fadeIn 0.4s ease;
+        }
+        .setup-screen h2 {
+            font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.6rem;
+            color: #f1c40f; text-align: center; margin-top: 0; margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(241,196,15,0.4);
+        }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; color: #a4b0be; margin-bottom: 8px; text-transform: uppercase; }
+        .form-control {
+            width: 100%; padding: 12px; background-color: #050811; border: 2px solid #233354;
+            border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: border-color 0.3s;
+        }
+        .form-control:focus { border-color: #f1c40f; }
+        .player-info-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 12px 18px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 15px; }
+        .player-info-name { font-size: 1.1rem; font-weight: bold; color: #3498db; }
+        .player-info-coin { font-size: 0.95rem; color: #ffeb3b; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        
+        .bet-buttons { display: flex; gap: 10px; margin-top: 8px; }
+        .btn-bet {
+            flex: 1; padding: 10px; background: #141d30; border: 1px solid #233354; color: #cbd5e1;
+            font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.25s;
+        }
+        .btn-bet.active { background: #f1c40f; color: #000; border-color: #f1c40f; box-shadow: 0 0 10px rgba(241,196,15,0.4); }
+        
+        .btn-start-duel {
+            width: 100%; padding: 15px; background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white; border: none; font-family: 'Cinzel Decorative', serif; font-weight: 900;
+            font-size: 1.25rem; border-radius: 8px; cursor: pointer; transition: all 0.3s;
+            margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+        }
+        .btn-start-duel:hover {
+            background: linear-gradient(135deg, #ff6b6b, #e74c3c); transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        }
+
+        /* DUEL PLAYING CONTAINER */
+        .duel-playing-area { display: none; flex-direction: column; flex-grow: 1; width: 100%; height: 100%; position: relative; }
+
+        /* CENTER QUESTIONS */
+        .question-center-card {
+            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
+            width: 480px; background: #0b0f19; border: 3px solid #f1c40f;
+            border-radius: 16px; padding: 25px; text-align: center; z-index: 100;
+            box-shadow: 0 0 35px rgba(241, 196, 15, 0.3), 0 10px 30px rgba(0,0,0,0.8);
+            animation: bounceIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .question-title { font-family: 'Montserrat', sans-serif; font-size: 0.95rem; color: #ff9f43; text-transform: uppercase; font-weight: 800; margin-bottom: 5px; }
+        .question-text { font-family: 'Averia Serif Libre', serif; font-size: 2.2rem; font-weight: bold; color: #ffffff; text-shadow: 0 2px 5px rgba(0,0,0,0.5); margin: 10px 0; }
+        .question-timer { height: 6px; background: #1e293b; border-radius: 3px; overflow: hidden; width: 100%; margin-top: 15px; }
+        .question-timer-fill { height: 100%; background: #2ecc71; width: 100%; }
+
+        /* SPLIT SCREEN LAYOUT */
+        .split-game-board { display: flex; flex-grow: 1; width: 100%; height: 100%; border-radius: 16px; overflow: hidden; border: 2px solid #141d30; }
+        
+        .side-player {
+            width: 50%; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+            padding: 25px; position: relative; transition: all 0.3s;
+        }
+        
+        /* PLAYER 1: LEFT SIDE (BLUE) */
+        .side-player-1 {
+            background: linear-gradient(135deg, #09172e 0%, #030814 100%);
+            border-right: 1px solid #1b2e4f;
+        }
+        .side-player-1.flash-correct { background: #002e17 !important; }
+        .side-player-1.flash-wrong { background: #3c0c0c !important; }
+
+        /* PLAYER 2: RIGHT SIDE (RED) */
+        .side-player-2 {
+            background: linear-gradient(135deg, #2e0909 0%, #140303 100%);
+            border-left: 1px solid #4f1b1b;
+        }
+        .side-player-2.flash-correct { background: #002e17 !important; }
+        .side-player-2.flash-wrong { background: #3c0c0c !important; }
+
+        /* USER HEADER AT EACH SIDE */
+        .side-user-header { display: flex; align-items: center; gap: 15px; }
+        .side-avatar {
+            width: 54px; height: 54px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.4rem; color: white;
+            flex-shrink: 0; box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        .side-player-1 .side-avatar { border: 3px solid #3498db; box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); }
+        .side-player-2 .side-avatar { border: 3px solid #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
+        
+        .side-user-meta { display: flex; flex-direction: column; text-align: left; }
+        .side-name { font-size: 1.25rem; font-weight: 900; color: #fff; }
+        .side-coin { font-size: 0.9rem; color: #ffeb3b; font-weight: bold; margin-top: 3px; }
+        
+        /* POINTS BIG BADGE */
+        .side-score-badge {
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 5rem;
+            position: absolute; top: 15%; right: 25px; opacity: 0.15;
+            pointer-events: none;
+        }
+        .side-player-1 .side-score-badge { color: #3498db; }
+        .side-player-2 .side-score-badge { color: #e74c3c; }
+
+        .side-score-real {
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2.2rem;
+            margin: 15px 0; text-align: left;
+        }
+        .side-player-1 .side-score-real { color: #3498db; }
+        .side-player-2 .side-score-real { color: #e74c3c; }
+
+        /* ANSWERS SECTION FOR EACH SIDE */
+        .side-answers-area { display: flex; flex-direction: column; gap: 12px; margin-top: auto; }
+        .btn-side-answer {
+            width: 100%; padding: 15px; border-radius: 10px; border: 2px solid;
+            color: white; font-size: 1.15rem; font-weight: bold; cursor: pointer;
+            transition: all 0.2s; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.4); text-align: left;
+        }
+        
+        .side-player-1 .btn-side-answer { border-color: #233354; }
+        .side-player-1 .btn-side-answer:hover:not(:disabled) { border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
+        .side-player-2 .btn-side-answer { border-color: #401d1d; }
+        .side-player-2 .btn-side-answer:hover:not(:disabled) { border-color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+        
+        .btn-side-answer:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .key-indicator {
+            font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.15);
+            color: #cbd5e1; font-family: monospace; font-weight: bold; border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .side-feedback-status { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; margin-top: 10px; text-align: center; min-height: 25px; }
+
+        /* VICTORY OVERLAY SCREEN */
+        .victory-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(5, 8, 17, 0.96); z-index: 500;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center; animation: fadeIn 0.4s ease;
+        }
+        .victory-overlay h2 {
+            font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 2.5rem;
+            color: #f1c40f; margin-top: 0; text-shadow: 0 0 15px rgba(241,196,15,0.5);
+        }
+        .victory-subtitle { font-size: 1.25rem; color: #a4b0be; margin-bottom: 20px; font-weight: bold; }
+        .victory-scores { display: flex; gap: 30px; justify-content: center; align-items: center; margin: 25px 0; }
+        .victory-score-box { background: rgba(255,255,255,0.03); border: 1px solid #233354; border-radius: 12px; padding: 20px; min-width: 140px; }
+        .victory-score-name { font-weight: bold; color: #a4b0be; font-size: 0.95rem; margin-bottom: 8px; }
+        .victory-score-val { font-family: 'Montserrat'; font-size: 3rem; font-weight: 900; }
+        .victory-score-box.winner { border-color: #f1c40f; background: rgba(241, 196, 15, 0.05); box-shadow: 0 0 15px rgba(241,196,15,0.2); }
+        .victory-score-box.winner .victory-score-val { color: #f1c40f; }
+
+        .coin-change-summary { font-size: 1.2rem; color: #ffeb3b; font-weight: bold; margin: 15px 0; display: flex; flex-direction: column; gap: 8px; }
+        .victory-btn-group { display: flex; gap: 15px; margin-top: 25px; }
+        .btn-victory-action {
+            border: none; padding: 12px 28px; font-weight: bold; border-radius: 8px; cursor: pointer;
+            text-transform: uppercase; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;
+            font-family: 'Averia Serif Libre', serif; transition: all 0.3s;
+        }
+        .btn-victory-replay { background: #f1c40f; color: #000; }
+        .btn-victory-replay:hover { background: #ffeb3b; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(241, 196, 15, 0.4); }
+        .btn-victory-lobby { background: #334155; color: #fff; }
+        .btn-victory-lobby:hover { background: #475569; transform: translateY(-2px); }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes bounceIn {
+            from, 20%, 40%, 60%, 80%, to { animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale3d(0.3, 0.3, 0.3); }
+            20% { transform: translate(-50%, -50%) scale3d(1.1, 1.1, 1.1); }
+            40% { transform: translate(-50%, -50%) scale3d(0.9, 0.9, 0.9); }
+            60% { opacity: 1; transform: translate(-50%, -50%) scale3d(1.03, 1.03, 1.03); }
+            80% { transform: translate(-50%, -50%) scale3d(0.97, 0.97, 0.97); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale3d(1, 1, 1); }
+        }
+
+        /* PASSWORD OVERLAY */
+        .pwd-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(5, 8, 17, 0.95); z-index: 10000; display: none; justify-content: center; align-items: center; }
+        .pwd-card { background: #0f172a; border: 2px solid #e74c3c; border-radius: 16px; padding: 30px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 10px 35px rgba(0,0,0,0.8); }
+        .pwd-card h4 { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.25rem; color: #e74c3c; margin: 0 0 10px 0; }
+        .pwd-input { width: 100%; padding: 12px; text-align: center; font-size: 1.3rem; letter-spacing: 5px; border: 1px solid #334155; background-color: #050811; border-radius: 8px; color: white; margin: 15px 0; outline: none; }
+        .pwd-input:focus { border-color: #e74c3c; box-shadow: 0 0 8px rgba(231, 76, 60, 0.3); }
+        .pwd-error { color: #e74c3c; font-size: 0.85rem; margin-bottom: 15px; display: none; }
+        .pwd-btn-group { display: flex; gap: 10px; }
+        .pwd-btn { flex: 1; border: none; padding: 12px 0; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-size: 0.85rem; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .pwd-btn-confirm { background: #e74c3c; color: white; }
+        .pwd-btn-cancel { background: #334155; color: #cbd5e1; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header-navbar">
+            <a href="index.html" class="header-logo">
+                <i class="fa-solid fa-spaghetti-monster-flying"></i> HERO MATH
+            </a>
+            <span style="font-family: 'Cinzel Decorative'; font-weight: 900; color: #ffeb3b; letter-spacing: 1px;">QUYẾT ĐẤU ĐỐI KHÁNG</span>
+            <a href="index.html" class="btn-back-lobby"><i class="fa-solid fa-house"></i> Sảnh Chính</a>
+        </div>
+
+        <!-- SETUP SCREEN -->
+        <div class="setup-screen" id="view-setup">
+            <h2><i class="fa-solid fa-gamepad fa-bounce" style="color:#e74c3c; margin-right:8px;"></i> CHUẨN BỊ THI ĐẤU</h2>
+            
+            <div class="form-group">
+                <label>Đấu sĩ 1 (Bạn)</label>
+                <div class="player-info-row">
+                    <span class="player-info-name" id="lbl-setup-p1-name">---</span>
+                    <span class="player-info-coin" id="lbl-setup-p1-coin">-- Xu</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Đấu sĩ 2 (Chọn đối thủ)</label>
+                <select class="form-control" id="select-p2-opponent" onchange="capNhatOpponentCoinDisplay()">
+                    <option value="">-- Chọn đối thủ từ lớp --</option>
+                </select>
+                <div id="p2-coin-row" class="player-info-row" style="display: none; margin-top: 10px;">
+                    <span class="player-info-name" style="color: #e74c3c;" id="lbl-setup-p2-name">---</span>
+                    <span class="player-info-coin" id="lbl-setup-p2-coin">-- Xu</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Số Xu Cá Cược</label>
+                <div class="bet-buttons">
+                    <button class="btn-bet active" onclick="chonCuocXu(0, this)">Chơi vui</button>
+                    <button class="btn-bet" onclick="chonCuocXu(5, this)">5 Xu</button>
+                    <button class="btn-bet" onclick="chonCuocXu(10, this)">10 Xu</button>
+                    <button class="btn-bet" onclick="chonCuocXu(20, this)">20 Xu</button>
+                </div>
+                <p style="font-size: 0.8rem; color: #7f8c8d; margin: 8px 0 0 0; font-style: italic;">
+                    * Lưu ý: Cược Xu yêu cầu cả hai người chơi có đủ số Xu đặt cược. Nếu "Chơi vui", người thắng được +5 Xu, người thua được +1 Xu từ hệ thống!
+                </p>
+            </div>
+
+            <button class="btn-start-duel" onclick="yeuCauXacNhanDoiThu()"><i class="fa-solid fa-swords"></i> BẮT ĐẦU QUYẾT ĐẤU</button>
+        </div>
+
+        <!-- PLAYING CONTAINER -->
+        <div class="duel-playing-area" id="view-game">
+            
+            <div class="split-game-board">
+                
+                <!-- PLAYER 1 (LEFT SIDE) -->
+                <div class="side-player side-player-1" id="side-p1">
+                    <div class="side-user-header">
+                        <div class="side-avatar" id="avatar-p1">?</div>
+                        <div class="side-user-meta">
+                            <span class="side-name" id="name-p1">Player 1</span>
+                            <span class="side-coin" id="coin-p1">0 Xu</span>
+                        </div>
+                    </div>
+                    
+                    <div class="side-score-badge">P1</div>
+                    <div class="side-score-real" id="score-p1">0 Điểm</div>
+
+                    <div class="side-feedback-status" id="feedback-p1" style="color: #2ecc71;"></div>
+
+                    <div class="side-answers-area">
+                        <button class="btn-side-answer" id="p1-btn-0" onclick="answerQuestion('p1', 0)">
+                            <span id="p1-txt-0">Đang tải...</span> <span class="key-indicator">Q</span>
+                        </button>
+                        <button class="btn-side-answer" id="p1-btn-1" onclick="answerQuestion('p1', 1)">
+                            <span id="p1-txt-1">Đang tải...</span> <span class="key-indicator">W</span>
+                        </button>
+                        <button class="btn-side-answer" id="p1-btn-2" onclick="answerQuestion('p1', 2)">
+                            <span id="p1-txt-2">Đang tải...</span> <span class="key-indicator">E</span>
+                        </button>
+                        <button class="btn-side-answer" id="p1-btn-3" onclick="answerQuestion('p1', 3)">
+                            <span id="p1-txt-3">Đang tải...</span> <span class="key-indicator">R</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PLAYER 2 (RIGHT SIDE) -->
+                <div class="side-player side-player-2" id="side-p2">
+                    <div class="side-user-header">
+                        <div class="side-avatar" id="avatar-p2">?</div>
+                        <div class="side-user-meta">
+                            <span class="side-name" id="name-p2">Player 2</span>
+                            <span class="side-coin" id="coin-p2">0 Xu</span>
+                        </div>
+                    </div>
+
+                    <div class="side-score-badge">P2</div>
+                    <div class="side-score-real" id="score-p2">0 Điểm</div>
+
+                    <div class="side-feedback-status" id="feedback-p2" style="color: #e74c3c;"></div>
+
+                    <div class="side-answers-area">
+                        <button class="btn-side-answer" id="p2-btn-0" onclick="answerQuestion('p2', 0)">
+                            <span id="p2-txt-0">Đang tải...</span> <span class="key-indicator">U</span>
+                        </button>
+                        <button class="btn-side-answer" id="p2-btn-1" onclick="answerQuestion('p2', 1)">
+                            <span id="p2-txt-1">Đang tải...</span> <span class="key-indicator">I</span>
+                        </button>
+                        <button class="btn-side-answer" id="p2-btn-2" onclick="answerQuestion('p2', 2)">
+                            <span id="p2-txt-2">Đang tải...</span> <span class="key-indicator">O</span>
+                        </button>
+                        <button class="btn-side-answer" id="p2-btn-3" onclick="answerQuestion('p2', 3)">
+                            <span id="p2-txt-3">Đang tải...</span> <span class="key-indicator">P</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- QUESTION CARD IN THE CENTER -->
+            <div class="question-center-card" id="center-question-card">
+                <div class="question-title" id="lbl-round-index">CÂU HỎI 1 / 5</div>
+                <div class="question-text" id="lbl-question-text">15 + 23 = ?</div>
+                <div class="question-timer">
+                    <div class="question-timer-fill" id="timer-bar-fill"></div>
+                </div>
+            </div>
+
+            <!-- VICTORY OVERLAY -->
+            <div class="victory-overlay" id="view-victory">
+                <i class="fa-solid fa-trophy" style="font-size: 5rem; color: #f1c40f; margin-bottom: 15px; filter: drop-shadow(0 0 10px gold);"></i>
+                <h2 id="lbl-victory-winner">CHIẾN THẮNG HUYỀN THOẠI!</h2>
+                <div class="victory-subtitle" id="lbl-victory-subtitle">Nguyen Van A đã đánh bại Tran Van B!</div>
+                
+                <div class="victory-scores">
+                    <div class="victory-score-box" id="victory-p1-box">
+                        <div class="victory-score-name" id="victory-p1-name">Dũng Sĩ 1</div>
+                        <div class="victory-score-val" id="victory-p1-val">3</div>
+                    </div>
+                    <div style="font-family:'Montserrat'; font-size:2.5rem; font-weight:900; color:#cbd5e1;">VS</div>
+                    <div class="victory-score-box" id="victory-p2-box">
+                        <div class="victory-score-name" id="victory-p2-name">Dũng Sĩ 2</div>
+                        <div class="victory-score-val" id="victory-p2-val">2</div>
+                    </div>
+                </div>
+
+                <div class="coin-change-summary" id="lbl-coin-change-summary">
+                    <div>Nguyen Van A nhận: +10 Xu</div>
+                    <div>Tran Van B nhận: -10 Xu</div>
+                </div>
+
+                <div class="victory-btn-group">
+                    <button class="btn-victory-action btn-victory-replay" onclick="resetAndReplay()"><i class="fa-solid fa-rotate-right"></i> Tái Đấu</button>
+                    <a href="index.html" class="btn-victory-action btn-victory-lobby"><i class="fa-solid fa-door-open"></i> Trở Về Sảnh</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PASSWORD VERIFICATION MODAL FOR PLAYER 2 -->
+    <div id="p2-pwd-modal" class="pwd-overlay">
+        <div class="pwd-card">
+            <i class="fa-solid fa-shield-halved fa-3x" style="color: #e74c3c; margin-bottom: 15px;"></i>
+            <h4>Xác Thực Đấu Sĩ 2</h4>
+            <p style="font-size: 0.85rem; color: #a4b0be; margin: 0 0 15px 0;" id="lbl-pwd-prompt">Vui lòng nhập mật khẩu của Nguyen Van B để đồng ý thách đấu.</p>
+            <input type="password" id="p2-password-field" class="pwd-input" placeholder="••••" onkeydown="chkP2PasswordEnter(event)">
+            <div id="p2-password-error" class="pwd-error">Mật mã chưa khớp! Vui lòng thử lại.</div>
+            <div class="pwd-btn-group">
+                <button class="pwd-btn pwd-btn-confirm" onclick="verifyP2Access()"><i class="fa-solid fa-swords"></i> Chấp Nhận Đấu</button>
+                <button class="pwd-btn pwd-btn-cancel" onclick="closeP2PasswordModal()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WEB AUDIO SYSTEM
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        function playBeep(freq, duration, type = 'sine') {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+        function playSoundEffect(name) {
+            if (name === 'click') {
+                playBeep(440, 0.1, 'triangle');
+            } else if (name === 'correct') {
+                playBeep(660, 0.15, 'sine');
+                setTimeout(() => playBeep(880, 0.25, 'sine'), 100);
+            } else if (name === 'wrong') {
+                playBeep(220, 0.3, 'sawtooth');
+            } else if (name === 'countdown') {
+                playBeep(330, 0.08, 'sine');
+            } else if (name === 'victory') {
+                playBeep(523.25, 0.15, 'sine'); // C5
+                setTimeout(() => playBeep(659.25, 0.15, 'sine'), 120); // E5
+                setTimeout(() => playBeep(783.99, 0.15, 'sine'), 240); // G5
+                setTimeout(() => playBeep(1046.50, 0.5, 'sine'), 360); // C6
+            }
+        }
+
+        // STATE VARIABLES
+        let nameP1 = '';
+        let coinP1 = 50;
+        let nameP2 = '';
+        let coinP2 = 50;
+        let selectedBet = 0;
+        
+        let currentRound = 0;
+        let maxRounds = 5;
+        let scoreP1 = 0;
+        let scoreP2 = 0;
+        let activeQuestion = null;
+        let timerInterval = null;
+        let timeRemaining = 15; // 15 seconds per question
+        let roundActive = false;
+        let p1Locked = false;
+        let p2Locked = false;
+
+        const avatarColors = [
+            'linear-gradient(135deg, #e67e22, #f1c40f)',
+            'linear-gradient(135deg, #3498db, #8e44ad)',
+            'linear-gradient(135deg, #2ecc71, #1abc9c)',
+            'linear-gradient(135deg, #e74c3c, #9b59b6)'
+        ];
+
+        // LOAD USERS AND INITS
+        window.addEventListener('DOMContentLoaded', () => {
+            nameP1 = sessionStorage.getItem('hoc_school_student_name');
+            if (!nameP1) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            coinP1 = parseInt(localStorage.getItem('coin_' + nameP1)) || 50;
+            if (localStorage.getItem('coin_' + nameP1) === null) {
+                localStorage.setItem('coin_' + nameP1, coinP1);
+            }
+
+            document.getElementById('lbl-setup-p1-name').innerText = nameP1;
+            document.getElementById('lbl-setup-p1-coin').innerText = coinP1 + ' Xu';
+
+            // Load P2 dropdown options
+            let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+            let dropdown = document.getElementById('select-p2-opponent');
+            
+            Object.keys(users).forEach(ten => {
+                if (ten !== nameP1) {
+                    let opt = document.createElement('option');
+                    opt.value = ten;
+                    opt.innerText = `${ten} (${users[ten].class || 'Khối 7'})`;
+                    dropdown.appendChild(opt);
+                }
+            });
+
+            // Listen keyboard events
+            window.addEventListener('keydown', handleKeyPress);
+        });
+
+        function chonCuocXu(soXu, element) {
+            playSoundEffect('click');
+            selectedBet = soXu;
+            document.querySelectorAll('.btn-bet').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function capNhatOpponentCoinDisplay() {
+            playSoundEffect('click');
+            let dropdown = document.getElementById('select-p2-opponent');
+            nameP2 = dropdown.value;
+            let coinRow = document.getElementById('p2-coin-row');
+            
+            if (!nameP2) {
+                coinRow.style.display = 'none';
+                return;
+            }
+
+            coinP2 = parseInt(localStorage.getItem('coin_' + nameP2)) || 50;
+            if (localStorage.getItem('coin_' + nameP2) === null) {
+                localStorage.setItem('coin_' + nameP2, coinP2);
+            }
+
+            document.getElementById('lbl-setup-p2-name').innerText = nameP2;
+            document.getElementById('lbl-setup-p2-coin').innerText = coinP2 + ' Xu';
+            coinRow.style.display = 'flex';
+        }
+
+        // P2 PASS VERIFICATION
+        function yeuCauXacNhanDoiThu() {
+            playSoundEffect('click');
+            if (!nameP2) {
+                alert("Vui lòng chọn đối thủ (Đấu sĩ 2) trước!");
+                return;
+            }
+
+            // Check coins
+            if (coinP1 < selectedBet) {
+                alert(`Bạn không có đủ Xu để cược! Bạn hiện có ${coinP1} Xu.`);
+                return;
+            }
+            if (coinP2 < selectedBet) {
+                alert(`Đối thủ "${nameP2}" không có đủ Xu để cược! Đối thủ hiện có ${coinP2} Xu.`);
+                return;
+            }
+
+            // Open verification modal
+            document.getElementById('lbl-pwd-prompt').innerText = `Vui lòng nhập mật mã bảo mật của bạn "${nameP2}" để đồng ý tham gia quyết đấu.`;
+            document.getElementById('p2-password-field').value = '';
+            document.getElementById('p2-password-error').style.display = 'none';
+            document.getElementById('p2-pwd-modal').style.display = 'flex';
+            document.getElementById('p2-password-field').focus();
+        }
+
+        function closeP2PasswordModal() {
+            playSoundEffect('click');
+            document.getElementById('p2-pwd-modal').style.display = 'none';
+        }
+
+        function chkP2PasswordEnter(event) {
+            if (event.key === 'Enter') {
+                verifyP2Access();
+            }
+        }
+
+        function verifyP2Access() {
+            let passInput = document.getElementById('p2-password-field').value;
+            let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+            let valid = false;
+
+            if (users[nameP2]) {
+                if (typeof users[nameP2] === 'string' && users[nameP2] === passInput) { valid = true; }
+                else if (typeof users[nameP2] === 'object' && users[nameP2].pass === passInput) { valid = true; }
+            }
+
+            if (valid) {
+                document.getElementById('p2-pwd-modal').style.display = 'none';
+                startDuelMatch();
+            } else {
+                playSoundEffect('wrong');
+                document.getElementById('p2-password-error').style.display = 'block';
+                document.getElementById('p2-password-field').focus();
+            }
+        }
+
+        // START DUEL
+        function startDuelMatch() {
+            // Setup player information display
+            document.getElementById('name-p1').innerText = nameP1;
+            document.getElementById('coin-p1').innerText = coinP1 + ' Xu';
+            let avatar1 = document.getElementById('avatar-p1');
+            let u1LastWord = nameP1.split(" ").pop();
+            avatar1.innerText = u1LastWord ? u1LastWord.charAt(0).toUpperCase() : "?";
+            avatar1.style.background = avatarColors[nameP1.length % avatarColors.length];
+
+            document.getElementById('name-p2').innerText = nameP2;
+            document.getElementById('coin-p2').innerText = coinP2 + ' Xu';
+            let avatar2 = document.getElementById('avatar-p2');
+            let u2LastWord = nameP2.split(" ").pop();
+            avatar2.innerText = u2LastWord ? u2LastWord.charAt(0).toUpperCase() : "?";
+            avatar2.style.background = avatarColors[nameP2.length % avatarColors.length];
+
+            scoreP1 = 0;
+            scoreP2 = 0;
+            currentRound = 0;
+
+            document.getElementById('score-p1').innerText = '0 Điểm';
+            document.getElementById('score-p2').innerText = '0 Điểm';
+
+            document.getElementById('view-setup').style.display = 'none';
+            document.getElementById('view-game').style.display = 'flex';
+
+            loadNextRound();
+        }
+
+        // DYNAMIC QUESTION GENERATION
+        function generateMathQuestion() {
+            const types = ['add', 'sub', 'mul', 'div', 'eq_add', 'eq_sub', 'eq_mul'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            let questionText = '';
+            let correctAnswer = 0;
+            
+            if (type === 'add') {
+                let a = Math.floor(Math.random() * 80) + 10;
+                let b = Math.floor(Math.random() * 80) + 10;
+                questionText = `${a} + ${b} = ?`;
+                correctAnswer = a + b;
+            } else if (type === 'sub') {
+                let a = Math.floor(Math.random() * 80) + 20;
+                let b = Math.floor(Math.random() * (a - 10)) + 5;
+                questionText = `${a} - ${b} = ?`;
+                correctAnswer = a - b;
+            } else if (type === 'mul') {
+                let a = Math.floor(Math.random() * 12) + 3;
+                let b = Math.floor(Math.random() * 12) + 3;
+                questionText = `${a} × ${b} = ?`;
+                correctAnswer = a * b;
+            } else if (type === 'div') {
+                let b = Math.floor(Math.random() * 10) + 3;
+                let correctAnswerTemp = Math.floor(Math.random() * 12) + 3;
+                let a = b * correctAnswerTemp;
+                questionText = `${a} : ${b} = ?`;
+                correctAnswer = correctAnswerTemp;
+            } else if (type === 'eq_add') {
+                let x = Math.floor(Math.random() * 30) + 5;
+                let a = Math.floor(Math.random() * 20) + 5;
+                let b = x + a;
+                questionText = `x + ${a} = ${b}  ⇒  x = ?`;
+                correctAnswer = x;
+            } else if (type === 'eq_sub') {
+                let x = Math.floor(Math.random() * 30) + 5;
+                let a = Math.floor(Math.random() * 20) + 5;
+                let b = x - a;
+                questionText = `x - ${a} = ${b}  ⇒  x = ?`;
+                correctAnswer = x;
+            } else if (type === 'eq_mul') {
+                let x = Math.floor(Math.random() * 10) + 2;
+                let a = Math.floor(Math.random() * 8) + 2;
+                let b = x * a;
+                questionText = `${a}x = ${b}  ⇒  x = ?`;
+                correctAnswer = x;
+            }
+            
+            let answers = [correctAnswer];
+            while (answers.length < 4) {
+                let offset = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 8) + 1);
+                let fake = correctAnswer + offset;
+                if (!answers.includes(fake)) {
+                    answers.push(fake);
+                }
+            }
+            
+            answers.sort(() => Math.random() - 0.5);
+            
+            return {
+                text: questionText,
+                options: answers,
+                correctIdx: answers.indexOf(correctAnswer)
+            };
+        }
+
+        // LOAD NEXT ROUND
+        function loadNextRound() {
+            if (currentRound >= maxRounds) {
+                finishDuelMatch();
+                return;
+            }
+
+            currentRound++;
+            document.getElementById('lbl-round-index').innerText = `CÂU HỎI ${currentRound} / ${maxRounds}`;
+            activeQuestion = generateMathQuestion();
+            document.getElementById('lbl-question-text').innerText = activeQuestion.text;
+
+            // Load options for P1 and P2
+            for (let i = 0; i < 4; i++) {
+                document.getElementById(`p1-txt-${i}`).innerText = activeQuestion.options[i];
+                document.getElementById(`p2-txt-${i}`).innerText = activeQuestion.options[i];
+                
+                let b1 = document.getElementById(`p1-btn-${i}`);
+                let b2 = document.getElementById(`p2-btn-${i}`);
+                b1.disabled = false;
+                b2.disabled = false;
+                b1.style.background = 'rgba(0,0,0,0.4)';
+                b2.style.background = 'rgba(0,0,0,0.4)';
+            }
+
+            document.getElementById('side-p1').className = "side-player side-player-1";
+            document.getElementById('side-p2').className = "side-player side-player-2";
+            document.getElementById('feedback-p1').innerText = "";
+            document.getElementById('feedback-p2').innerText = "";
+
+            p1Locked = false;
+            p2Locked = false;
+            roundActive = true;
+            timeRemaining = 15;
+            
+            updateTimerDisplay();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                if (timeRemaining <= 3 && timeRemaining > 0) {
+                    playSoundEffect('countdown');
+                }
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleRoundTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            let percentage = (timeRemaining / 15) * 100;
+            let bar = document.getElementById('timer-bar-fill');
+            bar.style.width = percentage + '%';
+            if (timeRemaining <= 5) {
+                bar.style.background = '#e74c3c';
+            } else if (timeRemaining <= 10) {
+                bar.style.background = '#f39c12';
+            } else {
+                bar.style.background = '#2ecc71';
+            }
+        }
+
+        // HANDLE ACTIONS
+        function answerQuestion(player, optionIndex) {
+            if (!roundActive) return;
+            if (player === 'p1' && p1Locked) return;
+            if (player === 'p2' && p2Locked) return;
+
+            let isCorrect = (optionIndex === activeQuestion.correctIdx);
+
+            if (player === 'p1') {
+                if (isCorrect) {
+                    playSoundEffect('correct');
+                    scoreP1++;
+                    document.getElementById('score-p1').innerText = scoreP1 + ' Điểm';
+                    document.getElementById('side-p1').classList.add('flash-correct');
+                    document.getElementById('feedback-p1').innerText = "TRẢ LỜI ĐÚNG! +1 ĐIỂM";
+                    document.getElementById('feedback-p1').style.color = "#2ecc71";
+                    
+                    document.getElementById(`p1-btn-${optionIndex}`).style.background = '#27ae60';
+                    
+                    roundActive = false;
+                    clearInterval(timerInterval);
+                    setTimeout(loadNextRound, 1500);
+                } else {
+                    playSoundEffect('wrong');
+                    p1Locked = true;
+                    scoreP1 = Math.max(0, scoreP1 - 1);
+                    document.getElementById('score-p1').innerText = scoreP1 + ' Điểm';
+                    document.getElementById('side-p1').classList.add('flash-wrong');
+                    document.getElementById('feedback-p1').innerText = "SAI RỒI! -1 ĐIỂM & KHÓA LƯỢT";
+                    document.getElementById('feedback-p1').style.color = "#e74c3c";
+                    
+                    document.getElementById(`p1-btn-${optionIndex}`).style.background = '#c0392b';
+                    document.getElementById(`p1-btn-${optionIndex}`).disabled = true;
+
+                    setTimeout(() => {
+                        document.getElementById('side-p1').classList.remove('flash-wrong');
+                    }, 500);
+
+                    checkBothLocked();
+                }
+            } else { // Player 2
+                if (isCorrect) {
+                    playSoundEffect('correct');
+                    scoreP2++;
+                    document.getElementById('score-p2').innerText = scoreP2 + ' Điểm';
+                    document.getElementById('side-p2').classList.add('flash-correct');
+                    document.getElementById('feedback-p2').innerText = "TRẢ LỜI ĐÚNG! +1 ĐIỂM";
+                    document.getElementById('feedback-p2').style.color = "#2ecc71";
+                    
+                    document.getElementById(`p2-btn-${optionIndex}`).style.background = '#27ae60';
+                    
+                    roundActive = false;
+                    clearInterval(timerInterval);
+                    setTimeout(loadNextRound, 1500);
+                } else {
+                    playSoundEffect('wrong');
+                    p2Locked = true;
+                    scoreP2 = Math.max(0, scoreP2 - 1);
+                    document.getElementById('score-p2').innerText = scoreP2 + ' Điểm';
+                    document.getElementById('side-p2').classList.add('flash-wrong');
+                    document.getElementById('feedback-p2').innerText = "SAI RỒI! -1 ĐIỂM & KHÓA LƯỢT";
+                    document.getElementById('feedback-p2').style.color = "#e74c3c";
+                    
+                    document.getElementById(`p2-btn-${optionIndex}`).style.background = '#c0392b';
+                    document.getElementById(`p2-btn-${optionIndex}`).disabled = true;
+
+                    setTimeout(() => {
+                        document.getElementById('side-p2').classList.remove('flash-wrong');
+                    }, 500);
+
+                    checkBothLocked();
+                }
+            }
+        }
+
+        function checkBothLocked() {
+            if (p1Locked && p2Locked) {
+                roundActive = false;
+                clearInterval(timerInterval);
+                document.getElementById('lbl-question-text').innerText = "CẢ HAI ĐỀU SAI!";
+                document.getElementById('lbl-question-text').style.color = "#e74c3c";
+                
+                let correctBtnP1 = document.getElementById(`p1-btn-${activeQuestion.correctIdx}`);
+                let correctBtnP2 = document.getElementById(`p2-btn-${activeQuestion.correctIdx}`);
+                correctBtnP1.style.background = '#27ae60';
+                correctBtnP2.style.background = '#27ae60';
+
+                setTimeout(() => {
+                    document.getElementById('lbl-question-text').style.color = "#ffffff";
+                    loadNextRound();
+                }, 2000);
+            }
+        }
+
+        function handleRoundTimeout() {
+            roundActive = false;
+            document.getElementById('lbl-question-text').innerText = "HẾT GIỜ!";
+            document.getElementById('lbl-question-text').style.color = "#e74c3c";
+            
+            let correctBtnP1 = document.getElementById(`p1-btn-${activeQuestion.correctIdx}`);
+            let correctBtnP2 = document.getElementById(`p2-btn-${activeQuestion.correctIdx}`);
+            correctBtnP1.style.background = '#27ae60';
+            correctBtnP2.style.background = '#27ae60';
+
+            setTimeout(() => {
+                document.getElementById('lbl-question-text').style.color = "#ffffff";
+                loadNextRound();
+            }, 2000);
+        }
+
+        // KEYBOARD HANDLER
+        function handleKeyPress(event) {
+            if (!roundActive) return;
+            let key = event.key.toLowerCase();
+            
+            // Player 1 controls: Q, W, E, R
+            if (key === 'q') answerQuestion('p1', 0);
+            else if (key === 'w') answerQuestion('p1', 1);
+            else if (key === 'e') answerQuestion('p1', 2);
+            else if (key === 'r') answerQuestion('p1', 3);
+
+            // Player 2 controls: U, I, O, P
+            if (key === 'u') answerQuestion('p2', 0);
+            else if (key === 'i') answerQuestion('p2', 1);
+            else if (key === 'o') answerQuestion('p2', 2);
+            else if (key === 'p') answerQuestion('p2', 3);
+        }
+
+        // FINISH DUEL MATCH
+        function finishDuelMatch() {
+            clearInterval(timerInterval);
+            playSoundEffect('victory');
+
+            document.getElementById('view-victory').style.display = 'flex';
+            
+            document.getElementById('victory-p1-name').innerText = nameP1;
+            document.getElementById('victory-p1-val').innerText = scoreP1;
+            document.getElementById('victory-p2-name').innerText = nameP2;
+            document.getElementById('victory-p2-val').innerText = scoreP2;
+
+            let winner = '';
+            let subtitle = '';
+            let coinBoxHtml = '';
+
+            let p1Box = document.getElementById('victory-p1-box');
+            let p2Box = document.getElementById('victory-p2-box');
+            p1Box.className = "victory-score-box";
+            p2Box.className = "victory-score-box";
+
+            if (scoreP1 > scoreP2) {
+                winner = "CHIẾN THẮNG THUỘC VỀ " + nameP1.toUpperCase() + "! 🏆";
+                subtitle = `${nameP1} đã đánh bại ${nameP2} với tỉ số sát nút!`;
+                p1Box.classList.add('winner');
+                
+                let betResult = selectedBet;
+                if (betResult > 0) {
+                    coinP1 += betResult;
+                    coinP2 -= betResult;
+                    coinBoxHtml = `
+                        <div style="color: #2ecc71;">${nameP1} nhận: +${betResult} Xu (Thắng cược)</div>
+                        <div style="color: #e74c3c;">${nameP2} nhận: -${betResult} Xu (Thua cược)</div>
+                    `;
+                } else {
+                    coinP1 += 5;
+                    coinP2 += 1;
+                    coinBoxHtml = `
+                        <div style="color: #2ecc71;">${nameP1} nhận: +5 Xu (Thưởng thắng)</div>
+                        <div style="color: #3498db;">${nameP2} nhận: +1 Xu (Khuyến khích)</div>
+                    `;
+                }
+            } else if (scoreP2 > scoreP1) {
+                winner = "CHIẾN THẮNG THUỘC VỀ " + nameP2.toUpperCase() + "! 🏆";
+                subtitle = `${nameP2} đã đánh bại ${nameP1} với tỉ số sát nút!`;
+                p2Box.classList.add('winner');
+
+                let betResult = selectedBet;
+                if (betResult > 0) {
+                    coinP2 += betResult;
+                    coinP1 -= betResult;
+                    coinBoxHtml = `
+                        <div style="color: #2ecc71;">${nameP2} nhận: +${betResult} Xu (Thắng cược)</div>
+                        <div style="color: #e74c3c;">${nameP1} nhận: -${betResult} Xu (Thua cược)</div>
+                    `;
+                } else {
+                    coinP2 += 5;
+                    coinP1 += 1;
+                    coinBoxHtml = `
+                        <div style="color: #2ecc71;">${nameP2} nhận: +5 Xu (Thưởng thắng)</div>
+                        <div style="color: #3498db;">${nameP1} nhận: +1 Xu (Khuyến khích)</div>
+                    `;
+                }
+            } else {
+                winner = "TRẬN ĐẤU HÒA! 🤝";
+                subtitle = `Hai đấu sĩ ngang tài ngang sức với tỉ số ${scoreP1} - ${scoreP2}!`;
+                
+                coinP1 += 2;
+                coinP2 += 2;
+                coinBoxHtml = `
+                    <div style="color: #3498db;">${nameP1} nhận: +2 Xu (Đồng lòng)</div>
+                    <div style="color: #3498db;">${nameP2} nhận: +2 Xu (Đồng lòng)</div>
+                `;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('coin_' + nameP1, coinP1);
+            localStorage.setItem('coin_' + nameP2, coinP2);
+
+            // Save to activity log for admin
+            let duelLogs = JSON.parse(localStorage.getItem('nhat_ky_doi_khang')) || [];
+            duelLogs.push({
+                p1: nameP1,
+                p2: nameP2,
+                s1: scoreP1,
+                s2: scoreP2,
+                bet: selectedBet,
+                time: new Date().toLocaleString('vi-VN')
+            });
+            localStorage.setItem('nhat_ky_doi_khang', JSON.stringify(duelLogs));
+
+            document.getElementById('lbl-victory-winner').innerText = winner;
+            document.getElementById('lbl-victory-subtitle').innerText = subtitle;
+            document.getElementById('lbl-coin-change-summary').innerHTML = coinBoxHtml;
+        }
+
+        function resetAndReplay() {
+            playSoundEffect('click');
+            document.getElementById('view-victory').style.display = 'none';
+            document.getElementById('view-game').style.display = 'none';
+            document.getElementById('view-setup').style.display = 'block';
+
+            coinP1 = parseInt(localStorage.getItem('coin_' + nameP1)) || 50;
+            coinP2 = parseInt(localStorage.getItem('coin_' + nameP2)) || 50;
+
+            document.getElementById('lbl-setup-p1-coin').innerText = coinP1 + ' Xu';
+            document.getElementById('lbl-setup-p2-coin').innerText = coinP2 + ' Xu';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VÒNG QUAY ĐỊNH MỆNH - HERO MATH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #050811;
+            background: radial-gradient(circle at center, #150a1f 0%, #050811 65%, #020306 100%);
+            color: #fff; 
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 900;
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.6), 0 0 28px rgba(139, 0, 0, 0.55);
+            font-size: 1.85rem;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+
+        #luot-quay-info {
+            margin: 10px auto 20px auto;
+            max-width: 420px;
+            font-size: 1rem;
+            min-height: 24px;
+            font-style: italic;
+            color: #a0aec0;
+        }
+        #luot-quay-info b { color: inherit; }
+
+        /* Khung chứa vòng quay - quầng hào quang huyền bí, tự "thở" theo nhịp */
+        #wheel-wrapper { 
+            position: relative; 
+            width: 320px; 
+            height: 320px; 
+            margin: 30px auto;
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(139, 0, 0, 0.45), 0 0 70px rgba(0, 0, 0, 0.6);
+            animation: hexBreath 4s infinite alternate;
+        }
+        @keyframes hexBreath {
+            0% { box-shadow: 0 0 25px rgba(139, 0, 0, 0.35), 0 0 55px rgba(0, 0, 0, 0.6); }
+            100% { box-shadow: 0 0 45px rgba(241, 196, 15, 0.45), 0 0 80px rgba(139, 0, 0, 0.5); }
+        }
+        
+        /* Vòng quay chia đều 8 ô - bảng màu huyền bí thay cho sắc màu sặc sỡ ban đầu */
+        #wheel { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 50%; 
+            border: 10px solid #8b0000;
+            box-sizing: border-box;
+            background: conic-gradient(
+                #2c0735 0deg 45deg,
+                #5c0a0a 45deg 90deg,
+                #1c2541 90deg 135deg,
+                #3d0c1f 135deg 180deg,
+                #2c0735 180deg 225deg,
+                #5c0a0a 225deg 270deg,
+                #1c2541 270deg 315deg,
+                #3d0c1f 315deg 360deg
+            );
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+
+        .num { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            text-align: center; 
+            padding-top: 22px; 
+            font-weight: bold; 
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 1rem;
+            color: #f1c40f; 
+            text-shadow: 0 0 6px rgba(241, 196, 15, 0.7), 1px 1px 3px rgba(0, 0, 0, 0.9);
+            pointer-events: none;
+            box-sizing: border-box;
+            transform-origin: center center;
+        }
+        
+        .pointer { 
+            position: absolute; 
+            top: -26px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 0; 
+            height: 0; 
+            border-left: 18px solid transparent; 
+            border-right: 18px solid transparent; 
+            border-top: 35px solid #f1c40f; 
+            filter: drop-shadow(0px 4px 8px rgba(139, 0, 0, 0.8));
+            z-index: 10; 
+        }
+        
+        .btn-quay { 
+            padding: 15px 45px; 
+            font-size: 1.15rem; 
+            background: linear-gradient(90deg, #8b0000, #b22222); 
+            border: none; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-weight: 900;
+            font-family: 'Cinzel Decorative', serif;
+            letter-spacing: 1px;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(139, 0, 0, 0.6);
+            transition: 0.2s;
+            text-transform: uppercase;
+        }
+        .btn-quay:hover:not(:disabled) {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #a90000, #cc2424);
+            box-shadow: 0 6px 25px rgba(204, 36, 36, 0.7);
+        }
+        .btn-quay:disabled {
+            background: #2c3344;
+            color: #6b7588;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #msg { 
+            margin-top: 25px; 
+            font-size: 1.45rem; 
+            color: #f1c40f; 
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: bold;
+            min-height: 40px;
+            text-shadow: 0 0 8px rgba(241, 196, 15, 0.5);
+        }
+
+        .back-link { 
+            display: inline-block; 
+            margin-top: 25px; 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            border: 1px solid #1e293b; 
+            padding: 10px 25px; 
+            border-radius: 10px; 
+            transition: 0.2s;
+            font-weight: 700;
+        }
+        .back-link:hover {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔮 VÒNG QUAY ĐỊNH MỆNH 🔮</h1>
+    <div id="luot-quay-info"></div>
+    
+    <div id="wheel-wrapper">
+        <div class="pointer"></div>
+        <div id="wheel">
+            <div class="num" style="transform: rotate(22.5deg);">100XP</div>
+            <div class="num" style="transform: rotate(67.5deg);">20XP</div>
+            <div class="num" style="transform: rotate(112.5deg);">50XP</div>
+            <div class="num" style="transform: rotate(157.5deg);">10XP</div>
+            <div class="num" style="transform: rotate(202.5deg);">20XP</div>
+            <div class="num" style="transform: rotate(247.5deg);">30XP</div>
+            <div class="num" style="transform: rotate(292.5deg);">50XP</div>
+            <div class="num" style="transform: rotate(337.5deg);">10XP</div>
+        </div>
+    </div>
+
+    <button class="btn-quay" id="btn" onclick="quay()">QUAY NGAY</button>
+    <div id="msg"></div>
+    
+    <a href="index.html" class="back-link">&#8592; Về Sảnh Chính</a>
+
+    <script>
+        // ========================== HỆ THỐNG GIỚI HẠN LƯỢT VÒNG QUAY ==========================
+        function layTenHocSinh() {
+            let ten = sessionStorage.getItem('hoc_school_student_name');
+            if (ten) return ten;
+            let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            if (nhatKy.length > 0) {
+                let last = nhatKy[nhatKy.length - 1];
+                ten = last.name;
+                sessionStorage.setItem('hoc_school_student_name', ten);
+                sessionStorage.setItem('hoc_school_student_class', last.className || 'Khối 7');
+                return ten;
+            }
+            return null;
+        }
+
+        function laySoLuotToiDa() {
+            return parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1;
+        }
+
+        function layKeyLuot(ten) {
+            return 'luot_vong_quay_' + ten;
+        }
+
+        function layDuLieuLuot(ten) {
+            let key = layKeyLuot(ten);
+            let raw = JSON.parse(localStorage.getItem(key)) || null;
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            let soLuotMax = laySoLuotToiDa();
+            if (!raw || raw.date !== homNay) {
+                raw = { date: homNay, soLuotConLai: soLuotMax };
+                localStorage.setItem(key, JSON.stringify(raw));
+            }
+            return raw;
+        }
+
+        function capNhatGiaoDien() {
+            let ten = layTenHocSinh();
+            let infoEl = document.getElementById('luot-quay-info');
+            let btn = document.getElementById('btn');
+
+            if (!ten) {
+                infoEl.style.color = '#e74c3c';
+                infoEl.innerHTML = 'Chưa xác định được danh tính. Vui lòng về Sảnh Chính đăng nhập trước.';
+                btn.disabled = true;
+                return;
+            }
+
+            let duLieu = layDuLieuLuot(ten);
+            let soLuotMax = laySoLuotToiDa();
+
+            if (duLieu.soLuotConLai <= 0) {
+                infoEl.style.color = '#e74c3c';
+                infoEl.innerHTML = 'Em đã dùng hết <b>' + soLuotMax + ' lượt</b> quay hôm nay rồi! Quay lại vào ngày mai nhé.';
+                btn.disabled = true;
+                btn.innerText = 'HẾT LƯỢT HÔM NAY';
+            } else {
+                infoEl.style.color = '#f1c40f';
+                infoEl.innerHTML = 'Em còn <b>' + duLieu.soLuotConLai + '</b> lượt quay hôm nay.';
+                btn.disabled = false;
+                btn.innerText = 'QUAY NGAY';
+            }
+        }
+
+        // Lưu góc xoay LŨY KẾ của vòng quay (tăng dần qua mỗi lượt, không bao giờ
+        // đặt lại về giá trị cũ) — nhờ vậy trình duyệt luôn nhận biết "transform"
+        // đã thay đổi và chạy hiệu ứng quay mượt ở MỌI lượt, không chỉ lượt đầu.
+        let gocXoayLuyKe = 0;
+
+        function quay() {
+            let ten = layTenHocSinh();
+            if (!ten) { alert("Chưa xác định được danh tính! Vui lòng đăng nhập từ Sảnh Chính."); return; }
+
+            let duLieu = layDuLieuLuot(ten);
+            if (duLieu.soLuotConLai <= 0) { capNhatGiaoDien(); return; }
+
+            const wheel = document.getElementById('wheel');
+            const btn = document.getElementById('btn');
+            btn.disabled = true;
+            document.getElementById('msg').innerText = "Đang quay...";
+
+            const vals = [100, 20, 50, 10, 20, 30, 50, 10];
+            const randomIndex = Math.floor(Math.random() * 8);
+            const diemTrungThuong = vals[randomIndex];
+
+            const stopDeg = 337.5 - (randomIndex * 45);
+            // Cộng thêm vào góc lũy kế (không gán lại từ 0) để mỗi lượt luôn
+            // quay tiếp từ vị trí hiện tại, đảm bảo luôn có hiệu ứng xoay.
+            gocXoayLuyKe += 1800 + stopDeg;
+            wheel.style.transform = 'rotate(' + gocXoayLuyKe + 'deg)';
+
+            setTimeout(function() {
+                let expHienTai = parseInt(localStorage.getItem('exp_' + ten)) || 0;
+                localStorage.setItem('exp_' + ten, expHienTai + diemTrungThuong);
+
+                let coinHienTai = parseInt(localStorage.getItem('coin_' + ten)) || 50;
+                localStorage.setItem('coin_' + ten, coinHienTai + diemTrungThuong);
+
+                duLieu.soLuotConLai = Math.max(0, duLieu.soLuotConLai - 1);
+                localStorage.setItem(layKeyLuot(ten), JSON.stringify(duLieu));
+
+                document.getElementById('msg').innerText = 'Chúc mừng! Em quay trúng +' + diemTrungThuong + ' XP & +' + diemTrungThuong + ' Xu';
+                capNhatGiaoDien();
+            }, 4000);
+        }
+
+        window.addEventListener('DOMContentLoaded', capNhatGiaoDien);
+        window.addEventListener('pageshow', capNhatGiaoDien);
+    </script>
+</body>
+</html>

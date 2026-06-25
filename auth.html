@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐĂNG NHẬP - HERO MATH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { 
+            background-color: #050811; color: #ffffff; margin: 0; padding: 15px; min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: radial-gradient(circle at center, #0d1527 0%, #050811 100%);
+        }
+        
+        .login-card { 
+            background: linear-gradient(135deg, #0f172a 0%, #070d19 100%); 
+            border: 2px solid #560707; padding: 40px 35px; border-radius: 16px; 
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(139, 0, 0, 0.4); 
+            text-align: center; width: 100%; max-width: 480px; position: relative; overflow: hidden;
+            animation: pulseBorder 4s infinite alternate;
+        }
+        @keyframes pulseBorder {
+            0% { border-color: #560707; box-shadow: 0 0 25px rgba(0,0,0,0.8), 0 0 10px rgba(139, 0, 0, 0.3); }
+            100% { border-color: #a91b1b; box-shadow: 0 0 35px rgba(0,0,0,0.9), 0 0 20px rgba(169, 27, 27, 0.6); }
+        }
+        .login-title { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.6rem; color: #e74c3c; margin-bottom: 5px; letter-spacing: 1px; text-shadow: 0 0 8px rgba(231, 76, 60, 0.4); }
+        .login-subtitle { font-size: 0.85rem; color: #718096; margin-bottom: 25px; font-style: italic; letter-spacing: 0.5px; }
+        
+        /* Cấu trúc CSS mới cho Bảng cổ thư dẫn truyện */
+        .lore-box {
+            background: rgba(5, 8, 17, 0.7);
+            border: 1px double #8b0000;
+            border-radius: 10px;
+            padding: 15px 18px;
+            margin-bottom: 25px;
+            text-align: justify;
+            box-shadow: inset 0 0 15px rgba(139, 0, 0, 0.2);
+        }
+        .lore-title {
+            font-family: 'Cinzel Decorative', serif;
+            color: #f1c40f;
+            font-size: 0.95rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(241, 196, 15, 0.4);
+        }
+        .lore-box p {
+            font-family: 'Averia Serif Libre', serif;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+            margin: 0 0 10px 0;
+        }
+        .lore-box p b {
+            color: #e74c3c;
+            font-family: 'Averia Serif Libre', serif;
+        }
+        .lore-call {
+            text-align: center !important;
+            font-style: italic;
+            color: #2ecc71 !important;
+            font-weight: bold;
+            margin-bottom: 0 !important;
+            animation: blinkText 2.5s infinite;
+        }
+        @keyframes blinkText {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 8px rgba(46, 204, 113, 0.5); }
+        }
+
+        .tabs { display: flex; margin-bottom: 25px; border-radius: 8px; overflow: hidden; border: 1px solid #1e293b; }
+        .tab-btn { flex: 1; padding: 12px; background: #050811; color: #718096; border: none; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .tab-btn.active { background: #e74c3c; color: white; }
+        
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 700; font-size: 0.8rem; color: #a0aec0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input[type="text"], .form-group input[type="password"], .form-group select { width: 100%; padding: 13px 16px; background-color: #050811; border: 1px solid #1e293b; border-radius: 8px; color: #f1f5f9; font-size: 1rem; outline: none; transition: all 0.3s; cursor: pointer; }
+        .form-group input:focus, .form-group select:focus { border-color: #e74c3c; box-shadow: 0 0 8px rgba(231, 76, 60, 0.3); background-color: #090f1d; }
+        
+        .btn-enter { 
+            width: 100%; background: linear-gradient(90deg, #8b0000, #b22222); color: white; border: none; padding: 15px; border-radius: 8px; font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer; box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4); transition: all 0.3s; letter-spacing: 1px;
+        }
+        .btn-enter:hover { background: linear-gradient(90deg, #a90000, #cc2424); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(204, 36, 36, 0.6); }
+
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 10005; display: flex; flex-direction: column; gap: 10px; }
+
+        /* Nút thoát rời khỏi màn hình cho người chơi không muốn chơi nữa */
+        .btn-exit-game { margin-top: 18px; width: 100%; background: transparent; color: #718096; border: 1px solid #1e293b; padding: 11px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; cursor: pointer; transition: all 0.3s; letter-spacing: 0.5px; }
+        .btn-exit-game:hover { background-color: #1e293b; color: #cbd5e1; border-color: #334155; }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-fairy-music" src="thugian.mp3" loop autoplay></audio>
+
+    <div class="login-card">
+        <div class="login-title">CỬA NGÕ VÙNG ĐẤT CẤM</div>
+        <div class="login-subtitle">Xác thực danh tính để bước vào thế giới Hero Math</div>
+        
+        <!-- BẢNG CỔ THƯ DẪN TRUYỆN LY KÌ -->
+        <div class="lore-box">
+            <div class="lore-title"><i class="fa-solid fa-scroll"></i> MẬT LỆNH TỪ KHÔNG GIAN</div>
+            <p>Ngàn năm trước, khi Lục địa Toán Học bị bao phủ bởi màn sương hỗn mang, vị Đại Pháp Sư tối cao đã dùng <b>Đại Pháp Trận Logic</b> để phong ấn chúa tể bóng tối. Nhưng giờ đây, các vết nứt thời gian đang rách toác... Lũ quỷ vô diện đang tràn ra, nuốt chửng tri thức của nhân loại.</p>
+            <p>Tiếng chuông cổ kính từ tháp ngà đang ngân vang để tìm kiếm những <b>Dũng Sĩ Kế Thừa</b> mang tư duy sắc bén. Ngươi có dám bước qua ranh giới này, dùng trí tuệ giải mã ẩn đố để đánh thức phong ấn cổ xưa?</p>
+            <p class="lore-call"><i class="fa-solid fa-fire-flame-curved"></i> Hãy ghi lại danh xưng hoặc lập giao ước mới bên dưới!</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" id="btn-tab-login" onclick="switchTab('login')">Đăng Nhập</button>
+            <button class="tab-btn" id="btn-tab-register" onclick="switchTab('register')">Đăng Ký</button>
+        </div>
+
+        <div id="form-login">
+            <div class="form-group">
+                <label><i class="fa-solid fa-id-card-clip" style="color: #e74c3c;"></i> Danh tính (Họ và tên):</label>
+                <input type="text" id="login-name" placeholder="Ví dụ: Trần Văn Trong" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-key" style="color: #e74c3c;"></i> Mật mã:</label>
+                <input type="password" id="login-pass" placeholder="Nhập mật mã..." autocomplete="off">
+            </div>
+            <button class="btn-enter" onclick="tienHanhDangNhap()">TIẾN VÀO SẢNH <i class="fa-solid fa-wand-magic-sparkles"></i></button>
+        </div>
+
+        <div id="form-register" style="display: none;">
+            <div class="form-group">
+                <label><i class="fa-solid fa-id-card-clip" style="color: #e74c3c;"></i> Danh tính mới (Họ và tên):</label>
+                <input type="text" id="reg-name" placeholder="Ví dụ: Trần Văn Trong" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-dungeon" style="color: #e74c3c;"></i> Khối lớp:</label>
+                <select id="reg-class">
+                    <option value="">-- Chọn khối lớp đang học --</option>
+                    <option value="Khối 6">Khối 6</option>
+                    <option value="Khối 7">Khối 7</option>
+                    <option value="Khối 8">Khối 8</option>
+                    <option value="Khối 9">Khối 9</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-users-rectangle" style="color: #e74c3c;"></i> Lớp cụ thể (VD: 6A1):</label>
+                <input type="text" id="reg-classroom" placeholder="Ví dụ: 6A1" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-key" style="color: #e74c3c;"></i> Tạo mật mã:</label>
+                <input type="password" id="reg-pass" placeholder="Tạo mật mã dễ nhớ..." autocomplete="off">
+            </div>
+            <button class="btn-enter" style="background: linear-gradient(90deg, #1d4ed8, #2563eb);" onclick="tienHanhDangKy()">TẠO ẤN KÝ <i class="fa-solid fa-khanda"></i></button>
+        </div>
+
+        <button class="btn-exit-game" onclick="thoatKhoiTroChoi()"><i class="fa-solid fa-door-open"></i> Thoát, không chơi nữa</button>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+        const amThanhNenMedia = document.getElementById('bg-fairy-music');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('hoc_school_student_name')) {
+                window.location.href = 'index.html';
+            }
+            // Xử lý tự động chạy nhạc (vượt rào cản trình duyệt)
+            let playPromise = amThanhNenMedia.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    document.body.addEventListener('click', () => {
+                        amThanhNenMedia.play().catch(()=>{});
+                    }, { once: true });
+                });
+            }
+        });
+
+        function phatAmThanhClick() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator(); let gain = ctx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(440, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
+        }
+
+        function switchTab(tab) {
+            phatAmThanhClick();
+            document.getElementById('form-login').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('form-register').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('btn-tab-login').className = tab === 'login' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('btn-tab-register').className = tab === 'register' ? 'tab-btn active' : 'tab-btn';
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `background: #0f172a; border-left: 4px solid ${type === 'success' ? '#2ecc71' : '#e74c3c'}; color: #fff; padding: 12px 20px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; min-width: 260px; animation: fadeIn 0.3s ease;`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+            toast.innerHTML = `<i class="fa-solid ${icon}" style="color: ${type === 'success' ? '#2ecc71' : '#e74c3c'};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function thoatKhoiTroChoi() {
+            phatAmThanhClick();
+            let xacNhan = confirm("Em có chắc chắn muốn thoát và không chơi nữa không?");
+            if (xacNhan) {
+                try { amThanhNenMedia.pause(); } catch (e) {}
+                window.location.href = "https://www.google.com";
+            }
+        }
+
+        function tienHanhDangKy() {
+            phatAmThanhClick();
+            let ten = document.getElementById('reg-name').value.trim();
+            let lop = document.getElementById('reg-class').value.trim();
+            let lopCuThe = document.getElementById('reg-classroom').value.trim();
+            let pass = document.getElementById('reg-pass').value.trim();
+
+            if (!ten || !lop || !pass) { showToast("Cần điền đầy đủ thông tin đăng ký!", "error"); return; }
+
+            let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+            if (users[ten]) { showToast("Chiến binh này đã tồn tại!", "error"); return; }
+
+            users[ten] = { class: lop, classroom: lopCuThe, pass: pass };
+            localStorage.setItem('math_hero_users_v2', JSON.stringify(users));
+            showToast("Tạo ấn ký thành công! Hãy đăng nhập.", "success");
+            switchTab('login');
+            document.getElementById('login-name').value = ten;
+            document.getElementById('login-pass').value = pass;
+        }
+
+        function tienHanhDangNhap() {
+            phatAmThanhClick();
+            let ten = document.getElementById('login-name').value.trim();
+            let pass = document.getElementById('login-pass').value.trim();
+
+            if (!ten || !pass) { showToast("Hãy điền đủ tên và mật mã!", "error"); return; }
+
+            let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+            let valid = false; let lopHs = "Khối 7"; let lopCuTheHs = "";
+            
+            if (users[ten]) {
+                if (typeof users[ten] === 'string' && users[ten] === pass) { valid = true; } 
+                else if (typeof users[ten] === 'object' && users[ten].pass === pass) { valid = true; lopHs = users[ten].class; lopCuTheHs = users[ten].classroom || ""; }
+            }
+
+            if (!valid) { showToast("Sai thông tin danh tính hoặc mật mã!", "error"); return; }
+
+            sessionStorage.setItem('hoc_school_student_name', ten);
+            sessionStorage.setItem('hoc_school_student_class', lopHs);
+            sessionStorage.setItem('hoc_school_student_classroom', lopCuTheHs);
+            
+            let danhSachNhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            danhSachNhatKy.push({ name: ten, className: lopHs, classroom: lopCuTheHs, time: new Date().toLocaleString('vi-VN') });
+            localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(danhSachNhatKy));
+            
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

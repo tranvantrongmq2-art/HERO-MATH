@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERO MATH - SẢNH CHÍNH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@900&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        
+        body { 
+            background-color: #050811; color: #ffffff; margin: 0; padding: 15px; min-height: 100vh; 
+            display: flex; flex-direction: column; align-items: center; 
+            background: radial-gradient(circle at center, #0d1527 0%, #050811 100%);
+        }
+        
+        .container { width: 100%; max-width: 1100px; margin: 0 auto; }
+
+        /* HEADER TOP BAR - PHONG CÁCH BẢNG CHỈ DẪN */
+        .header-navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid #141d30; }
+        .nav-buttons { display: flex; gap: 20px; }
+        
+        .header-signpost {
+            font-family: 'Averia Serif Libre', Georgia, serif; font-weight: 700; font-size: 1.25rem;
+            color: #990000; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 2px 4px rgba(0,0,0,0.8);
+            text-decoration: none; background: transparent; border: none; cursor: pointer;
+            transition: all 0.25s; text-transform: uppercase; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .header-signpost:hover { transform: scale(1.08) translateY(-2px); color: #cc0000; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.5)); }
+
+        /* THÔNG TIN CHIẾN BINH PHONG CÁCH MA MỊ MỚI */
+        .student-status-card { 
+            display: flex; background: linear-gradient(135deg, #0d111a 0%, #050811 100%); 
+            border: 1px solid #3f000f; border-left: 4px solid #b91c1c; border-radius: 10px; 
+            padding: 12px 18px; margin-bottom: 25px; justify-content: space-between; align-items: center; 
+            box-shadow: 0 4px 20px rgba(185, 28, 28, 0.15); gap: 12px; flex-wrap: wrap;
+        }
+        .student-left-profile { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+        .dynamic-avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.2rem; color: white; border: 2px solid #b91c1c; flex-shrink: 0; box-shadow: 0 0 10px rgba(185, 28, 28, 0.5); }
+        .student-info-box { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+        .student-meta { font-size: 0.9rem; font-weight: bold; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* CHỮ ĐỎ MA MỊ CHỈ ĐỊNH */
+        .mystic-label {
+            font-family: 'Averia Serif Libre', Georgia, serif; color: #ff4d4d; 
+            text-shadow: 0 0 6px rgba(255, 77, 77, 0.6); font-weight: 700; 
+            letter-spacing: 0.5px; text-transform: uppercase;
+        }
+
+        /* HÀNG BADGE THỐNG KÊ */
+        .stats-badge-row {
+            display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+        }
+        .stat-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            border-radius: 6px; padding: 4px 10px;
+            font-weight: 700; font-size: 0.8rem; white-space: nowrap;
+        }
+        .stat-badge.exp {
+            background: linear-gradient(135deg, #2a0808 0%, #1a0202 100%);
+            border: 1px solid #560707; color: white;
+            box-shadow: 0 0 8px rgba(86,7,7,0.4);
+        }
+        .stat-badge.coin {
+            background: linear-gradient(135deg, #1b1c02 0%, #0d0e01 100%);
+            border: 1px solid #565407; color: white;
+            box-shadow: 0 0 8px rgba(86,84,7,0.4);
+        }
+        .stat-badge.luot-lam {
+            background: linear-gradient(135deg, #0a2a1a 0%, #051008 100%);
+            border: 1px solid #1a5c30; color: white;
+            box-shadow: 0 0 8px rgba(26,92,48,0.4);
+        }
+        .stat-badge.luot-boss {
+            background: linear-gradient(135deg, #2a0808 0%, #1a0202 100%);
+            border: 1px solid #7f1010; color: white;
+            box-shadow: 0 0 8px rgba(127,16,16,0.35);
+        }
+        .stat-badge.luot-vq {
+            background: linear-gradient(135deg, #1c1200 0%, #100a00 100%);
+            border: 1px solid #5c3a00; color: white;
+            box-shadow: 0 0 8px rgba(92,58,0,0.4);
+        }
+        .stat-badge.the-card {
+            background: linear-gradient(135deg, #1a0d2e 0%, #0d0618 100%);
+            border: 1px solid #5b2d8a; color: white;
+            box-shadow: 0 0 8px rgba(91,45,138,0.4);
+        }
+        .stat-val { color: white; font-size: 0.92rem; }
+        .stat-badge.zero .stat-val { color: #e74c3c; }
+
+        /* NÚT THOÁT ĐỎ ĐEN HUYỀN BÍ */
+        .btn-logout { 
+            background: linear-gradient(135deg, #4a0404, #2a0000); color: #ff8a8a; 
+            border: 1px solid #7f0000; padding: 8px 14px; border-radius: 6px; 
+            font-family: 'Averia Serif Libre', serif; font-weight: bold; cursor: pointer; 
+            font-size: 0.85rem; transition: all 0.3s; text-transform: uppercase; 
+            box-shadow: 0 0 10px rgba(127, 0, 0, 0.5); letter-spacing: 0.5px; flex-shrink: 0;
+        }
+        .btn-logout:hover { 
+            background: linear-gradient(135deg, #7f0000, #4a0404); color: white; 
+            border-color: #ff4d4d; box-shadow: 0 0 15px rgba(255, 77, 77, 0.7); transform: translateY(-2px); 
+        }
+
+        /* BẢN ĐỒ KHU VƯỜN */
+        #main-lobby-area { width: 100%; }
+        .lobby-section-title { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.3rem; color: #ffffff; margin: 0 0 15px 0; letter-spacing: 0.5px; }
+        
+        .fairy-garden-map {
+            width: 100%; position: relative; background-image: url('image_da51cb.jpg'); background-size: cover;
+            background-repeat: no-repeat; background-position: center; border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.7); border: 3px solid #1e293b; aspect-ratio: 1000 / 460;
+        }
+
+        .signpost-item { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; text-decoration: none; background: transparent; border: none; outline: none; cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .signpost-title {
+            font-family: 'Averia Serif Libre', Georgia, serif; font-weight: 700; font-size: 1.15rem; line-height: 1.1;
+            color: #990000; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0px 2px 4px rgba(0,0,0,0.8);
+            letter-spacing: -0.2px; margin-bottom: 5px;
+        }
+        .signpost-sub { font-family: 'Roboto', sans-serif; font-weight: 900; font-size: 0.52rem; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.8px; color: #ffffff; box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+
+        .sign-today-task { width: 18.5%; height: 18%; left: 7.8%; top: 56.5%; transform: rotate(-3.5deg); }
+        .sign-today-task .signpost-sub { background-color: #1d4ed8; }
+        .sign-theory-vault { width: 16.5%; height: 15%; left: 32.8%; top: 51.5%; transform: rotate(2deg); }
+        .sign-theory-vault .signpost-sub { background-color: #047857; }
+        .sign-essay-challenge { width: 14%; height: 13.5%; left: 54.2%; top: 48%; transform: rotate(-1.5deg); }
+        .sign-essay-challenge .signpost-title { font-size: 0.95rem; }
+        .sign-essay-challenge .signpost-sub { background-color: #6d28d9; }
+        .sign-boss-fight { width: 16%; height: 14.5%; left: 69.2%; top: 52.5%; transform: rotate(2.5deg); }
+        .sign-boss-fight .signpost-title { font-size: 0.95rem; }
+        .sign-boss-fight .signpost-sub { background-color: #b91c1c; }
+        .sign-lucky-wheel { width: 13.5%; height: 14%; left: 82.5%; top: 71.5%; transform: rotate(-3deg); }
+        .sign-lucky-wheel .signpost-title { font-size: 0.95rem; }
+        .sign-lucky-wheel .signpost-sub { background-color: #b45309; }
+
+        .signpost-item:hover { transform: scale(1.06) translateY(-3px); filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.5)); }
+        .signpost-item:hover .signpost-title { color: #cc0000; }
+
+        .audio-control-panel { margin-top: 20px; display: flex; justify-content: center; }
+        .btn-toggle-music { background-color: #0f172a; border: 1px solid #334155; color: #94a3b8; padding: 10px 22px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-toggle-music.playing { background: linear-gradient(135deg, #4c0519 0%, #1c0209 100%); border-color: #9f1239; color: #fda4af; box-shadow: 0 0 15px rgba(159, 18, 57, 0.4); }
+        .btn-toggle-music.muted { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-color: #334155; color: #94a3b8; }
+        .btn-toggle-music:hover { transform: translateY(-1px); }
+
+        #sound-status-tip { text-align: center; font-size: 0.8rem; color: #475569; margin-top: 10px; font-style: italic; }
+
+        /* OVERLAY MẬT KHẨU GIÁO VIÊN */
+        .pwd-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(5, 8, 17, 0.95); z-index: 10000; display: flex; justify-content: center; align-items: center; }
+        .pwd-card { background: #0f172a; border: 2px solid #9f1239; border-radius: 16px; padding: 35px 30px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 10px 35px rgba(0,0,0,0.8); animation: fadeIn 0.25s ease; }
+        .pwd-card h4 { font-family: 'Cinzel Decorative', serif; font-weight: 900; font-size: 1.2rem; color: #f43f5e; margin: 0 0 10px 0; }
+        .pwd-input-glowing { width: 100%; padding: 12px; text-align: center; font-size: 1.3rem; letter-spacing: 5px; border: 1px solid #334155; background-color: #050811; border-radius: 8px; color: white; margin: 15px 0; outline: none; }
+        .pwd-input-glowing:focus { border-color: #f43f5e; box-shadow: 0 0 8px rgba(244, 63, 94, 0.3); }
+        .pwd-error { color: #f43f5e; font-size: 0.85rem; margin-top: -5px; margin-bottom: 15px; display: none; }
+        .pwd-btn-group { display: flex; gap: 10px; }
+        .pwd-btn-action { flex: 1; border: none; padding: 12px 0; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.85rem; }
+        .pwd-btn-confirm { background: #b91c1c; color: white; }
+        .pwd-btn-cancel { background: #334155; color: #cbd5e1; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media(max-width: 850px) {
+            .signpost-title { font-size: 0.85rem !important; text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; }
+            .signpost-sub { font-size: 0.42rem !important; padding: 1px 3px; }
+            .header-signpost { font-size: 0.9rem; }
+            .nav-buttons { gap: 10px; }
+        }
+        @media(max-width: 600px) {
+            .signpost-title { font-size: 0.65rem !important; }
+            .signpost-sub { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-fairy-music" src="thugian.mp3" loop autoplay></audio>
+
+    <div class="container">
+        
+        <div class="header-navbar">
+            <a href="index.html" class="header-signpost" style="color: #f1c40f; font-size: 1.5rem;" onclick="phatAmThanhClick()">
+                <i class="fa-solid fa-spaghetti-monster-flying"></i> HERO MATH
+            </a>
+            <div class="nav-buttons">
+                <a href="ly-thuyet.html" class="header-signpost" onclick="phatAmThanhClick()">Lý Thuyết</a>
+                <a href="cua-hang.html" class="header-signpost" onclick="phatAmThanhClick()">Cửa Hàng</a>
+                <a href="bang-xep-hang.html" class="header-signpost" onclick="phatAmThanhClick()">BXH Lớp</a>
+                <button class="header-signpost" onclick="openTeacherPasswordModal()">Giáo viên</button>
+            </div>
+        </div>
+
+        <div class="student-status-card" id="student-status-bar">
+            <div class="student-left-profile">
+                <div class="dynamic-avatar" id="player-avatar">?</div>
+                <div class="student-info-box">
+                    <div class="student-meta">
+                        <i class="fa-solid fa-user-shield" style="color:#ff4d4d;margin-right:3px;filter:drop-shadow(0 0 3px red);"></i>
+                        <span class="mystic-label">Thám Hiểm:</span>
+                        <span id="txt-student-name" style="color:#f1f5f9;text-shadow:0 0 4px white;"> ..</span>
+                        <span style="color:#8b0000;margin:0 5px;font-weight:bold;">|</span>
+                        <span class="mystic-label">Khối:</span>
+                        <span id="txt-student-class" style="color:#f1f5f9;text-shadow:0 0 4px white;"> ..</span>
+                        <span style="color:#8b0000;margin:0 5px;font-weight:bold;">|</span>
+                        <span class="mystic-label">Lớp:</span>
+                        <span id="txt-student-classroom" style="color:#2ecc71;text-shadow:0 0 4px rgba(46,204,113,0.5);font-weight:bold;"> —</span>
+                    </div>
+                    <div class="stats-badge-row">
+                        <div class="stat-badge exp">
+                            <i class="fa-solid fa-gem" style="color:#f1c40f;filter:drop-shadow(0 0 3px gold);"></i>
+                            <span style="color:#ff4d4d;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">EXP:</span>
+                            <span class="stat-val" id="lbl-student-exp">20</span>
+                        </div>
+                        <div class="stat-badge coin">
+                            <i class="fa-solid fa-coins" style="color:#ffeb3b;filter:drop-shadow(0 0 3px gold);"></i>
+                            <span style="color:#ffeb3b;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">Xu:</span>
+                            <span class="stat-val" id="lbl-student-coin">50</span>
+                        </div>
+                        <div class="stat-badge luot-lam" id="badge-luot-lam">
+                            <i class="fa-solid fa-scroll" style="color:#2ecc71;"></i>
+                            <span style="color:#2ecc71;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">NV:</span>
+                            <span class="stat-val" id="lbl-luot-lam">–</span>
+                        </div>
+                        <div class="stat-badge luot-boss" id="badge-luot-boss">
+                            <i class="fa-solid fa-skull-crossbones" style="color:#e74c3c;"></i>
+                            <span style="color:#e07070;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">Boss:</span>
+                            <span class="stat-val" id="lbl-luot-boss">–</span>
+                        </div>
+                        <div class="stat-badge luot-vq" id="badge-luot-vq">
+                            <i class="fa-solid fa-rotate" style="color:#f39c12;"></i>
+                            <span style="color:#f0bb60;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">Quay:</span>
+                            <span class="stat-val" id="lbl-luot-vq">–</span>
+                        </div>
+                        <div class="stat-badge the-card" id="badge-the" style="display:none;">
+                            <i class="fa-solid fa-hand-holding-magic" style="color:#b983ff;"></i>
+                            <span style="color:#c9a0ff;font-family:'Averia Serif Libre',serif;font-size:0.78rem;">Thẻ:</span>
+                            <span class="stat-val" id="lbl-so-the">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-logout" onclick="xuLyDoiTaiKhoan()">Rời Vùng Đất <i class="fa-solid fa-door-open" style="margin-left:5px;"></i></button>
+        </div>
+
+        <div id="main-lobby-area">
+            <h2 class="lobby-section-title"><i class="fa-solid fa-compass fa-spin" style="color: #e74c3c; margin-right: 6px;"></i> KHÁM PHÁ CÁC KHU VỰC</h2>
+            
+            <div class="fairy-garden-map">
+                <a href="lam-bai.html" class="signpost-item sign-today-task" onclick="phatAmThanhClick()">
+                    <span class="signpost-title">Nhiệm Vụ<br>Hôm Nay</span>
+                    <span class="signpost-sub">LÀM BÀI</span>
+                </a>
+                <a href="thi-dau-doi-khang.html" class="signpost-item sign-theory-vault" onclick="phatAmThanhClick()">
+                    <span class="signpost-title">Thi Đấu<br>Đối Kháng</span>
+                    <span class="signpost-sub">QUYẾT ĐẤU</span>
+                </a>
+                <a href="bai-tap-tu-luan.html" class="signpost-item sign-essay-challenge" onclick="phatAmThanhClick()">
+                    <span class="signpost-title">Thử Thách<br>Tự Luận</span>
+                    <span class="signpost-sub">TRÌNH BÀY</span>
+                </a>
+                <a href="boss-cuoi-tuan.html" class="signpost-item sign-boss-fight" onclick="phatAmThanhClick()">
+                    <span class="signpost-title">Khiêu Chiến<br>Boss Cuối Tuần</span>
+                    <span class="signpost-sub">CHIẾN ĐẤU</span>
+                </a>
+                <a href="vong-quay.html" class="signpost-item sign-lucky-wheel" onclick="phatAmThanhClick()">
+                    <span class="signpost-title">Vòng Quay<br>May Mắn</span>
+                    <span class="signpost-sub">NHẬN QUÀ</span>
+                </a>
+            </div>
+
+            <div class="audio-control-panel">
+                <button id="btn-music-toggle" class="btn-toggle-music muted" onclick="xuLyBatTatAmThanhNen()">
+                    <i id="icon-music-toggle" class="fa-solid fa-volume-xmark"></i> 
+                    <span id="text-music-toggle">Kích Hoạt Nhạc Nền Kì Bí</span>
+                </button>
+            </div>
+            <div id="sound-status-tip">
+                <i class="fa-solid fa-circle-info"></i> Bản phối thư giãn độc quyền đã sẵn sàng phục vụ hành trình của em.
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-pwd-modal" class="pwd-overlay" style="display: none;">
+        <div class="pwd-card">
+            <i class="fa-solid fa-eye-slash fa-3x" style="color: #e11d48; margin-bottom: 15px;"></i>
+            <h4>Bảo mật Giáo Viên</h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 15px 0;">Vui lòng nhập mật mã tối cao để mở khóa bảng điều khiển cấu trúc dữ liệu.</p>
+            <input type="password" id="teacher-password-field" class="pwd-input-glowing" placeholder="••••" onkeydown="chkTeacherPasswordEnter(event)">
+            <div id="teacher-password-error" class="pwd-error">Khóa bảo mật chưa khớp! Vui lòng thử lại.</div>
+            <div class="pwd-btn-group">
+                <button class="pwd-btn-action pwd-btn-confirm" onclick="verifyTeacherAccess()"><i class="fa-solid fa-unlock-keyhole"></i> Giải mã</button>
+                <button class="pwd-btn-action pwd-btn-cancel" onclick="closeTeacherPasswordModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 10005; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <script>
+        const amThanhNenMedia = document.getElementById('bg-fairy-music');
+        const nutBatTatAmThanh = document.getElementById('btn-music-toggle');
+        const iconBatTatAmThanh = document.getElementById('icon-music-toggle');
+        const dongChuBatTatAmThanh = document.getElementById('text-music-toggle');
+        const mangMauAvatar = [
+            'linear-gradient(135deg, #e67e22, #f1c40f)', 'linear-gradient(135deg, #3498db, #8e44ad)',
+            'linear-gradient(135deg, #2ecc71, #1abc9c)', 'linear-gradient(135deg, #e74c3c, #9b59b6)'
+        ];
+
+        function hienThiTrangThaiNhacNen(dangPhat) {
+            if (dangPhat) {
+                nutBatTatAmThanh.className = "btn-toggle-music playing";
+                iconBatTatAmThanh.className = "fa-solid fa-volume-high fa-spin-pulse";
+                dongChuBatTatAmThanh.innerText = "Tắt Nhạc Nền";
+                document.getElementById('sound-status-tip').innerHTML = `<i class="fa-solid fa-wand-magic-sparkles" style="color: #fda4af;"></i> Giai điệu ma mị đang bao phủ không gian...`;
+            } else {
+                nutBatTatAmThanh.className = "btn-toggle-music muted";
+                iconBatTatAmThanh.className = "fa-solid fa-volume-xmark";
+                dongChuBatTatAmThanh.innerText = "Kích Hoạt Nhạc Nền Kì Bí";
+                document.getElementById('sound-status-tip').innerHTML = `<i class="fa-solid fa-volume-xmark"></i> Nhạc nền đã được ẩn đi.`;
+            }
+        }
+
+        // KIỂM TRA ĐĂNG NHẬP VÀ XỬ LÝ AUTO-PLAY NHẠC
+        window.addEventListener('DOMContentLoaded', () => {
+            let tenLuu = sessionStorage.getItem('hoc_school_student_name');
+            let lopLuu = sessionStorage.getItem('hoc_school_student_class');
+            
+            if (!tenLuu) {
+                window.location.href = 'auth.html'; return;
+            }
+
+            document.getElementById('txt-student-name').innerText = tenLuu;
+            document.getElementById('txt-student-class').innerText = lopLuu || '—';
+
+            // Đọc lớp cụ thể (classroom): sessionStorage → nhật ký đăng nhập → bảng users
+            let lopCuThe = sessionStorage.getItem('hoc_school_student_classroom') || '';
+            if (!lopCuThe) {
+                // Thử lấy từ nhật ký đăng nhập (item mới nhất của chính học sinh này)
+                let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                let myLog = [...nhatKy].reverse().find(it => it.name === tenLuu);
+                if (myLog && myLog.classroom) lopCuThe = myLog.classroom;
+            }
+            if (!lopCuThe) {
+                // Thử lấy từ bảng users
+                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+                let ud = users[tenLuu];
+                if (ud && typeof ud === 'object' && ud.classroom) lopCuThe = ud.classroom;
+            }
+            if (lopCuThe) {
+                sessionStorage.setItem('hoc_school_student_classroom', lopCuThe);
+            }
+            document.getElementById('txt-student-classroom').innerText = lopCuThe ? lopCuThe.toUpperCase() : '—';
+            let mangCacTu = tenLuu.split(" "); let tuCuoiCung = mangCacTu[mangCacTu.length - 1];
+            let khungAvatar = document.getElementById('player-avatar');
+            khungAvatar.innerText = tuCuoiCung ? tuCuoiCung.charAt(0).toUpperCase() : "?";
+            khungAvatar.style.background = mangMauAvatar[tenLuu.length % mangMauAvatar.length];
+            document.getElementById('lbl-student-exp').innerText = localStorage.getItem('exp_' + tenLuu) || "0";
+            document.getElementById('lbl-student-coin').innerText = localStorage.getItem('coin_' + tenLuu) || "50";
+
+            // ===== HIỂN THỊ LƯỢT LÀM BÀI / BOSS / VÒNG QUAY (đồng bộ logic với admin.html) =====
+            let homNay = new Date().toLocaleDateString('vi-VN');
+
+            // Lượt Nhiệm Vụ hôm nay
+            let soLuotLamBaiMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3;
+            let rawLB = JSON.parse(localStorage.getItem('luot_lam_bai_' + tenLuu)) || null;
+            let luotLamBai = (rawLB && rawLB.date === homNay) ? rawLB.soLuotConLai : soLuotLamBaiMax;
+            let elLB = document.getElementById('lbl-luot-lam');
+            elLB.innerText = luotLamBai + '/' + soLuotLamBaiMax;
+            if (luotLamBai <= 0) document.getElementById('badge-luot-lam').classList.add('zero');
+
+            // Lượt Boss
+            let soLuotBossMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3;
+            let rawBoss = JSON.parse(localStorage.getItem('luot_boss_' + tenLuu)) || null;
+            let luotBoss = rawBoss ? rawBoss.soLuotConLai : soLuotBossMax;
+            let elBoss = document.getElementById('lbl-luot-boss');
+            elBoss.innerText = luotBoss + '/' + soLuotBossMax;
+            if (luotBoss <= 0) document.getElementById('badge-luot-boss').classList.add('zero');
+
+            // Lượt Vòng Quay
+            let soLuotVQMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1;
+            let rawVQ = JSON.parse(localStorage.getItem('luot_vong_quay_' + tenLuu)) || null;
+            let luotVQ = (rawVQ && rawVQ.date === homNay) ? rawVQ.soLuotConLai : soLuotVQMax;
+            let elVQ = document.getElementById('lbl-luot-vq');
+            elVQ.innerText = luotVQ + '/' + soLuotVQMax;
+            if (luotVQ <= 0) document.getElementById('badge-luot-vq').classList.add('zero');
+
+            // Số thẻ đặc quyền đang giữ (tổng tất cả loại)
+            const CARD_KEYS = ['hero_x2exp_stack_', 'hero_5050_stack_', 'hero_rutgon_stack_', 'hero_cohoi2_stack_'];
+            const CARD_KEYS_OLD = ['hero_x2exp_', 'hero_5050_', 'hero_rutgon_', 'hero_cohoi2_'];
+            let tongThe = 0;
+            CARD_KEYS.forEach((k, i) => {
+                let stack = parseInt(localStorage.getItem(k + tenLuu)) || 0;
+                if (stack === 0 && localStorage.getItem(CARD_KEYS_OLD[i] + tenLuu) === '1') stack = 1;
+                tongThe += stack;
+            });
+            if (tongThe > 0) {
+                document.getElementById('lbl-so-the').innerText = tongThe;
+                document.getElementById('badge-the').style.display = 'inline-flex';
+            }
+
+            // Vượt rào cản Autoplay của trình duyệt
+            let playPromise = amThanhNenMedia.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    hienThiTrangThaiNhacNen(true);
+                }).catch(error => {
+                    hienThiTrangThaiNhacNen(false);
+                    document.body.addEventListener('click', () => {
+                        if (amThanhNenMedia.paused && !nutBatTatAmThanh.classList.contains('playing')) {
+                            amThanhNenMedia.play().then(() => hienThiTrangThaiNhacNen(true)).catch(()=>{});
+                        }
+                    }, { once: true });
+                });
+            }
+        });
+
+        function xuLyBatTatAmThanhNen() {
+            if (amThanhNenMedia.paused) {
+                amThanhNenMedia.play().then(() => hienThiTrangThaiNhacNen(true)).catch(err => {
+                    showToast("Hãy click một điểm bất kỳ trên màn hình trước khi kích hoạt âm thanh nha!", "error");
+                });
+            } else {
+                amThanhNenMedia.pause(); hienThiTrangThaiNhacNen(false);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.style.cssText = `background: #0f172a; border-left: 4px solid ${type === 'success' ? '#2ecc71' : '#e74c3c'}; color: #fff; padding: 12px 20px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 10px; font-size: 0.9rem; min-width: 260px; animation: fadeIn 0.3s ease;`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+            toast.innerHTML = `<i class="fa-solid ${icon}" style="color: ${type === 'success' ? '#2ecc71' : '#e74c3c'};"></i> <span>${message}</span>`;
+            container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function phatAmThanhClick() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator(); let gain = ctx.createGain();
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(440, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
+        }
+
+        function xuLyDoiTaiKhoan() { phatAmThanhClick(); sessionStorage.clear(); window.location.href = 'auth.html'; }
+        
+        const TEACHER_PASSWORD = "thaytrongmath";
+        function openTeacherPasswordModal() { phatAmThanhClick(); document.getElementById('teacher-pwd-modal').style.display = 'flex'; const field = document.getElementById('teacher-password-field'); field.value = ''; field.focus(); document.getElementById('teacher-password-error').style.display = 'none'; }
+        function closeTeacherPasswordModal() { phatAmThanhClick(); document.getElementById('teacher-pwd-modal').style.display = 'none'; }
+        function chkTeacherPasswordEnter(event) { if (event.key === 'Enter') { verifyTeacherAccess(); } }
+        function verifyTeacherAccess() {
+            if (document.getElementById('teacher-password-field').value === TEACHER_PASSWORD) {
+                closeTeacherPasswordModal(); showToast("Mở khóa thành công! Đang chuyển hướng...", "success");
+                setTimeout(() => { window.location.href = "admin.html"; }, 1000);
+            } else { document.getElementById('teacher-password-error').style.display = 'block'; showToast("Khóa bảo mật sai!", "error"); }
+        }
+    </script>
+</body>
+</html>

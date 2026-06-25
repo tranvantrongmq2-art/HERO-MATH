@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SẢNH TỰ LUẬN - QUẢN TRỊ GIÁO VIÊN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { 
+            background: #0b111e; 
+            color: #fff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { width: 100%; max-width: 650px; padding: 10px; }
+        
+        /* Nút thoát nhanh ở góc đầu sảnh */
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .btn-quick-exit {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #1c263f;
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: 1px solid #2c3a57;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+        .btn-quick-exit:hover {
+            background: #283556;
+            border-color: #34495e;
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Thẻ sảnh bài tập tối chuẩn Gaming */
+        .essay-card { 
+            background: #151d30; 
+            border: 2px solid #2c3a57; 
+            border-radius: 16px; 
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); 
+            text-align: center;
+            position: relative;
+        }
+        h3 { 
+            color: #9b59b6; 
+            font-size: 1.6rem; 
+            margin-top: 0; 
+            margin-bottom: 20px; 
+            text-shadow: 0 0 10px rgba(155, 89, 182, 0.4); 
+        }
+
+        /* Thông tin Học sinh đang làm bài */
+        .student-info {
+            background: rgba(44, 58, 87, 0.4);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #9b59b6;
+        }
+        .student-info b { color: #3498db; }
+
+        /* Vùng tải ảnh kéo thả */
+        .upload-area { 
+            border: 2px dashed #2c3a57; 
+            background: rgba(155, 89, 182, 0.02); 
+            padding: 30px 20px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            margin-bottom: 25px;
+        }
+        .upload-area:hover { 
+            background: rgba(155, 89, 182, 0.08); 
+            border-color: #9b59b6; 
+            transform: translateY(-2px); 
+        }
+        .upload-area i { color: #9b59b6; margin-bottom: 12px; }
+        .upload-area p { margin: 5px 0; color: #b0bccc; font-size: 0.95rem; }
+        #preview-img { 
+            max-width: 100%; 
+            max-height: 300px; 
+            margin-top: 15px; 
+            border-radius: 8px; 
+            border: 2px solid #2c3a57; 
+            display: none; 
+        }
+
+        /* Thẻ chờ chấm dành cho Học sinh sau khi nộp bài */
+        .waiting-status {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid #3498db;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .btn-unlock-admin {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-unlock-admin:hover {
+            transform: scale(1.05);
+        }
+        .btn-delete-submission {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-left: 10px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-delete-submission:hover {
+            transform: scale(1.05);
+        }
+
+        /* Bảng chọn điểm số từ 1-10 phong cách Gaming */
+        .grading-panel {
+            margin-top: 25px;
+            text-align: left;
+            background: #0f1626;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #9b59b6;
+            display: none;
+            animation: slideDown 0.5s ease;
+        }
+        .grading-panel h4 {
+            margin-top: 0;
+            color: #2ecc71;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .score-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .score-btn {
+            background: #1c263f;
+            border: 2px solid #2c3a57;
+            color: #fff;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .score-btn:hover {
+            border-color: #9b59b6;
+            background: rgba(155, 89, 182, 0.15);
+        }
+        .score-btn.active {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            border-color: #e0a3ff;
+            box-shadow: 0 0 12px rgba(155, 89, 182, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Phần nhập lời nhắn / nhận xét của giáo viên */
+        .comment-area {
+            width: 100%;
+            height: 80px;
+            background: #1c263f;
+            border: 2px solid #2c3a57;
+            border-radius: 8px;
+            color: #fff;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: none;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            transition: border-color 0.2s;
+        }
+        .comment-area:focus {
+            border-color: #2ecc71;
+            outline: none;
+        }
+
+        /* EXP Dự kiến nhận được */
+        .exp-preview-box {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2ecc71;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* Nút hoàn thành chấm bài */
+        .btn-submit { 
+            background: linear-gradient(135deg, #2ecc71, #27ae60); 
+            color: white; 
+            border: none; 
+            padding: 15px 35px;
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); 
+            transition: all 0.2s;
+        }
+        .btn-submit:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 7px 20px rgba(46, 204, 113, 0.5); 
+        }
+
+        /* Khung hiển thị kết quả chúc mừng sau khi chấm */
+        .victory-panel {
+            background: rgba(155, 89, 182, 0.1);
+            border: 2px solid #9b59b6;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+            text-align: center;
+            animation: bounceIn 0.6s ease;
+        }
+        .victory-panel h4 {
+            color: #f1c40f;
+            font-size: 1.4rem;
+            margin: 0 0 10px 0;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.4);
+        }
+        .victory-detail {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #ecf0f1;
+        }
+        .exp-badge {
+            display: inline-block;
+            background: #f1c40f;
+            color: #111;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+
+        /* Thiết kế 2 nút điều hướng Gaming tại Victory Panel */
+        .victory-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+        .btn-victory-nav {
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.2s;
+        }
+        .btn-nav-lobby {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        .btn-nav-lobby:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+        }
+        .btn-nav-reset {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);
+        }
+        .btn-nav-reset:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(230, 126, 34, 0.5);
+        }
+
+        /* GIAO DIỆN HỘP THOẠI KHÓA MẬT KHẨU GIÁO VIÊN */
+        .pwd-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 17, 30, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .pwd-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .pwd-box {
+            background: #151d30;
+            border: 2px solid #e67e22;
+            border-radius: 12px;
+            padding: 25px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .pwd-modal.active .pwd-box {
+            transform: scale(1);
+        }
+        .pwd-box h4 {
+            color: #e67e22;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .pwd-input {
+            width: 100%;
+            padding: 12px;
+            background: #0f1626;
+            border: 2px solid #2c3a57;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 5px;
+            box-sizing: border-box;
+            margin: 15px 0;
+            transition: border-color 0.2s;
+        }
+        .pwd-input:focus {
+            border-color: #e67e22;
+            outline: none;
+        }
+        .pwd-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .pwd-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .pwd-btn-cancel {
+            background: #34495e;
+            color: #fff;
+        }
+        .pwd-btn-confirm {
+            background: #e67e22;
+            color: #fff;
+        }
+        .pwd-error-msg {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            70% { transform: scale(0.9); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Nút thoát nhanh lên Sảnh Chính -->
+        <div class="header-action-row">
+            <a href="index.html" class="btn-quick-exit">
+                <i class="fa-solid fa-arrow-left"></i> Sảnh Chính
+            </a>
+            <span style="font-size: 0.85rem; color: #64748b; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Phòng Tự Luận</span>
+        </div>
+
+        <div class="essay-card">
+            <h3><i class="fa-solid fa-graduation-cap"></i> PHÒNG TỰ LUẬN - MATH HERO</h3>
+            
+            <!-- Hiển thị tên học sinh đang làm bài -->
+            <div class="student-info">
+                <span>Học sinh: <b id="lbl-student-name">Học Sinh</b></span>
+                <span>EXP hiện tại: <b id="lbl-current-exp" style="color: #f1c40f;">0 EXP</b></span>
+            </div>
+            
+            <!-- Vùng Upload ảnh -->
+            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                <i class="fa-solid fa-camera-rotate fa-3x"></i>
+                <p><b>Nhấn vào đây</b> để tải lên ảnh bài làm tự luận</p>
+                <p style="font-size: 0.8rem; color: #6a7b95;">(Hỗ trợ định dạng hình ảnh: .jpg, .png)</p>
+                
+                <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewFile(event)">
+                <img id="preview-img" alt="Xem trước bài làm">
+            </div>
+
+            <!-- Thẻ chờ chấm dành cho Học sinh sau khi nộp bài -->
+            <div id="waiting-status" class="waiting-status">
+                <p style="color: #3498db; font-weight: bold; margin: 0 0 5px 0;">
+                    <i class="fa-solid fa-clock-rotate-left"></i> ĐÃ NỘP BÀI GIẢI THÀNH CÔNG!
+                </p>
+                <p style="font-size: 0.85rem; color: #b0bccc; margin: 0;">Bài giải của con đang được lưu trên hệ thống. Hãy gửi thiết bị cho Thầy/Cô chấm điểm nhé.</p>
+                <button class="btn-unlock-admin" onclick="openPasswordModal()">
+                    <i class="fa-solid fa-lock"></i> Mở khoá Chế độ Giáo viên
+                </button>
+                <button class="btn-delete-submission" onclick="xoaBaiNop()">
+                    <i class="fa-solid fa-trash"></i> Xóa bài đã nộp
+                </button>
+            </div>
+
+            <!-- Bảng chấm điểm dành cho Giáo Viên (Được bảo mật khóa) -->
+            <div id="grading-panel" class="grading-panel">
+                <h4>
+                    <span><i class="fa-solid fa-marker"></i> ĐÁNH GIÁ CỦA GIÁO VIÊN:</span>
+                    <span style="font-size: 0.8rem; color: #e67e22;"><i class="fa-solid fa-user-shield"></i> Chế độ Admin</span>
+                </h4>
+                
+                <p style="margin: 5px 0 12px 0; font-size: 0.9rem; color: #b0bccc;">Chọn điểm số cho bài viết này:</p>
+                
+                <div class="score-buttons">
+                    <button class="score-btn" onclick="selectScore(1)">1</button>
+                    <button class="score-btn" onclick="selectScore(2)">2</button>
+                    <button class="score-btn" onclick="selectScore(3)">3</button>
+                    <button class="score-btn" onclick="selectScore(4)">4</button>
+                    <button class="score-btn" onclick="selectScore(5)">5</button>
+                    <button class="score-btn" onclick="selectScore(6)">6</button>
+                    <button class="score-btn" onclick="selectScore(7)">7</button>
+                    <button class="score-btn" onclick="selectScore(8)">8</button>
+                    <button class="score-btn" onclick="selectScore(9)">9</button>
+                    <button class="score-btn" onclick="selectScore(10)">10</button>
+                </div>
+
+                <p style="margin: 15px 0 8px 0; font-size: 0.9rem; color: #b0bccc;">Nhận xét chi tiết hoặc lời khuyên:</p>
+                <textarea id="txt-comment" class="comment-area" placeholder="Bài giải rõ ràng, cách làm đúng hướng. Con cần cẩn thận hơn ở phần rút gọn phân số nhé..."></textarea>
+
+                <!-- Dự báo EXP sẽ nhận được -->
+                <div id="exp-preview" class="exp-preview-box"></div>
+
+                <button class="btn-submit" id="btn-submit" onclick="hoanTatChamDiem()">
+                    <i class="fa-solid fa-trophy"></i> XÁC NHẬN CHẤM ĐIỂM & BAN EXP
+                </button>
+            </div>
+            
+            <!-- Thẻ ăn mừng hoàn thành kèm nút điều hướng -->
+            <div id="victory-panel" class="victory-panel">
+                <h4><i class="fa-solid fa-circle-check"></i> CHẤM ĐIỂM HOÀN TẤT!</h4>
+                <div id="victory-content" class="victory-detail"></div>
+                
+                <!-- Sảnh hành động sau khi chấm điểm thành công -->
+                <div class="victory-actions">
+                    <a href="index.html" class="btn-victory-nav btn-nav-lobby">
+                        <i class="fa-solid fa-house"></i> Về Sảnh Chính
+                    </a>
+                    <button onclick="lamMoiTrangCham()" class="btn-victory-nav btn-nav-reset">
+                        <i class="fa-solid fa-rotate-left"></i> Chấm Tiếp Bài Khác
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HỘP THOẠI NHẬP MẬT KHẨU GIÁO VIÊN -->
+    <div id="pwd-modal" class="pwd-modal">
+        <div class="pwd-box">
+            <i class="fa-solid fa-key fa-2x" style="color: #e67e22; margin-bottom: 10px;"></i>
+            <h4>BẢO MẬT GIÁO VIÊN</h4>
+            <p style="font-size: 0.85rem; color: #b0bccc; margin: 0;">Vui lòng điền mã bảo mật của Thầy/Cô để mở khóa chấm bài.</p>
+            
+            <input type="password" id="pwd-input" class="pwd-input" placeholder="••••" onkeydown="handlePasswordEnter(event)">
+            <div id="pwd-error" class="pwd-error-msg">Mật mã chưa chính xác! Vui lòng thử lại.</div>
+            
+            <div class="pwd-buttons">
+                <button class="pwd-btn pwd-btn-cancel" onclick="closePasswordModal()">HỦY BỎ</button>
+                <button class="pwd-btn pwd-btn-confirm" onclick="verifyPassword()">XÁC NHẬN</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CẤU HÌNH MẬT KHẨU GIÁO VIÊN TẠI ĐÂY:
+        const TEACHER_PASSWORD = "thaytrongmath";
+
+        // Lấy tên học sinh từ hệ thống
+        const tenHocSinh = sessionStorage.getItem('hoc_school_student_name') || 'Học Sinh';
+        let expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
+        let coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
+        
+        document.getElementById('lbl-student-name').innerText = tenHocSinh;
+        document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+
+        // Inject coin element right next to EXP
+        let expContainer = document.getElementById('lbl-current-exp').parentNode;
+        if (expContainer) {
+            let coinSpan = document.createElement('span');
+            coinSpan.style.marginLeft = '15px';
+            coinSpan.innerHTML = `Xu hiện tại: <b id="lbl-current-coin" style="color: #ffeb3b;">${coinHienTai} XU</b>`;
+            expContainer.parentNode.appendChild(coinSpan);
+        }
+
+        let selectedScore = null;
+
+        // Bảng quy đổi EXP lũy tiến bắt đầu từ 5 điểm
+        const bangEXP = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 20,
+            6: 40,
+            7: 70,
+            8: 100,
+            9: 150,
+            10: 250
+        };
+
+        // Xem trước ảnh và kích hoạt trạng thái chờ chấm điểm
+        function previewFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const previewImg = document.getElementById('preview-img');
+            const waitingStatus = document.getElementById('waiting-status');
+            const gradingPanel = document.getElementById('grading-panel');
+            const victoryPanel = document.getElementById('victory-panel');
+            
+            const reader = new FileReader();
+            reader.onload = function() {
+                previewImg.src = reader.result;
+                previewImg.style.display = 'block';
+                
+                // Trạng thái cho học sinh xem: Chờ chấm bài
+                waitingStatus.style.display = 'block';
+                gradingPanel.style.display = 'none';
+                victoryPanel.style.display = 'none';
+                clearGradingForm();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Mở hộp thoại mật mã
+        function openPasswordModal() {
+            const modal = document.getElementById('pwd-modal');
+            const input = document.getElementById('pwd-input');
+            const error = document.getElementById('pwd-error');
+            
+            error.style.display = 'none';
+            input.value = '';
+            modal.classList.add('active');
+            input.focus();
+        }
+
+        // Đóng hộp thoại mật mã
+        function closePasswordModal() {
+            document.getElementById('pwd-modal').classList.remove('active');
+        }
+
+        // Cho phép nhấn Enter để xác nhận mật khẩu nhanh
+        function handlePasswordEnter(event) {
+            if (event.key === 'Enter') {
+                verifyPassword();
+            }
+        }
+
+        // Xác thực mật khẩu
+        function verifyPassword() {
+            const inputPwd = document.getElementById('pwd-input').value;
+            const errorMsg = document.getElementById('pwd-error');
+            const waitingStatus = document.getElementById('waiting-status');
+            const gradingPanel = document.getElementById('grading-panel');
+
+            if (inputPwd === TEACHER_PASSWORD) {
+                // Đăng nhập thành công chế độ giáo viên
+                closePasswordModal();
+                waitingStatus.style.display = 'none';
+                gradingPanel.style.display = 'block';
+                // Cuộn xuống khu vực chấm bài mượt mà
+                gradingPanel.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                // Báo lỗi mật khẩu
+                errorMsg.style.display = 'block';
+                document.getElementById('pwd-input').focus();
+            }
+        }
+
+        // Reset các giá trị của form chấm bài
+        function clearGradingForm() {
+            selectedScore = null;
+            document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('txt-comment').value = '';
+            document.getElementById('exp-preview').style.display = 'none';
+        }
+
+        // Chọn điểm số
+        function selectScore(score) {
+            selectedScore = score;
+            
+            // Highlight nút điểm được chọn
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                if (parseInt(btn.innerText) === score) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Hiển thị EXP dự kiến nhận được tăng dần
+            const expNhanDuoc = bangEXP[score] || 0;
+            const expPreview = document.getElementById('exp-preview');
+            expPreview.style.display = 'block';
+
+            if (score < 5) {
+                expPreview.style.color = '#e74c3c';
+                expPreview.style.borderColor = 'rgba(231, 76, 60, 0.3)';
+                expPreview.style.background = 'rgba(231, 76, 60, 0.08)';
+                expPreview.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Bài giải chưa đạt yêu cầu (dưới 5 điểm). Học sinh không nhận được EXP lần này.`;
+            } else {
+                expPreview.style.color = '#2ecc71';
+                expPreview.style.borderColor = 'rgba(46, 204, 113, 0.3)';
+                expPreview.style.background = 'rgba(46, 204, 113, 0.08)';
+                expPreview.innerHTML = `<i class="fa-solid fa-bolt"></i> CHẠM MỐC ${score} ĐIỂM: Thưởng ngay +${expNhanDuoc} EXP lũy tiến cho học sinh!`;
+            }
+        }
+
+        // Lưu điểm và cộng điểm EXP cho học sinh vào LocalStorage
+        function hoanTatChamDiem() {
+            if (selectedScore === null) {
+                alert("Thầy ơi, Thầy chưa bấm chọn điểm số (1-10) kìa!");
+                return;
+            }
+
+            const comment = document.getElementById('txt-comment').value.trim() || 'Thầy đánh giá bài làm tốt, đạt yêu cầu đề ra!';
+            const expNhanDuoc = bangEXP[selectedScore] || 0;
+
+            // Tiến hành cập nhật EXP thực tế vào máy
+            expHienTai += expNhanDuoc;
+            localStorage.setItem('exp_' + tenHocSinh, expHienTai);
+            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+
+            // Cập nhật Xu thực tế vào máy song song
+            coinHienTai += expNhanDuoc;
+            localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
+            let coinLbl = document.getElementById('lbl-current-coin');
+            if (coinLbl) coinLbl.innerText = coinHienTai + " XU";
+
+            // Ẩn bảng nhập, hiện màn hình Victory
+            document.getElementById('grading-panel').style.display = 'none';
+            
+            const victoryPanel = document.getElementById('victory-panel');
+            const victoryContent = document.getElementById('victory-content');
+            
+            victoryPanel.style.display = 'block';
+            
+            // Xây dựng giao diện kết quả đẹp mắt
+            let textKhenNgoi = selectedScore >= 9 ? "XUẤT SẮC" : (selectedScore >= 7 ? "KHÁ TỐT" : "CẦN CỐ GẮNG");
+            victoryContent.innerHTML = `
+                <p>Học sinh <b>${tenHocSinh}</b> đã được đánh giá xếp loại: <span class="exp-badge">${textKhenNgoi}</span></p>
+                <p style="font-size: 1.5rem; margin: 15px 0;">Điểm số: <b style="color: #2ecc71;">${selectedScore}/10</b></p>
+                <p style="border-top: 1px solid #2c3a57; padding-top: 15px; text-align: left;">
+                    <b style="color: #9b59b6;"><i class="fa-solid fa-comment-dots"></i> Nhận xét của Thầy:</b><br>
+                    <i style="color: #b0bccc;">"${comment}"</i>
+                </p>
+                <div style="background: rgba(241, 196, 15, 0.15); padding: 10px; border-radius: 8px; margin-top: 15px; color: #f1c40f; font-weight: bold;">
+                    <i class="fa-solid fa-gem"></i> Tổng EXP tích lũy mới của con: ${expHienTai} EXP (đã cộng +${expNhanDuoc} EXP)
+                </div>
+            `;
+        }
+
+        // Học sinh tự xóa bài đã nộp (ví dụ nộp nhầm ảnh) để làm lại từ đầu
+        function xoaBaiNop() {
+            if (confirm("Em có chắc chắn muốn xóa bài đã nộp này không? Hành động này không thể hoàn tác.")) {
+                lamMoiTrangCham();
+            }
+        }
+
+        // Hàm dọn dẹp và reset form để chuẩn bị chấm bài mới tinh
+        function lamMoiTrangCham() {
+            // Reset thẻ input file
+            document.getElementById('file-input').value = "";
+            
+            // Ẩn toàn bộ giao diện trạng thái và ảnh xem trước
+            document.getElementById('preview-img').style.display = "none";
+            document.getElementById('preview-img').src = "";
+            document.getElementById('waiting-status').style.display = "none";
+            document.getElementById('grading-panel').style.display = "none";
+            document.getElementById('victory-panel').style.display = "none";
+            
+            // Dọn sạch dữ liệu cũ trong form chấm điểm
+            clearGradingForm();
+        }
+    </script>
+</body>
+</html>
