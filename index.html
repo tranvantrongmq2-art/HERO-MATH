@@ -79,6 +79,9 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.4); 
             gap: 4px;
             z-index: 5;
+            /* Đảm bảo nội dung không tràn */
+            overflow: hidden;
+            min-width: 0;
         }
         /* Hàng trên: avatar + tên + lớp + nút thoát */
         .student-top-row {
@@ -87,6 +90,7 @@
             justify-content: space-between;
             gap: 6px;
             flex-wrap: nowrap;
+            min-width: 0;
         }
         .student-left-profile { 
             display: flex; 
@@ -114,13 +118,13 @@
             font-size: 0.5rem; 
             font-weight: bold; 
             color: #f1f5f9; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 1px 4px;
+            min-width: 0;
+            white-space: normal; /* Cho phép xuống dòng */
+            word-break: break-word;
         }
         .mystic-label {
             font-family: 'Averia Serif Libre', Georgia, serif; 
@@ -128,6 +132,7 @@
             letter-spacing: 0.2px; 
             text-transform: uppercase;
             font-size: 0.46rem;
+            white-space: nowrap; /* Giữ label không xuống dòng */
             /* màu sắc được set inline */
         }
         .btn-logout { 
@@ -146,6 +151,7 @@
             letter-spacing: 0.2px; 
             flex-shrink: 0;
             touch-action: manipulation;
+            white-space: nowrap;
         }
         .btn-logout:hover { 
             background: linear-gradient(135deg, #e02a24, #9a0000); 
@@ -162,6 +168,7 @@
             gap: 2px 6px;
             align-items: center;
             justify-content: flex-start;
+            min-width: 0;
         }
         .stat-badge {
             display: inline-flex; 
@@ -174,6 +181,9 @@
             white-space: nowrap;
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 1; /* Cho phép co giãn */
+            min-width: 0;
+            max-width: 100%;
         }
         .stat-badge .label-text {
             font-family: 'Averia Serif Libre', serif;
@@ -184,12 +194,14 @@
             font-weight: 900;
             font-size: 0.48rem;
             color: #fff;
+            flex-shrink: 0;
         }
         /* Emoji có kích thước lớn hơn một chút */
         .stat-badge .stat-icon {
             font-size: 0.85rem;
             line-height: 1;
             filter: drop-shadow(0 0 2px rgba(255,255,255,0.2));
+            flex-shrink: 0;
         }
 
         /* Màu sắc đặc trưng cho từng loại */
@@ -219,6 +231,16 @@
             }
             .stat-badge .stat-icon {
                 font-size: 0.75rem;
+            }
+            .student-meta {
+                font-size: 0.42rem;
+            }
+            .mystic-label {
+                font-size: 0.38rem;
+            }
+            .btn-logout {
+                font-size: 0.4rem;
+                padding: 2px 6px;
             }
         }
 
@@ -455,9 +477,8 @@
             .student-top-row { flex-wrap: nowrap; }
             .student-meta {
                 font-size: 0.48rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                white-space: normal;
+                word-break: break-word;
             }
             .mystic-label { font-size: 0.44rem; }
             .btn-logout { font-size: 0.46rem; padding: 3px 7px; }
@@ -531,6 +552,7 @@
         }
 
         /* ========== CHẾ ĐỘ CHỈNH VỊ TRÍ (EDIT MODE) ========== */
+        /* Thanh công cụ mặc định fixed ở đáy, nhưng khi kéo sẽ chuyển sang absolute */
         .edit-toolbar {
             position: fixed;
             bottom: 16px;
@@ -549,6 +571,8 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.7);
             flex-wrap: wrap;
             justify-content: center;
+            cursor: move; /* Cho biết có thể kéo */
+            touch-action: none; /* Ngăn chặn hành vi mặc định trên touch */
         }
         .edit-toolbar.show { display: flex; }
 
@@ -582,7 +606,7 @@
         }
         body.edit-mode-on .edit-hint { display: block; }
 
-        /* Panel chỉnh sửa font – hiện khi chọn khung */
+        /* Panel chỉnh sửa font – hiện khi chọn khung, cũng có thể kéo */
         .font-edit-panel {
             position: fixed;
             bottom: 80px;
@@ -603,6 +627,8 @@
             max-width: 95vw;
             box-shadow: 0 8px 30px rgba(0,0,0,0.8);
             pointer-events: auto;
+            cursor: move;
+            touch-action: none;
         }
         .font-edit-panel.show { display: flex; }
         .font-edit-panel label {
@@ -611,6 +637,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            flex-shrink: 0;
         }
         .font-edit-panel input[type="color"] {
             width: 32px;
@@ -728,7 +755,7 @@
         <div class="edit-hint" id="edit-hint-box">Chạm giữ → kéo di chuyển. Kéo nút vàng góc để đổi kích thước.</div>
     </div>
 
-    <!-- Panel chỉnh sửa font & màu chữ -->
+    <!-- Panel chỉnh sửa font & màu chữ – cũng có thể kéo thả -->
     <div class="font-edit-panel" id="font-edit-panel">
         <label><i class="fa-solid fa-palette"></i> Màu <input type="color" id="font-color-picker" value="#ffffff" onchange="capNhatFontKhung()"></label>
         <label><i class="fa-solid fa-font"></i> Font 
@@ -780,19 +807,19 @@
                                 <span class="mystic-label" style="color:#ffd700;text-shadow:0 0 8px rgba(255,215,0,0.4);">
                                     🧭 Thám Hiểm:
                                 </span>
-                                <span id="txt-student-name" style="color:#f1f5f9;text-shadow:0 0 4px white;"> ..</span>
-                                <span style="color:#8b0000;font-weight:bold;">|</span>
+                                <span id="txt-student-name" style="color:#f1f5f9;text-shadow:0 0 4px white; word-break: break-word;"> ..</span>
+                                <span style="color:#8b0000;font-weight:bold; flex-shrink:0;">|</span>
                                 <!-- Khối với emoji sách -->
                                 <span class="mystic-label" style="color:#8a2be2;text-shadow:0 0 8px rgba(138,43,226,0.4);">
                                     📚 Khối:
                                 </span>
-                                <span id="txt-student-class" style="color:#f1f5f9;text-shadow:0 0 4px white;"> ..</span>
-                                <span style="color:#8b0000;font-weight:bold;">|</span>
+                                <span id="txt-student-class" style="color:#f1f5f9;text-shadow:0 0 4px white; word-break: break-word;"> ..</span>
+                                <span style="color:#8b0000;font-weight:bold; flex-shrink:0;">|</span>
                                 <!-- Lớp với emoji nhóm -->
                                 <span class="mystic-label" style="color:#00ff7f;text-shadow:0 0 8px rgba(0,255,127,0.4);">
                                     👥 Lớp:
                                 </span>
-                                <span id="txt-student-classroom" style="color:#2ecc71;text-shadow:0 0 4px rgba(46,204,113,0.5);font-weight:bold;"> —</span>
+                                <span id="txt-student-classroom" style="color:#2ecc71;text-shadow:0 0 4px rgba(46,204,113,0.5);font-weight:bold; word-break: break-word;"> —</span>
                             </div>
                         </div>
                         <!-- Nút Rời có emoji cửa ra -->
@@ -896,11 +923,27 @@
             <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 12px 0;">
                 Nhập mật khẩu để mở tính năng tương ứng.
             </p>
-            <input type="password" id="teacher-password-field" class="pwd-input-glowing" placeholder="••••" onkeydown="chkTeacherPasswordEnter(event)">
+            <!-- Thêm inputmode="numeric" để hiện bàn phím số trên mobile -->
+            <input type="password" id="teacher-password-field" class="pwd-input-glowing" placeholder="••••" inputmode="numeric" onkeydown="chkTeacherPasswordEnter(event)">
             <div id="teacher-password-error" class="pwd-error">Mật khẩu không hợp lệ!</div>
             <div class="pwd-btn-group">
                 <button class="pwd-btn-action pwd-btn-confirm" onclick="verifyTeacherAccess()"><i class="fa-solid fa-unlock-keyhole"></i> Xác nhận</button>
                 <button class="pwd-btn-action pwd-btn-cancel" onclick="closeTeacherPasswordModal()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal nhập mật khẩu khi khóa vị trí (cũng thêm inputmode) -->
+    <div id="edit-pwd-modal" class="pwd-overlay" style="display: none;">
+        <div class="pwd-card">
+            <i class="fa-solid fa-lock fa-3x" style="color: #facc15; margin-bottom: 12px;"></i>
+            <h4 id="edit-pwd-title">Khóa vị trí</h4>
+            <p style="font-size: 0.8rem; color: #94a3b8; margin: 0 0 12px 0;" id="edit-pwd-desc">Nhập mật khẩu để khóa bố cục.</p>
+            <input type="password" id="edit-password-field" class="pwd-input-glowing" placeholder="••••" inputmode="numeric" onkeydown="chkEditPasswordEnter(event)">
+            <div id="edit-password-error" class="pwd-error">Sai mật khẩu!</div>
+            <div class="pwd-btn-group">
+                <button class="pwd-btn-action pwd-btn-confirm" id="edit-pwd-confirm-btn" onclick="xacNhanMatKhauChinhSua()"><i class="fa-solid fa-key"></i> Xác nhận</button>
+                <button class="pwd-btn-action pwd-btn-cancel" onclick="dongEditPasswordModal()"><i class="fa-solid fa-xmark"></i> Hủy</button>
             </div>
         </div>
     </div>
@@ -915,6 +958,8 @@
            ============================================================ */
         const OVERLAY_POS_KEY = 'hero_overlay_positions_v1';
         const EDIT_LOCK_KEY = 'hero_edit_locked_v1';
+        const TOOLBAR_POS_KEY = 'hero_toolbar_position_v1';
+        const FONTPANEL_POS_KEY = 'hero_fontpanel_position_v1';
         const PASSWORD_EDIT = "123456";
         const PASSWORD_ADMIN = "thaytrongmath";
 
@@ -928,6 +973,12 @@
         let pendingEditAction = null;
         let zoneDangChon = null;
 
+        // ---- Biến cho kéo toolbar và font panel ----
+        let toolbarDangKeo = false;
+        let toolbarOffsetX = 0, toolbarOffsetY = 0;
+        let fontPanelDangKeo = false;
+        let fontPanelOffsetX = 0, fontPanelOffsetY = 0;
+
         // ---- Khởi tạo trạng thái ----
         function loadState() {
             daXacThuc = sessionStorage.getItem('teacher_authenticated') === 'true';
@@ -939,6 +990,47 @@
                 anToolbar();
             }
             updateLockUI();
+            // Khôi phục vị trí toolbar và font panel
+            khoiPhucViTriToolbar();
+            khoiPhucViTriFontPanel();
+        }
+
+        function khoiPhucViTriToolbar() {
+            const toolbar = document.getElementById('edit-toolbar');
+            const saved = localStorage.getItem(TOOLBAR_POS_KEY);
+            if (saved) {
+                try {
+                    const pos = JSON.parse(saved);
+                    toolbar.style.position = 'fixed';
+                    toolbar.style.bottom = 'auto';
+                    toolbar.style.left = pos.left + 'px';
+                    toolbar.style.top = pos.top + 'px';
+                    toolbar.style.transform = 'none';
+                } catch (e) {}
+            }
+        }
+
+        function luuViTriToolbar(left, top) {
+            localStorage.setItem(TOOLBAR_POS_KEY, JSON.stringify({ left, top }));
+        }
+
+        function khoiPhucViTriFontPanel() {
+            const panel = document.getElementById('font-edit-panel');
+            const saved = localStorage.getItem(FONTPANEL_POS_KEY);
+            if (saved) {
+                try {
+                    const pos = JSON.parse(saved);
+                    panel.style.position = 'fixed';
+                    panel.style.bottom = 'auto';
+                    panel.style.left = pos.left + 'px';
+                    panel.style.top = pos.top + 'px';
+                    panel.style.transform = 'none';
+                } catch (e) {}
+            }
+        }
+
+        function luuViTriFontPanel(left, top) {
+            localStorage.setItem(FONTPANEL_POS_KEY, JSON.stringify({ left, top }));
         }
 
         function hienToolbar() {
@@ -1062,55 +1154,50 @@
 
         // ---- Mật khẩu cho việc khóa (dùng chung) ----
         function moEditPasswordModal(title, desc) {
-            // Tạo modal tạm để xác nhận khóa (có thể dùng lại modal chính nhưng tùy chỉnh)
-            // Ở đây mình tạo một modal riêng nhanh, nhưng để đơn giản dùng lại modal teacher-pwd-modal
-            // Tuy nhiên, để tránh xung đột logic, mình sẽ dùng prompt hoặc dùng modal sẵn
-            // Thực tế: dùng modal hiện có với tiêu đề thay đổi
-            const modal = document.getElementById('teacher-pwd-modal');
-            // Thay đổi nội dung modal tạm thời
-            document.querySelector('#teacher-pwd-modal h4').innerText = title;
-            document.querySelector('#teacher-pwd-modal p').innerText = desc;
-            // Lưu action để xử lý sau
-            pendingEditAction = 'lock';
-            modal.style.display = 'flex';
-            const field = document.getElementById('teacher-password-field');
+            document.getElementById('edit-pwd-title').innerText = title;
+            document.getElementById('edit-pwd-desc').innerText = desc;
+            document.getElementById('edit-pwd-modal').style.display = 'flex';
+            const field = document.getElementById('edit-password-field');
             field.value = '';
             field.focus();
-            document.getElementById('teacher-password-error').style.display = 'none';
-            // Gán lại sự kiện cho nút xác nhận để xử lý khóa
-            document.querySelector('#teacher-pwd-modal .pwd-btn-confirm').onclick = function() {
-                const pwd = document.getElementById('teacher-password-field').value;
-                if (pwd === PASSWORD_EDIT) {
-                    // Xác nhận khóa
-                    document.getElementById('teacher-pwd-modal').style.display = 'none';
+            document.getElementById('edit-password-error').style.display = 'none';
+            document.getElementById('edit-pwd-confirm-btn').onclick = xacNhanMatKhauChinhSua;
+        }
+
+        function dongEditPasswordModal() {
+            document.getElementById('edit-pwd-modal').style.display = 'none';
+            pendingEditAction = null;
+        }
+
+        function chkEditPasswordEnter(event) {
+            if (event.key === 'Enter') xacNhanMatKhauChinhSua();
+        }
+
+        function xacNhanMatKhauChinhSua() {
+            const pwd = document.getElementById('edit-password-field').value;
+            if (pwd === PASSWORD_EDIT) {
+                dongEditPasswordModal();
+                if (pendingEditAction === 'lock') {
                     tatEditMode();
                     isLocked = true;
                     localStorage.setItem(EDIT_LOCK_KEY, 'true');
                     anToolbar();
                     updateLockUI();
                     showToast('Đã khóa bố cục. Bạn cần nhập mật khẩu lần nữa để chỉnh sửa.', 'success');
-                    pendingEditAction = null;
-                } else {
-                    document.getElementById('teacher-password-error').style.display = 'block';
-                    showToast('Sai mật khẩu!', 'error');
                 }
-            };
-            document.querySelector('#teacher-pwd-modal .pwd-btn-cancel').onclick = function() {
-                document.getElementById('teacher-pwd-modal').style.display = 'none';
                 pendingEditAction = null;
-            };
-            // Xóa onkeydown cũ để tránh gọi verifyTeacherAccess
-            document.getElementById('teacher-password-field').onkeydown = function(e) {
-                if (e.key === 'Enter') {
-                    document.querySelector('#teacher-pwd-modal .pwd-btn-confirm').click();
-                }
-            };
+            } else {
+                document.getElementById('edit-password-error').style.display = 'block';
+                showToast('Sai mật khẩu!', 'error');
+            }
         }
 
         // ---- Reset vị trí ----
         function resetOverlayPositions() {
             if (!confirm('Xóa hết vị trí đã tự chỉnh và quay về vị trí gốc?')) return;
             localStorage.removeItem(OVERLAY_POS_KEY);
+            localStorage.removeItem(TOOLBAR_POS_KEY);
+            localStorage.removeItem(FONTPANEL_POS_KEY);
             showToast('Đã reset vị trí gốc. Đang tải lại trang...', 'success');
             setTimeout(() => window.location.reload(), 800);
         }
@@ -1118,7 +1205,18 @@
         // ---- Panel font & màu ----
         function hienFontPanel(zone) {
             const panel = document.getElementById('font-edit-panel');
-            if (!zone) { panel.classList.remove('show'); return; }
+            if (!zone) { 
+                panel.classList.remove('show'); 
+                return; 
+            }
+            // Nếu panel chưa có vị trí tùy chỉnh, đặt mặc định ở dưới
+            if (!localStorage.getItem(FONTPANEL_POS_KEY)) {
+                panel.style.position = 'fixed';
+                panel.style.bottom = '80px';
+                panel.style.left = '50%';
+                panel.style.transform = 'translateX(-50%)';
+                panel.style.top = 'auto';
+            }
             let data = docViTriDaLuu();
             let zoneId = zone.getAttribute('data-zone-id');
             let saved = data[zoneId] || {};
@@ -1177,7 +1275,7 @@
             localStorage.setItem(OVERLAY_POS_KEY, JSON.stringify(data));
         }
 
-        // ---- Kéo thả và resize ----
+        // ---- Kéo thả và resize các vùng (editable-zone) ----
         function layVungChuaAnh() {
             return document.getElementById('fairy-garden-map');
         }
@@ -1356,11 +1454,115 @@
             document.removeEventListener('touchend', ketThucResizeZone);
         }
 
+        // ---- Kéo thả thanh công cụ (edit-toolbar) ----
+        function batDauKeoToolbar(e) {
+            if (!dangOEditMode && !daXacThuc) return;
+            if (e.target.closest('.edit-toolbar-btn')) return;
+            e.preventDefault();
+            const toolbar = document.getElementById('edit-toolbar');
+            const rect = toolbar.getBoundingClientRect();
+            const toaDo = layToaDoSuKien(e);
+            toolbarOffsetX = toaDo.x - rect.left;
+            toolbarOffsetY = toaDo.y - rect.top;
+            toolbarDangKeo = true;
+            document.addEventListener('mousemove', diChuyenToolbar);
+            document.addEventListener('touchmove', diChuyenToolbar, { passive: false });
+            document.addEventListener('mouseup', ketThucKeoToolbar);
+            document.addEventListener('touchend', ketThucKeoToolbar);
+        }
+
+        function diChuyenToolbar(e) {
+            if (!toolbarDangKeo) return;
+            e.preventDefault();
+            const toaDo = layToaDoSuKien(e);
+            const toolbar = document.getElementById('edit-toolbar');
+            let left = toaDo.x - toolbarOffsetX;
+            let top = toaDo.y - toolbarOffsetY;
+            const maxX = window.innerWidth - toolbar.offsetWidth;
+            const maxY = window.innerHeight - toolbar.offsetHeight;
+            left = Math.max(0, Math.min(left, maxX));
+            top = Math.max(0, Math.min(top, maxY));
+            toolbar.style.position = 'fixed';
+            toolbar.style.left = left + 'px';
+            toolbar.style.top = top + 'px';
+            toolbar.style.bottom = 'auto';
+            toolbar.style.transform = 'none';
+        }
+
+        function ketThucKeoToolbar(e) {
+            if (!toolbarDangKeo) return;
+            toolbarDangKeo = false;
+            const toolbar = document.getElementById('edit-toolbar');
+            const rect = toolbar.getBoundingClientRect();
+            luuViTriToolbar(rect.left, rect.top);
+            document.removeEventListener('mousemove', diChuyenToolbar);
+            document.removeEventListener('touchmove', diChuyenToolbar);
+            document.removeEventListener('mouseup', ketThucKeoToolbar);
+            document.removeEventListener('touchend', ketThucKeoToolbar);
+        }
+
+        // ---- Kéo thả font-edit-panel ----
+        function batDauKeoFontPanel(e) {
+            if (!dangOEditMode) return;
+            if (e.target.closest('.close-panel-btn') || e.target.closest('input') || e.target.closest('select')) return;
+            e.preventDefault();
+            const panel = document.getElementById('font-edit-panel');
+            const rect = panel.getBoundingClientRect();
+            const toaDo = layToaDoSuKien(e);
+            fontPanelOffsetX = toaDo.x - rect.left;
+            fontPanelOffsetY = toaDo.y - rect.top;
+            fontPanelDangKeo = true;
+            document.addEventListener('mousemove', diChuyenFontPanel);
+            document.addEventListener('touchmove', diChuyenFontPanel, { passive: false });
+            document.addEventListener('mouseup', ketThucKeoFontPanel);
+            document.addEventListener('touchend', ketThucKeoFontPanel);
+        }
+
+        function diChuyenFontPanel(e) {
+            if (!fontPanelDangKeo) return;
+            e.preventDefault();
+            const toaDo = layToaDoSuKien(e);
+            const panel = document.getElementById('font-edit-panel');
+            let left = toaDo.x - fontPanelOffsetX;
+            let top = toaDo.y - fontPanelOffsetY;
+            const maxX = window.innerWidth - panel.offsetWidth;
+            const maxY = window.innerHeight - panel.offsetHeight;
+            left = Math.max(0, Math.min(left, maxX));
+            top = Math.max(0, Math.min(top, maxY));
+            panel.style.position = 'fixed';
+            panel.style.left = left + 'px';
+            panel.style.top = top + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.transform = 'none';
+        }
+
+        function ketThucKeoFontPanel(e) {
+            if (!fontPanelDangKeo) return;
+            fontPanelDangKeo = false;
+            const panel = document.getElementById('font-edit-panel');
+            const rect = panel.getBoundingClientRect();
+            luuViTriFontPanel(rect.left, rect.top);
+            document.removeEventListener('mousemove', diChuyenFontPanel);
+            document.removeEventListener('touchmove', diChuyenFontPanel);
+            document.removeEventListener('mouseup', ketThucKeoFontPanel);
+            document.removeEventListener('touchend', ketThucKeoFontPanel);
+        }
+
         // ---- Khởi tạo ----
         function khoiTao() {
             loadState();
             apDungViTriDaLuu();
             if (isLocked || !daXacThuc) tatEditMode();
+            // Gắn sự kiện kéo thả cho toolbar
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.addEventListener('mousedown', batDauKeoToolbar);
+            toolbar.addEventListener('touchstart', batDauKeoToolbar, { passive: false });
+            // Gắn sự kiện kéo thả cho font panel
+            const fontPanel = document.getElementById('font-edit-panel');
+            fontPanel.addEventListener('mousedown', batDauKeoFontPanel);
+            fontPanel.addEventListener('touchstart', batDauKeoFontPanel, { passive: false });
+
+            // Các sự kiện cho editable-zone
             document.querySelectorAll('.editable-zone').forEach(zone => {
                 zone.addEventListener('mousedown', batDauKeoZone);
                 zone.addEventListener('touchstart', batDauKeoZone, { passive: false });
