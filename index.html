@@ -1033,15 +1033,21 @@
             localStorage.setItem(FONTPANEL_POS_KEY, JSON.stringify({ left, top }));
         }
 
+        // ===== SỬA LỖI: ẩn/hiện toolbar =====
         function hienToolbar() {
-            document.getElementById('edit-toolbar').classList.add('show');
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.style.display = ''; // xóa inline style
+            toolbar.classList.add('show');
             daXacThuc = true;
             sessionStorage.setItem('teacher_authenticated', 'true');
         }
 
         function anToolbar() {
-            document.getElementById('edit-toolbar').classList.remove('show');
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.classList.remove('show');
+            toolbar.style.display = 'none'; // đảm bảo ẩn tuyệt đối
         }
+        // ==================================
 
         function updateLockUI() {
             const badge = document.getElementById('lock-badge');
@@ -1050,7 +1056,7 @@
                 badge.className = 'lock-status-badge locked';
                 badge.innerHTML = '<i class="fa-solid fa-lock"></i> <span id="lock-status-text">Khóa</span>';
                 if (dangOEditMode) tatEditMode();
-                anToolbar();
+                anToolbar(); // ẩn thanh
             } else {
                 badge.className = 'lock-status-badge unlocked';
                 badge.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span id="lock-status-text">Mở</span>';
@@ -1181,8 +1187,9 @@
                     tatEditMode();
                     isLocked = true;
                     localStorage.setItem(EDIT_LOCK_KEY, 'true');
+                    // Ẩn thanh công cụ ngay lập tức
                     anToolbar();
-                    updateLockUI();
+                    updateLockUI(); // cập nhật giao diện (sẽ gọi anToolbar() lần nữa nhưng không sao)
                     showToast('Đã khóa bố cục. Bạn cần nhập mật khẩu lần nữa để chỉnh sửa.', 'success');
                 }
                 pendingEditAction = null;
