@@ -979,16 +979,37 @@
         let fontPanelDangKeo = false;
         let fontPanelOffsetX = 0, fontPanelOffsetY = 0;
 
+        // ===== HÀM ĐIỀU KHIỂN TOOLBAR =====
+        function anToolbar() {
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.classList.remove('show');
+            toolbar.style.display = 'none';
+        }
+
+        function hienToolbar() {
+            // Chỉ hiện khi chưa khóa và đã xác thực
+            if (isLocked) return;
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.style.display = '';
+            toolbar.classList.add('show');
+        }
+
+        function capNhatTrangThaiToolbar() {
+            if (isLocked) {
+                anToolbar();
+            } else if (daXacThuc) {
+                hienToolbar();
+            } else {
+                anToolbar();
+            }
+        }
+
         // ---- Khởi tạo trạng thái ----
         function loadState() {
             daXacThuc = sessionStorage.getItem('teacher_authenticated') === 'true';
             let lockVal = localStorage.getItem(EDIT_LOCK_KEY);
             isLocked = (lockVal === 'true');
-            if (daXacThuc && !isLocked) {
-                hienToolbar();
-            } else {
-                anToolbar();
-            }
+            capNhatTrangThaiToolbar();
             updateLockUI();
             // Khôi phục vị trí toolbar và font panel
             khoiPhucViTriToolbar();
@@ -1033,22 +1054,6 @@
             localStorage.setItem(FONTPANEL_POS_KEY, JSON.stringify({ left, top }));
         }
 
-        // ===== SỬA LỖI: ẩn/hiện toolbar =====
-        function hienToolbar() {
-            const toolbar = document.getElementById('edit-toolbar');
-            toolbar.style.display = ''; // xóa inline style
-            toolbar.classList.add('show');
-            daXacThuc = true;
-            sessionStorage.setItem('teacher_authenticated', 'true');
-        }
-
-        function anToolbar() {
-            const toolbar = document.getElementById('edit-toolbar');
-            toolbar.classList.remove('show');
-            toolbar.style.display = 'none'; // đảm bảo ẩn tuyệt đối
-        }
-        // ==================================
-
         function updateLockUI() {
             const badge = document.getElementById('lock-badge');
             const txt = document.getElementById('lock-status-text');
@@ -1056,7 +1061,7 @@
                 badge.className = 'lock-status-badge locked';
                 badge.innerHTML = '<i class="fa-solid fa-lock"></i> <span id="lock-status-text">Khóa</span>';
                 if (dangOEditMode) tatEditMode();
-                anToolbar(); // ẩn thanh
+                anToolbar(); // ẩn chắc chắn
             } else {
                 badge.className = 'lock-status-badge unlocked';
                 badge.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span id="lock-status-text">Mở</span>';
@@ -1122,8 +1127,17 @@
                 return;
             }
             if (dangOEditMode) {
-                pendingEditAction = 'lock';
-                moEditPasswordModal('Khóa vị trí', 'Nhập mật khẩu giáo viên để khóa bố cục hiện tại.');
+                // Khóa bố cục ngay, không cần nhập lại mật khẩu
+                tatEditMode();
+                isLocked = true;
+                localStorage.setItem(EDIT_LOCK_KEY, 'true');
+                // Thu hồi quyền xác thực để không hiện toolbar
+                daXacThuc = false;
+                sessionStorage.removeItem('teacher_authenticated');
+                // Ẩn toolbar ngay
+                anToolbar();
+                updateLockUI(); // cập nhật giao diện (sẽ gọi anToolbar() lần nữa nhưng không sao)
+                showToast('Đã khóa bố cục. Bạn cần nhập mật khẩu lần nữa để chỉnh sửa.', 'success');
             } else {
                 batEditMode();
             }
@@ -1133,13 +1147,13 @@
         function verifyTeacherAccess() {
             const pwd = document.getElementById('teacher-password-field').value;
             if (pwd === PASSWORD_EDIT) {
-                // Mật khẩu chỉnh sửa bố cục
+                // Mật khẩu chỉnh sửa bố cục → MỞ KHÓA
                 closeTeacherPasswordModal();
                 isLocked = false;
                 localStorage.setItem(EDIT_LOCK_KEY, 'false');
                 daXacThuc = true;
                 sessionStorage.setItem('teacher_authenticated', 'true');
-                hienToolbar();
+                capNhatTrangThaiToolbar();
                 updateLockUI();
                 showToast('Mở khóa thành công! Bạn có thể chỉnh sửa bố cục.', 'success');
                 batEditMode();
@@ -1184,10 +1198,14 @@
             if (pwd === PASSWORD_EDIT) {
                 dongEditPasswordModal();
                 if (pendingEditAction === 'lock') {
+                    // KHÓA BỐ CỤC
                     tatEditMode();
                     isLocked = true;
                     localStorage.setItem(EDIT_LOCK_KEY, 'true');
-                    // Ẩn thanh công cụ ngay lập tức
+                    // Thu hồi quyền xác thực để không hiện toolbar
+                    daXacThuc = false;
+                    sessionStorage.removeItem('teacher_authenticated');
+                    // Ẩn toolbar ngay
                     anToolbar();
                     updateLockUI(); // cập nhật giao diện (sẽ gọi anToolbar() lần nữa nhưng không sao)
                     showToast('Đã khóa bố cục. Bạn cần nhập mật khẩu lần nữa để chỉnh sửa.', 'success');
