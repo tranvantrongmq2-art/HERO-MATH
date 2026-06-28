@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>KHIÊU CHIẾN BOSS CUỐI TUẦN - MATH HERO</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,10 +13,20 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-        body { background-color: #0b0f19; color: #ffffff; margin: 0; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; position: relative; overflow-x: hidden; }
+        * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+        body { 
+            background-color: #0b0f19; 
+            color: #ffffff; 
+            padding: 10px; 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            position: relative; 
+            overflow-x: hidden;
+        }
         
-        /* HIỆU ỨNG VIỀN MÀU ĐỎ CẢNH BÁO NGUY HIỂM CHỚP NHÁY TOÀN MÀN HÌNH */
+        /* HIỆU ỨNG VIỀN ĐỎ CẢNH BÁO */
         .danger-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             box-shadow: inset 0 0 40px rgba(231, 76, 60, 0.6);
@@ -28,7 +38,6 @@
             100% { box-shadow: inset 0 0 50px rgba(231, 76, 60, 0.95); opacity: 1; }
         }
 
-        /* HIỆU ỨNG RUNG LẮC TOÀN MÀN HÌNH KHI QUÁI VẬT GẦM (TRẢ LỜI SAI) */
         @keyframes shakeScreen {
             0% { transform: translate(2px, 2px) rotate(0deg); }
             10% { transform: translate(-2px, -3px) rotate(-1deg); }
@@ -38,55 +47,444 @@
             100% { transform: translate(2px, -3px) rotate(0deg); }
         }
 
-        .container { width: 100%; max-width: 850px; margin: 0 auto; text-align: center; z-index: 10; }
+        .container { width: 100%; max-width: 900px; margin: 0 auto; text-align: center; z-index: 10; padding: 0 4px; }
 
-        /* THANH ĐIỀU HƯỚNG QUAY VỀ SẢNH CHÍNH */
-        .header-box-boss { display: flex; justify-content: flex-end; align-items: center; width: 100%; margin-bottom: 15px; }
-        .btn-home-boss { background-color: #34495e; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; transition: 0.2s; }
+        /* TOP BAR */
+        .header-box-boss { 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            width: 100%; 
+            margin-bottom: 12px; 
+        }
+        .btn-home-boss { 
+            background-color: #34495e; 
+            color: white; 
+            border: none; 
+            padding: 8px 14px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px; 
+            font-size: 0.85rem; 
+            transition: 0.2s; 
+        }
         .btn-home-boss:hover { background-color: #415b76; }
-        
-        /* KHU VỰC THÔNG TIN BOSS NGUY HIỂM */
+        .btn-home-boss i { font-size: 1rem; }
+
+        /* BOSS CARD */
         .boss-card {
             background: linear-gradient(135deg, #1f1115 0%, #111625 100%);
-            border: 2px solid #e74c3c; border-radius: 15px; padding: 25px;
-            margin-bottom: 25px; position: relative; overflow: hidden;
+            border: 2px solid #e74c3c; 
+            border-radius: 16px; 
+            padding: 18px 16px; 
+            margin-bottom: 20px; 
+            position: relative; 
+            overflow: hidden;
             box-shadow: 0 0 25px rgba(231, 76, 60, 0.3);
         }
         
-        .boss-flex-layout { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .boss-flex-layout { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 12px; 
+            flex-wrap: wrap; 
+        }
         
-        .boss-avatar-box { width: 100px; height: 100px; background-color: #111; border: 3px solid #f1c40f; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; animation: shakeBoss 3s infinite ease-in-out; box-shadow: 0 0 15px #e74c3c; }
+        .boss-avatar-box {
+            width: 72px; 
+            height: 72px; 
+            background-color: #111; 
+            border: 3px solid #f1c40f; 
+            border-radius: 50%;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 3rem;
+            animation: shakeBoss 3s infinite ease-in-out; 
+            box-shadow: 0 0 15px #e74c3c;
+            flex-shrink: 0;
+        }
         @keyframes shakeBoss {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-8px) scale(1.05); }
+            50% { transform: translateY(-6px) scale(1.04); }
         }
 
-        .boss-info-right { flex: 1; text-align: left; min-width: 250px; }
-        .boss-name { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.6rem; color: #e74c3c; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px rgba(231,76,60,0.6); margin-bottom: 8px; }
-        
-        .hp-container { background-color: #111625; border: 2px solid #34495e; border-radius: 12px; height: 26px; width: 100%; position: relative; overflow: hidden; }
-        .hp-bar-fill { background: linear-gradient(90deg, #c0392b, #e74c3c); height: 100%; width: 100%; transition: width 0.4s ease-out; }
-        .hp-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 0.9rem; text-shadow: 1px 1px 3px black; font-family: 'Montserrat', sans-serif; }
+        .boss-info-center {
+            flex: 1; 
+            text-align: left; 
+            min-width: 140px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px;
+        }
+        .boss-name {
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 900; 
+            font-size: 1.1rem;
+            color: #e74c3c; 
+            letter-spacing: 0.5px; 
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(231,76,60,0.6); 
+            margin: 0;
+        }
+        .hp-container {
+            background-color: #111625; 
+            border: 2px solid #34495e; 
+            border-radius: 10px;
+            height: 22px; 
+            width: 100%; 
+            position: relative; 
+            overflow: hidden;
+            margin-top: 2px;
+        }
+        .hp-bar-fill {
+            height: 100%; 
+            transition: width 0.4s ease-out;
+            border-radius: 8px;
+        }
+        .hp-bar-fill.boss-hp { background: linear-gradient(90deg, #c0392b, #e74c3c); }
+        .hp-bar-fill.player-hp { background: linear-gradient(90deg, #27ae60, #2ecc71); }
 
-        /* KHUNG TRẬN ĐẤU */
-        .quiz-wrapper { background-color: #161c2d; border: 1px solid #2c3a57; border-radius: 12px; padding: 30px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .q-title { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #f1c40f; font-size: 1.1rem; margin-bottom: 12px; text-transform: uppercase; }
-        .q-text { font-size: 1.2rem; line-height: 1.6; margin-bottom: 25px; }
+        .hp-text {
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            font-weight: bold; 
+            font-size: 0.7rem; 
+            text-shadow: 1px 1px 3px black;
+            font-family: 'Montserrat', sans-serif; 
+            white-space: nowrap;
+        }
+        .hp-label {
+            font-size: 0.6rem; 
+            font-weight: 700; 
+            color: #95a5a6;
+            text-transform: uppercase; 
+            letter-spacing: 0.3px;
+            display: flex; 
+            justify-content: space-between;
+        }
+        .hp-label .boss-label { color: #e74c3c; }
+        .hp-label .player-label { color: #2ecc71; }
 
-        .answers-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 25px; }
-        .btn-answer { background-color: #0b0f19; border: 2px solid #2c3a57; border-radius: 8px; padding: 15px 20px; color: white; text-align: left; font-size: 1rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; width: 100%; }
+        /* PLAYER AVATAR */
+        .player-avatar-box {
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+            margin-top: 8px; 
+            padding-top: 8px; 
+            border-top: 1px solid rgba(255,255,255,0.05);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .player-avatar {
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #2d4a3d, #0f1f17);
+            border: 2px solid #2ecc71;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-size: 1.8rem; 
+            box-shadow: 0 0 15px rgba(46,204,113,0.3);
+            flex-shrink: 0;
+        }
+        .player-name-tag {
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            color: #2ecc71;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* THẺ ĐẶC QUYỀN */
+        .boss-card-bar {
+            display: flex; 
+            gap: 5px; 
+            justify-content: center; 
+            flex-wrap: wrap;
+            margin-top: 12px; 
+            padding-top: 10px;
+            border-top: 1px solid rgba(241,196,15,0.2);
+        }
+        .boss-card-bar-label {
+            width: 100%; 
+            text-align: center; 
+            font-size: 0.65rem; 
+            font-weight: 700;
+            color: rgba(241,196,15,0.7); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .bthe-slot {
+            width: 70px; 
+            min-height: 62px; 
+            border-radius: 9px; 
+            border: 2px solid rgba(241,196,15,0.25);
+            background: rgba(15,20,35,0.85); 
+            text-align: center; 
+            padding: 4px 3px;
+            cursor: pointer; 
+            transition: all 0.22s; 
+            user-select: none;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 1px;
+            flex: 0 0 auto;
+            touch-action: manipulation;
+        }
+        .bthe-slot:hover:not(.bthe-locked):not(:disabled) {
+            border-color: rgba(241,196,15,0.7); 
+            background: rgba(241,196,15,0.08);
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 14px rgba(241,196,15,0.22);
+        }
+        .bthe-slot.bthe-locked {
+            opacity: 0.35; 
+            cursor: not-allowed; 
+            pointer-events: none;
+        }
+        .bthe-slot.bthe-activating {
+            border-color: #f1c40f !important; 
+            box-shadow: 0 0 18px rgba(241,196,15,0.7) !important;
+            animation: cardActivate 0.35s ease-out;
+        }
+        @keyframes cardActivate {
+            0%   { transform: scale(1); }
+            40%  { transform: scale(1.1); box-shadow: 0 0 28px rgba(241,196,15,0.9); }
+            100% { transform: scale(1); }
+        }
+        .bthe-slot:disabled, .bthe-slot[disabled] {
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            background: rgba(30,30,30,0.6);
+            border-color: rgba(100,100,100,0.3); 
+            pointer-events: none;
+        }
+        .bthe-icon  { font-size: 1.3rem; line-height: 1; }
+        .bthe-name  { font-size: 0.5rem; font-weight: 700; color: #f1c40f; line-height: 1.15; }
+        .bthe-used  { font-size: 0.45rem; color: #64748b; font-weight: 600; margin-top: 1px; }
+        .bthe-note  { font-size: 0.45rem; color: #94a3b8; line-height: 1.1; margin-top: 1px; }
+
+        /* QUIZ AREA */
+        .quiz-wrapper {
+            background-color: #161c2d; 
+            border: 1px solid #2c3a57; 
+            border-radius: 12px;
+            padding: 20px 16px; 
+            text-align: left; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            display: none;
+        }
+        .q-title { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 800; 
+            color: #f1c40f; 
+            font-size: 0.95rem; 
+            margin-bottom: 10px; 
+            text-transform: uppercase; 
+        }
+        .q-text { 
+            font-size: 1.1rem; 
+            line-height: 1.7; 
+            margin-bottom: 20px; 
+            word-break: break-word; 
+        }
+
+        .answers-grid { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        .btn-answer {
+            background-color: #0b0f19; 
+            border: 2px solid #2c3a57; 
+            border-radius: 8px;
+            padding: 14px 16px; 
+            color: white; 
+            text-align: left; 
+            font-size: 0.95rem;
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 10px;
+            width: 100%; 
+            line-height: 1.5;
+            touch-action: manipulation;
+        }
+        .btn-answer span { flex: 1; min-width: 0; word-break: break-word; }
         .btn-answer:hover:not(:disabled) { background-color: #1f2d44; border-color: #e74c3c; }
-        
         .btn-answer.correct { background-color: #27ae60 !important; border-color: #2ecc71 !important; font-weight: bold; }
         .btn-answer.wrong { background-color: #c0392b !important; border-color: #e74c3c !important; }
 
-        .feedback-box { padding: 15px; border-radius: 6px; font-weight: bold; margin-bottom: 25px; display: none; font-family: 'Montserrat', sans-serif; text-align: center; }
-        .explain-box { background-color: #0b0f19; border-left: 5px solid #f1c40f; padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 25px; display: none; }
+        .feedback-box {
+            padding: 12px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            margin-bottom: 20px;
+            display: none; 
+            font-family: 'Montserrat', sans-serif; 
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .explain-box {
+            background-color: #0b0f19; 
+            border-left: 5px solid #f1c40f;
+            padding: 12px 14px; 
+            border-radius: 0 8px 8px 0; 
+            margin-bottom: 20px; 
+            display: none;
+        }
+        .explain-box p { 
+            margin: 6px 0 0 0; 
+            color: #bdc3c7; 
+            line-height: 1.5; 
+            font-size: 0.9rem; 
+        }
 
-        .btn-nav { background-color: #e67e22; color: white; border: none; padding: 12px 28px; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.95rem; display: none; margin-left: auto; }
+        .btn-nav {
+            background-color: #e67e22; 
+            color: white; 
+            border: none;
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer;
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            display: none; 
+            margin-left: auto;
+            touch-action: manipulation;
+            width: 100%;
+            max-width: 280px;
+            margin: 0 auto;
+        }
         .btn-nav:hover { background-color: #d35400; }
 
-        .victory-wrapper { background-color: #1a2236; border: 2px solid #2ecc71; border-radius: 12px; padding: 40px; text-align: center; display: none; box-shadow: 0 0 20px rgba(46,204,113,0.3); }
+        /* VICTORY */
+        .victory-wrapper {
+            background-color: #1a2236; 
+            border: 2px solid #2ecc71; 
+            border-radius: 12px;
+            padding: 30px 20px; 
+            text-align: center; 
+            display: none;
+            box-shadow: 0 0 20px rgba(46,204,113,0.3);
+        }
+        .victory-wrapper h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.6rem;
+            margin: 10px 0;
+        }
+        .victory-wrapper p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .victory-wrapper a {
+            background-color: #2ecc71; 
+            color: black; 
+            font-weight: bold; 
+            padding: 12px 28px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            text-transform: uppercase; 
+            font-size: 0.9rem; 
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* TOAST */
+        #toast-box {
+            position: fixed; 
+            bottom: 16px; 
+            right: 16px; 
+            z-index: 2000;
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px;
+            max-width: 90vw;
+        }
+        .toast-item {
+            background: #141d30; 
+            border-left: 4px solid #2ecc71; 
+            color: #fff;
+            padding: 10px 16px; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-size: 0.85rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4); 
+            min-width: 180px;
+            animation: fadeInToast 0.3s ease;
+            word-break: break-word;
+        }
+        .toast-item.error { border-left-color: #e74c3c; }
+        @keyframes fadeInToast { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+
+        /* RESPONSIVE */
+        @media (min-width: 640px) {
+            body { padding: 20px; }
+            .container { padding: 0; }
+            .boss-card { padding: 25px; }
+            .boss-avatar-box { width: 90px; height: 90px; font-size: 3.8rem; }
+            .boss-name { font-size: 1.3rem; }
+            .hp-container { height: 24px; }
+            .hp-text { font-size: 0.8rem; }
+            .hp-label { font-size: 0.65rem; }
+            .player-avatar { width: 56px; height: 56px; font-size: 2.2rem; }
+            .player-name-tag { font-size: 0.9rem; }
+            .bthe-slot { width: 80px; min-height: 72px; padding: 6px 4px; }
+            .bthe-icon { font-size: 1.6rem; }
+            .bthe-name { font-size: 0.55rem; }
+            .quiz-wrapper { padding: 30px; }
+            .q-title { font-size: 1.1rem; }
+            .q-text { font-size: 1.2rem; }
+            .btn-answer { padding: 16px 20px; font-size: 1rem; }
+            .btn-nav { padding: 12px 28px; font-size: 0.95rem; width: auto; }
+            .victory-wrapper { padding: 40px; }
+            .victory-wrapper h1 { font-size: 2rem; }
+            .victory-wrapper p { font-size: 1.1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .boss-flex-layout { justify-content: center; text-align: center; }
+            .boss-info-center { text-align: center; min-width: 100%; }
+            .boss-avatar-box { width: 64px; height: 64px; font-size: 2.6rem; }
+            .boss-name { font-size: 0.95rem; }
+            .hp-text { font-size: 0.6rem; }
+            .player-avatar-box { margin-top: 6px; padding-top: 6px; }
+            .bthe-slot { width: 60px; min-height: 54px; padding: 3px 2px; }
+            .bthe-icon { font-size: 1.1rem; }
+            .bthe-name { font-size: 0.45rem; }
+            .q-text { font-size: 1rem; }
+            .btn-answer { padding: 12px 14px; font-size: 0.9rem; gap: 8px; }
+            .btn-nav { font-size: 0.8rem; padding: 10px 16px; }
+            .victory-wrapper h1 { font-size: 1.3rem; }
+        }
+
+        @media (max-width: 360px) {
+            .bthe-slot { width: 52px; min-height: 48px; }
+            .bthe-icon { font-size: 0.9rem; }
+            .bthe-name { font-size: 0.4rem; }
+            .boss-avatar-box { width: 56px; height: 56px; font-size: 2.2rem; }
+        }
+
+        /* Hỗ trợ màn hình cảm ứng */
+        @media (hover: none) {
+            .btn-answer:hover:not(:disabled) { background-color: initial; }
+            .bthe-slot:hover:not(.bthe-locked):not(:disabled) { transform: none; box-shadow: none; }
+        }
     </style>
 </head>
 <body>
@@ -94,30 +492,44 @@
     <div class="danger-overlay" id="danger-screen"></div>
 
     <div class="container">
-        <!-- THANH ĐIỀU HƯỚNG QUAY VỀ SẢNH CHÍNH -->
+        <!-- TOP BAR -->
         <div class="header-box-boss">
-            <a href="index.html" class="btn-home-boss"><i class="fa-solid fa-circle-chevron-left"></i> Trở về sảnh chính</a>
+            <a href="index.html" class="btn-home-boss"><i class="fa-solid fa-circle-chevron-left"></i> Trở về</a>
         </div>
 
-        <!-- CARD BOSS -->
+        <!-- BOSS CARD -->
         <div class="boss-card">
             <div class="boss-flex-layout">
                 <div class="boss-avatar-box" id="boss-avatar">👹</div>
-                <div class="boss-info-right">
-                    <div class="boss-name"><i class="fa-solid fa-skull-crossbones"></i> MA VƯƠNG ĐẠI SỐ (MAXX HP)</div>
+                <div class="boss-info-center">
+                    <div class="boss-name"><i class="fa-solid fa-skull-crossbones"></i> MA VƯƠNG ĐẠI SỐ</div>
+                    <div class="hp-label">
+                        <span class="boss-label"><i class="fa-solid fa-heart-crack"></i> Boss</span>
+                        <span class="player-label"><i class="fa-solid fa-heart"></i> Chiến binh</span>
+                    </div>
                     <div class="hp-container">
-                        <div class="hp-bar-fill" id="boss-hp-bar"></div>
-                        <div class="hp-text" id="boss-hp-text">HP: 100 / 100</div>
+                        <div class="hp-bar-fill boss-hp" id="boss-hp-bar" style="width:100%"></div>
+                        <div class="hp-text" id="boss-hp-text">100 / 100</div>
+                    </div>
+                    <div class="hp-container" style="margin-top:6px;">
+                        <div class="hp-bar-fill player-hp" id="player-hp-bar" style="width:100%"></div>
+                        <div class="hp-text" id="player-hp-text">100 / 100</div>
                     </div>
                 </div>
+                <div class="player-avatar-box" style="flex-shrink:0; flex-direction:column; gap:4px; min-width:60px;">
+                    <div class="player-avatar" id="player-avatar">🧙</div>
+                    <div class="player-name-tag" id="player-name-tag">Chiến binh</div>
+                </div>
             </div>
-            <div id="heartbeat-indicator" style="text-align: right; color: #e74c3c; font-size: 0.8rem; margin-top: 8px; font-weight: bold; letter-spacing: 1px;">
-                <i class="fa-solid fa-compact-disc fa-spin"></i> HỆ THỐNG ÂM THANH: ĐANG PHÁT NHẠC NỀN TRẬN ĐẤU
+
+            <!-- THẺ ĐẶC QUYỀN -->
+            <div class="boss-card-bar" id="boss-card-bar">
+                <div class="boss-card-bar-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Thẻ Đặc Quyền</div>
             </div>
         </div>
 
-        <!-- KHU VỰC CÂU HỎI -->
-        <div class="quiz-wrapper" id="quiz-area" style="display: none;">
+        <!-- QUIZ AREA -->
+        <div class="quiz-wrapper" id="quiz-area">
             <div class="q-title" id="lbl-question-title">Đòn đánh thứ 1</div>
             <div class="q-text" id="lbl-question-text">Đang tải thử thách...</div>
 
@@ -127,7 +539,7 @@
 
             <div class="explain-box" id="explain-container">
                 <strong style="color: #f1c40f;"><i class="fa-solid fa-wand-magic-sparkles"></i> Thần chú giải toán:</strong>
-                <p id="explain-text" style="margin: 8px 0 0 0; color: #bdc3c7; line-height: 1.5; font-size: 0.95rem;"></p>
+                <p id="explain-text"></p>
             </div>
 
             <button onclick="chuyenCauTiepTheo()" class="btn-nav" id="next-btn">
@@ -135,110 +547,21 @@
             </button>
         </div>
 
-        <!-- MÀN HÌNH KẾT THÚC KHI HẠ BOSS -->
+        <!-- VICTORY -->
         <div class="victory-wrapper" id="victory-area">
-            <i class="fa-solid fa-trophy" style="font-size: 4.5rem; color: #f1c40f; margin-bottom: 15px;"></i>
-            <h1 id="victory-title" style="font-family:'Montserrat',sans-serif; text-transform:uppercase; margin:0 0 10px 0; color:#2ecc71;">CHIẾN THẮNG ĐẠI KHẢI!</h1>
-            <p id="victory-desc" style="color:#bdc3c7; font-size:1.1rem; max-width:600px; margin:0 auto 25px auto;">Bạn đã xuất sắc đánh bại Boss cuối tuần và bảo vệ thành công vương quốc Toán học!</p>
-            <a href="index.html" style="background-color:#2ecc71; color:black; font-weight:bold; padding:12px 30px; text-decoration:none; border-radius:6px; text-transform:uppercase; font-size:0.95rem; display:inline-block;"><i class="fa-solid fa-house"></i> Trở về sảnh chính</a>
+            <i class="fa-solid fa-trophy" style="font-size: 3.5rem; color: #f1c40f; margin-bottom: 10px;"></i>
+            <h1 id="victory-title">CHIẾN THẮNG ĐẠI KHẢI!</h1>
+            <p id="victory-desc" style="margin-bottom: 20px;"></p>
+            <a href="index.html"><i class="fa-solid fa-house"></i> Trở về sảnh chính</a>
         </div>
     </div>
 
+    <div id="toast-box"></div>
+
     <script>
-        let danhSachCauHoi = [];
-        let indexCauHienTai = 0;
-        let bossMaxHP = 100;
-        let bossCurrentHP = 100;
-        let damageMoiCau = 25; 
-        let daBamChonChua = false;
-
-        // ========================== HỆ THỐNG GIỚI HẠN LƯỢT SĂN BOSS ==========================
-        function layTenHocSinhHienTai() {
-            let ten = sessionStorage.getItem('hoc_school_student_name');
-            if (ten) return ten;
-            let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
-            if (nhatKy.length > 0) {
-                let lastUser = nhatKy[nhatKy.length - 1];
-                ten = lastUser.name;
-                sessionStorage.setItem('hoc_school_student_name', ten);
-                sessionStorage.setItem('hoc_school_student_class', lastUser.className || 'Khối 7');
-                return ten;
-            }
-            return null;
-        }
-
-        function laySoLuotBossToiDa() {
-            return parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3;
-        }
-
-        function layKeyLuotBoss() {
-            let ten = layTenHocSinhHienTai();
-            return ten ? ('luot_boss_' + ten) : null;
-        }
-
-        function layDuLieuLuotBoss() {
-            let key = layKeyLuotBoss();
-            if (!key) return null;
-            let raw = JSON.parse(localStorage.getItem(key)) || null;
-            if (!raw) {
-                raw = { soLuotConLai: laySoLuotBossToiDa() };
-                localStorage.setItem(key, JSON.stringify(raw));
-            }
-            return raw;
-        }
-
-        function truLuotBoss() {
-            let key = layKeyLuotBoss();
-            if (!key) return;
-            let duLieu = layDuLieuLuotBoss();
-            if (!duLieu) return;
-            duLieu.soLuotConLai = Math.max(0, duLieu.soLuotConLai - 1);
-            localStorage.setItem(key, JSON.stringify(duLieu));
-        }
-
-        function kiemTraVaHienThiLuotBoss() {
-            let duLieu = layDuLieuLuotBoss();
-            let soLuotToiDa = laySoLuotBossToiDa();
-
-            // Ẩn quiz và victory, tắt danger-screen
-            document.getElementById('quiz-area').style.display = 'none';
-            document.getElementById('victory-area').style.display = 'none';
-
-            let thongBaoEl = document.getElementById('boss-luot-status');
-            if (!thongBaoEl) {
-                thongBaoEl = document.createElement('div');
-                thongBaoEl.id = 'boss-luot-status';
-                thongBaoEl.style.cssText = 'margin-top: 15px; padding: 14px 18px; border-radius: 8px; border: 1px solid; font-size: 0.95rem; font-weight: 500; text-align: center;';
-                document.querySelector('.boss-card').after(thongBaoEl);
-            }
-
-            if (!duLieu) {
-                thongBaoEl.style.background = 'rgba(231,76,60,0.12)';
-                thongBaoEl.style.borderColor = '#e74c3c';
-                thongBaoEl.style.color = '#e74c3c';
-                thongBaoEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Chưa xác định được danh tính. Vui lòng quay về sảnh chính và đăng nhập trước.`;
-                document.getElementById('danger-screen').style.display = 'none';
-                return false;
-            }
-
-            thongBaoEl.style.display = 'block';
-
-            if (duLieu.soLuotConLai <= 0) {
-                thongBaoEl.style.background = 'rgba(231,76,60,0.12)';
-                thongBaoEl.style.borderColor = '#e74c3c';
-                thongBaoEl.style.color = '#e74c3c';
-                thongBaoEl.innerHTML = `<i class="fa-solid fa-lock"></i> Em đã dùng hết <b>${soLuotToiDa} lượt</b> khiêu chiến Boss tuần này rồi! Hãy nhờ thầy reset lượt hoặc chờ thầy mở lại.`;
-                document.getElementById('danger-screen').style.display = 'none';
-                return false;
-            }
-
-            thongBaoEl.style.background = 'rgba(231,76,60,0.10)';
-            thongBaoEl.style.borderColor = '#e74c3c';
-            thongBaoEl.style.color = '#f1c40f';
-            thongBaoEl.innerHTML = `<i class="fa-solid fa-skull-crossbones"></i> Em còn <b>${duLieu.soLuotConLai}</b> lượt khiêu chiến Boss tuần này.`;
-            return true;
-        }
-
+        // ============================================================
+        //  HỆ THỐNG ÂM THANH
+        // ============================================================
         let audioCtx = null;
         let ambientNode1 = null;
         let ambientNode2 = null;
@@ -248,15 +571,15 @@
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 ambientGain = audioCtx.createGain();
-                ambientGain.gain.setValueAtTime(0.07, audioCtx.currentTime); 
+                ambientGain.gain.setValueAtTime(0.07, audioCtx.currentTime);
 
                 ambientNode1 = audioCtx.createOscillator();
                 ambientNode1.type = 'sine';
-                ambientNode1.frequency.setValueAtTime(55, audioCtx.currentTime); 
+                ambientNode1.frequency.setValueAtTime(55, audioCtx.currentTime);
 
                 ambientNode2 = audioCtx.createOscillator();
                 ambientNode2.type = 'sawtooth';
-                ambientNode2.frequency.setValueAtTime(58, audioCtx.currentTime); 
+                ambientNode2.frequency.setValueAtTime(58, audioCtx.currentTime);
 
                 ambientNode1.connect(ambientGain);
                 ambientNode2.connect(ambientGain);
@@ -314,19 +637,259 @@
             } catch (e) {}
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            let coLuot = kiemTraVaHienThiLuotBoss();
-            if (coLuot) {
-                phatAmThanhHanhDong('danger_alarm');
-                docNganHangDeBoss();
-                document.body.addEventListener('click', () => {
-                    if(!ambientNode1) batDauNhacNenHoiHop();
-                }, { once: true });
-            }
-        });
+        // ============================================================
+        //  CẤU HÌNH & DỮ LIỆU
+        // ============================================================
+        let danhSachCauHoi = [];
+        let indexCauHienTai = 0;
 
-        // Xáo trộn ngẫu nhiên 1 mảng (Fisher-Yates) và trả về SỐ LƯỢNG câu chỉ định,
-        // không làm thay đổi mảng gốc truyền vào.
+        const HP_MAX = 100;
+        let bossHP = 100;
+        let playerHP = 100;
+
+        const DAMAGE_BASE = 20;
+        const BOSS_DAMAGE_BASE = 15;
+
+        let daBamChonChua = false;
+        let cauTraLoiHienTaiDaSai = false;
+
+        let giapHoMenhConLai = false;
+        let chiMangSamSetSan = false;
+        let giamSatThuongNhan = 0;
+        let daDungBinhMau = false;
+
+        const BOSS_PRIVILEGE_ITEMS = [
+            { id: "boss_giaphomenh",   icon: "🛡️", name: "Giáp Hộ Mệnh",       desc: "Miễn sát thương 1 lần sai" },
+            { id: "boss_cuonsachtrithu", icon: "⚡", name: "Cuộn Sách Tri Thức", desc: "Loại 2 đáp án sai" },
+            { id: "boss_donghocat",    icon: "⏳", name: "Đồng Hồ Cát",         desc: "Giảm 50% sát thương nhận 3 câu" },
+            { id: "boss_chimangsamset", icon: "☄️", name: "Chí Mạng Sấm Sét",  desc: "Câu đúng tiếp theo x2 sát thương" },
+            { id: "boss_binhhoimau",   icon: "🧪", name: "Bình Hồi Máu",        desc: "Hồi 30% HP tối đa" }
+        ];
+        let thesDaDung = {
+            boss_giaphomenh: false,
+            boss_cuonsachtrithu: false,
+            boss_donghocat: false,
+            boss_chimangsamset: false,
+            boss_binhhoimau: false
+        };
+
+        // ============================================================
+        //  HÀM TIỆN ÍCH
+        // ============================================================
+        function layTenHocSinhHienTai() {
+            let ten = sessionStorage.getItem('hoc_school_student_name');
+            if (ten) return ten;
+            let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            if (nhatKy.length > 0) {
+                let lastUser = nhatKy[nhatKy.length - 1];
+                ten = lastUser.name;
+                sessionStorage.setItem('hoc_school_student_name', ten);
+                sessionStorage.setItem('hoc_school_student_class', lastUser.className || 'Khối 7');
+                return ten;
+            }
+            return null;
+        }
+
+        function laySoLuotBossToiDa() {
+            return parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3;
+        }
+        function layKeyLuotBoss() {
+            let ten = layTenHocSinhHienTai();
+            return ten ? ('luot_boss_' + ten) : null;
+        }
+        function layDuLieuLuotBoss() {
+            let key = layKeyLuotBoss();
+            if (!key) return null;
+            let raw = JSON.parse(localStorage.getItem(key)) || null;
+            if (!raw) {
+                raw = { soLuotConLai: laySoLuotBossToiDa() };
+                localStorage.setItem(key, JSON.stringify(raw));
+            }
+            return raw;
+        }
+        function truLuotBoss() {
+            let key = layKeyLuotBoss();
+            if (!key) return;
+            let duLieu = layDuLieuLuotBoss();
+            if (!duLieu) return;
+            duLieu.soLuotConLai = Math.max(0, duLieu.soLuotConLai - 1);
+            localStorage.setItem(key, JSON.stringify(duLieu));
+        }
+
+        function capNhatHP() {
+            document.getElementById('boss-hp-bar').style.width = bossHP + "%";
+            document.getElementById('boss-hp-text').innerText = `${Math.round(bossHP)} / ${HP_MAX}`;
+            document.getElementById('player-hp-bar').style.width = playerHP + "%";
+            document.getElementById('player-hp-text').innerText = `${Math.round(playerHP)} / ${HP_MAX}`;
+        }
+
+        // ============================================================
+        //  THẺ ĐẶC QUYỀN
+        // ============================================================
+        function renderBossCardBar() {
+            let bar = document.getElementById('boss-card-bar');
+            if (!bar) return;
+            let label = bar.querySelector('.boss-card-bar-label');
+            bar.innerHTML = '';
+            if (label) bar.appendChild(label);
+
+            let ten = layTenHocSinhHienTai();
+            let ruong = ten ? (JSON.parse(localStorage.getItem('ruong_do_' + ten)) || []) : [];
+            let cacTenCoBoss = BOSS_PRIVILEGE_ITEMS.map(it => it.name);
+            let cacTheCoSan = ruong.filter(item => cacTenCoBoss.includes(item.name) && item.status === 'cho_nhan');
+            let setCoSan = new Set(cacTheCoSan.map(it => it.name));
+
+            BOSS_PRIVILEGE_ITEMS.forEach(meta => {
+                let coSan = setCoSan.has(meta.name);
+                let slot = document.createElement('button');
+                slot.className = 'bthe-slot' + (coSan ? '' : ' bthe-locked');
+                slot.id = 'bslot-' + meta.id;
+                slot.title = meta.desc;
+                slot.disabled = !coSan;
+                slot.innerHTML = `
+                    <span class="bthe-icon">${meta.icon}</span>
+                    <span class="bthe-name">${meta.name}</span>
+                    <span class="bthe-note">${coSan ? 'Bấm dùng' : 'Chưa có'}</span>
+                `;
+                if (coSan) {
+                    slot.onclick = () => dungTheInline(meta.id);
+                }
+                bar.appendChild(slot);
+            });
+        }
+
+        function dungTheInline(idThe) {
+            if (thesDaDung[idThe]) return;
+            let meta = BOSS_PRIVILEGE_ITEMS.find(b => b.id === idThe);
+            if (!meta) return;
+
+            let slot = document.getElementById('bslot-' + idThe);
+            if (slot) {
+                slot.classList.add('bthe-activating');
+                setTimeout(() => {
+                    slot.classList.remove('bthe-activating');
+                    slot.disabled = true;
+                    slot.innerHTML = `<span class="bthe-icon" style="filter:grayscale(1);opacity:.5">${meta.icon}</span><span class="bthe-name" style="color:#64748b">${meta.name}</span><span class="bthe-used">Đã dùng</span>`;
+                }, 360);
+            }
+
+            thesDaDung[idThe] = true;
+
+            let ten = layTenHocSinhHienTai();
+            if (ten) {
+                let ruong = JSON.parse(localStorage.getItem('ruong_do_' + ten)) || [];
+                let idx = ruong.findIndex(item => item.name === meta.name && item.status === 'cho_nhan');
+                if (idx !== -1) {
+                    ruong[idx].status = 'da_nhan';
+                    localStorage.setItem('ruong_do_' + ten, JSON.stringify(ruong));
+                }
+            }
+
+            if (idThe === 'boss_giaphomenh') {
+                giapHoMenhConLai = true;
+                hienThongBao('🛡️ GIÁP HỘ MỆNH: Miễn sát thương 1 lần sai!', '#3498db');
+                phatAmThanhHanhDong('hit_boss');
+            }
+            else if (idThe === 'boss_cuonsachtrithu') {
+                an2DapAnSaiNgauNhien();
+                hienThongBao('⚡ CUỘN SÁCH TRI THỨC: Loại bỏ 2 đáp án sai!', '#9b59b6');
+                phatAmThanhHanhDong('hit_boss');
+            }
+            else if (idThe === 'boss_donghocat') {
+                giamSatThuongNhan = 3;
+                hienThongBao('⏳ ĐỒNG HỒ CÁT: Giảm 50% sát thương 3 câu!', '#1abc9c');
+                phatAmThanhHanhDong('hit_boss');
+            }
+            else if (idThe === 'boss_chimangsamset') {
+                chiMangSamSetSan = true;
+                hienThongBao('☄️ CHÍ MẠNG SẤM SÉT: Câu đúng tiếp theo x2 sát thương!', '#e67e22');
+                phatAmThanhHanhDong('hit_boss');
+            }
+            else if (idThe === 'boss_binhhoimau') {
+                if (!daDungBinhMau) {
+                    daDungBinhMau = true;
+                    let hoi = Math.floor(HP_MAX * 0.3);
+                    playerHP = Math.min(HP_MAX, playerHP + hoi);
+                    capNhatHP();
+                    hienThongBao(`🧪 BÌNH HỒI MÁU: Hồi +${hoi} HP!`, '#2ecc71');
+                    phatAmThanhHanhDong('hit_boss');
+                } else {
+                    hienThongBao('Bình Hồi Máu đã dùng rồi!', '#e74c3c');
+                }
+            }
+        }
+
+        function an2DapAnSaiNgauNhien() {
+            let cauHoi = danhSachCauHoi[indexCauHienTai];
+            let dapAnDung = parseInt(cauHoi.correct) || 0;
+            let cacNutSai = [];
+            document.querySelectorAll('.btn-answer').forEach(btn => {
+                let i = parseInt(btn.id.replace('btn-ans-', ''));
+                if (i !== dapAnDung && btn.style.display !== 'none') cacNutSai.push(btn);
+            });
+            cacNutSai.sort(() => Math.random() - 0.5);
+            cacNutSai.slice(0, 2).forEach(btn => btn.style.display = 'none');
+        }
+
+        function hienThongBao(msg, mau) {
+            let banner = document.getElementById('feedback-banner');
+            banner.style.backgroundColor = (mau || '#1a253c') + '33';
+            banner.style.color = mau || '#f1c40f';
+            banner.style.border = `1px solid ${mau || '#f1c40f'}`;
+            banner.innerHTML = msg;
+            banner.style.display = 'block';
+            setTimeout(() => { if (banner.style.display === 'block') banner.style.display = 'none'; }, 2200);
+        }
+
+        // ============================================================
+        //  PARSER CÂU HỎI
+        // ============================================================
+        function parseTextKhoiCauHoi(rawText) {
+            if (!rawText || typeof rawText !== 'string') return [];
+            let ketQua = [];
+            let khoi = rawText.split(/(?=Câu\s*\d+\s*:)/i).map(s => s.trim()).filter(s => s);
+            khoi.forEach(khoiText => {
+                try {
+                    let dongArr = khoiText.split('\n').map(d => d.trim()).filter(d => d);
+                    if (dongArr.length < 3) return;
+                    let cauHoiText = dongArr[0].replace(/^Câu\s*\d+\s*:\s*/i, '').trim();
+                    let answers = [];
+                    let correct = 0;
+                    let explanation = '';
+                    dongArr.forEach((dong, idx) => {
+                        if (idx === 0) return;
+                        let mDapAn = dong.match(/^([A-D])\.\s*(.+)/i);
+                        if (mDapAn) answers.push(mDapAn[2].trim());
+                        let mDung = dong.match(/^Đáp\s*án\s*:\s*([A-D])/i);
+                        if (mDung) correct = 'ABCD'.indexOf(mDung[1].toUpperCase());
+                        let mGiaiThich = dong.match(/^Giải\s*thích\s*:\s*(.+)/i);
+                        if (mGiaiThich) explanation = mGiaiThich[1].trim();
+                    });
+                    if (cauHoiText && answers.length >= 2) {
+                        ketQua.push({ question: cauHoiText, answers, correct, explanation });
+                    }
+                } catch(e) {}
+            });
+            return ketQua;
+        }
+
+        function chuanHoaCauHoi(rawArr) {
+            if (!Array.isArray(rawArr)) return [];
+            let ketQua = [];
+            rawArr.forEach(item => {
+                if (typeof item === 'string') {
+                    let parsed = parseTextKhoiCauHoi(item);
+                    ketQua = ketQua.concat(parsed);
+                } else if (item && typeof item === 'object' && item.question && Array.isArray(item.answers)) {
+                    ketQua.push(item);
+                } else if (item && typeof item === 'object' && item.rawText) {
+                    let parsed = parseTextKhoiCauHoi(item.rawText);
+                    ketQua = ketQua.concat(parsed);
+                }
+            });
+            return ketQua;
+        }
+
         function layNgauNhienNCau(mangCauHoi, soLuong) {
             let banSao = mangCauHoi.slice();
             for (let i = banSao.length - 1; i > 0; i--) {
@@ -336,65 +899,133 @@
             return banSao.slice(0, Math.min(soLuong, banSao.length));
         }
 
+        function renderLatexText(raw) {
+            if (!raw) return '';
+            let chuanHoa = raw
+                .replace(/<br\s*\/?>/gi, '\u0001BR\u0001')
+                .replace(/\*\*(.+?)\*\*/g, '\u0002B\u0002$1\u0002/B\u0002');
+            let result = '';
+            let i = 0;
+            while (i < chuanHoa.length) {
+                if (chuanHoa[i] === '$') {
+                    let j = chuanHoa.indexOf('$', i + 1);
+                    if (j !== -1) {
+                        result += chuanHoa.slice(i, j + 1);
+                        i = j + 1;
+                    } else {
+                        result += '$';
+                        i++;
+                    }
+                } else {
+                    let ch = chuanHoa[i];
+                    if (ch === '<') result += '&lt;';
+                    else if (ch === '>') result += '&gt;';
+                    else if (ch === '&') result += '&amp;';
+                    else result += ch;
+                    i++;
+                }
+            }
+            result = result
+                .split('\u0001BR\u0001').join('<br>')
+                .split('\u0002B\u0002').join('<strong>')
+                .split('\u0002/B\u0002').join('</strong>');
+            return result;
+        }
+
+        function renderMathJax(element) {
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([element]).catch(e => {});
+            }
+        }
+
+        // ============================================================
+        //  TẢI CÂU HỎI & BẮT ĐẦU TRẬN
+        // ============================================================
         function docNganHangDeBoss() {
             let duLieuNganHang = localStorage.getItem('ngan_hang_de_boss') || "[]";
             let khoDeBoss = JSON.parse(duLieuNganHang);
-
-            // Xác định khối lớp của học sinh đang đăng nhập để phân luồng đúng bộ đề Boss
             let khoiHocSinh = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
 
-            // Chỉ lấy các bộ đề Boss áp dụng cho khối của học sinh (hoặc "Tất cả các khối")
             let cacBoDePhuHop = khoDeBoss.filter(b => !b.grade || b.grade === 'all' || b.grade === khoiHocSinh);
             let khoCauHoiBoss = [];
             cacBoDePhuHop.forEach(bo => {
-                if (Array.isArray(bo.questions)) khoCauHoiBoss = khoCauHoiBoss.concat(bo.questions);
+                if (Array.isArray(bo.questions)) {
+                    let daChuanHoa = chuanHoaCauHoi(bo.questions);
+                    khoCauHoiBoss = khoCauHoiBoss.concat(daChuanHoa);
+                }
+                if (typeof bo.rawText === 'string' && bo.rawText.trim()) {
+                    let parsed = parseTextKhoiCauHoi(bo.rawText);
+                    khoCauHoiBoss = khoCauHoiBoss.concat(parsed);
+                }
             });
 
             if (khoCauHoiBoss.length === 0) {
-                document.getElementById('lbl-question-text').innerText = `Thầy giáo chưa nạp bộ đề Boss nào dành cho ${khoiHocSinh}. Vui lòng quay lại sau!`;
+                let msgEl = document.getElementById('lbl-question-text');
+                msgEl.innerHTML = `<span style="color:#e74c3c;"><i class="fa-solid fa-circle-exclamation"></i> Thầy giáo chưa nạp bộ đề Boss nào dành cho <b>${khoiHocSinh}</b>. Vui lòng quay lại sau!</span>`;
                 document.getElementById('quiz-area').style.display = 'block';
                 return;
             }
 
-            // Mỗi lượt khiêu chiến chỉ lấy NGẪU NHIÊN tối đa 20 câu trong kho đề
-            // (nếu kho đề có ít hơn 20 câu thì lấy hết).
             const SO_CAU_MOI_TRAN = 20;
             danhSachCauHoi = layNgauNhienNCau(khoCauHoiBoss, SO_CAU_MOI_TRAN);
-            damageMoiCau = Math.ceil(100 / danhSachCauHoi.length); 
             document.getElementById('quiz-area').style.display = 'block';
 
-            // Trừ ngay 1 lượt săn Boss khi trận đấu bắt đầu, để dù học sinh
-            // có thoát ra giữa trận (mới làm vài câu) thì lượt vẫn được tính.
+            bossHP = HP_MAX;
+            playerHP = HP_MAX;
+            capNhatHP();
+
+            giapHoMenhConLai = false;
+            chiMangSamSetSan = false;
+            giamSatThuongNhan = 0;
+            daDungBinhMau = false;
+            Object.keys(thesDaDung).forEach(k => thesDaDung[k] = false);
+
             truLuotBoss();
 
+            let ten = layTenHocSinhHienTai();
+            if (ten) document.getElementById('player-name-tag').innerText = ten;
+            else document.getElementById('player-name-tag').innerText = 'Chiến binh';
+
+            renderBossCardBar();
+            batDauNhacNenHoiHop();
+
+            indexCauHienTai = 0;
             taiCauHoiHT();
         }
 
         function taiCauHoiHT() {
             daBamChonChua = false;
+            cauTraLoiHienTaiDaSai = false;
             document.getElementById('feedback-banner').style.display = 'none';
             document.getElementById('explain-container').style.display = 'none';
             document.getElementById('next-btn').style.display = 'none';
 
             let cauHoi = danhSachCauHoi[indexCauHienTai];
+
             document.getElementById('lbl-question-title').innerText = `🔥 ĐÒN ĐÁNH THỨ ${indexCauHienTai + 1} / ${danhSachCauHoi.length}`;
-            document.getElementById('lbl-question-text').innerText = cauHoi.question;
+
+            let lblText = document.getElementById('lbl-question-text');
+            lblText.innerHTML = renderLatexText(cauHoi.question);
 
             let boxAns = document.getElementById('box-answers-list');
             boxAns.innerHTML = "";
-
             let mangPrefix = ['A', 'B', 'C', 'D'];
+
             cauHoi.answers.forEach((ans, i) => {
-                boxAns.innerHTML += `
-                    <button class="btn-answer" id="btn-ans-${i}" onclick="kiemTraDonDanh(${i})">
-                        <strong style="color: #e74c3c;">${mangPrefix[i]}.</strong> ${ans}
-                    </button>
-                `;
+                let btn = document.createElement('button');
+                btn.className = 'btn-answer';
+                btn.id = 'btn-ans-' + i;
+                btn.onclick = () => kiemTraDonDanh(i);
+                btn.innerHTML = `<strong style="color:#e74c3c; flex-shrink:0;">${mangPrefix[i]}.</strong> <span>${renderLatexText(ans)}</span>`;
+                boxAns.appendChild(btn);
             });
 
-            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise().catch(e => {});
+            renderMathJax(document.getElementById('quiz-area'));
         }
 
+        // ============================================================
+        //  XỬ LÝ TRẢ LỜI
+        // ============================================================
         function kiemTraDonDanh(indexHocSinhChon) {
             if (daBamChonChua) return;
             daBamChonChua = true;
@@ -405,44 +1036,66 @@
             let cacNut = document.querySelectorAll('.btn-answer');
             cacNut.forEach(nut => nut.disabled = true);
             let banner = document.getElementById('feedback-banner');
-            
+
+            let giatDamage = DAMAGE_BASE;
+            let bossGiat = BOSS_DAMAGE_BASE;
+
+            if (giamSatThuongNhan > 0) {
+                bossGiat = Math.floor(bossGiat * 0.5);
+                giamSatThuongNhan--;
+            }
+
             if (indexHocSinhChon === dapAnDung) {
-                phatAmThanhHanhDong('hit_boss');
+                cauTraLoiHienTaiDaSai = false;
+                if (chiMangSamSetSan) {
+                    giatDamage *= 2;
+                    chiMangSamSetSan = false;
+                }
+                bossHP = Math.max(0, bossHP - giatDamage);
                 document.getElementById(`btn-ans-${indexHocSinhChon}`).classList.add('correct');
-                
-                bossCurrentHP = Math.max(0, bossCurrentHP - damageMoiCau);
-                
+
                 banner.style.backgroundColor = "rgba(46,204,113,0.2)";
                 banner.style.color = "#2ecc71";
                 banner.style.border = "1px solid #2ecc71";
-                banner.innerHTML = `⚔️ ĐÒN ĐÁNH CHÍNH XÁC! Bạn gây ra -${damageMoiCau} HP lên Ma Vương!`;
-                
-                let hinhBoss = document.getElementById('boss-avatar');
-                hinhBoss.style.transform = "scale(1.3)";
-                setTimeout(() => hinhBoss.style.transform = "scale(1)", 300);
+                banner.innerHTML = `⚔️ ĐÒN ĐÁNH CHÍNH XÁC! Gây -${giatDamage} HP lên Ma Vương!`;
+                phatAmThanhHanhDong('hit_boss');
             } else {
-                phatAmThanhHanhDong('monster_roar');
-                document.getElementById(`btn-ans-${indexHocSinhChon}`).classList.add('wrong');
-                document.getElementById(`btn-ans-${dapAnDung}`).classList.add('correct');
+                cauTraLoiHienTaiDaSai = true;
 
-                banner.style.backgroundColor = "rgba(231,76,60,0.2)";
-                banner.style.color = "#e74c3c";
-                banner.style.border = "1px solid #e74c3c";
-                banner.innerHTML = `🛡️ TRẢ LỜI SAI! Ma Vương gầm rống dữ dội, bẻ gãy đòn đánh của bạn!`;
-
-                document.body.style.animation = "shakeScreen 0.15s 5";
-                setTimeout(() => document.body.style.animation = "", 750);
+                if (giapHoMenhConLai) {
+                    giapHoMenhConLai = false;
+                    bossGiat = 0;
+                    document.getElementById(`btn-ans-${indexHocSinhChon}`).classList.add('wrong');
+                    document.getElementById(`btn-ans-${dapAnDung}`).classList.add('correct');
+                    banner.style.backgroundColor = "rgba(52,152,219,0.2)";
+                    banner.style.color = "#3498db";
+                    banner.style.border = "1px solid #3498db";
+                    banner.innerHTML = `🛡️ GIÁP HỘ MỆNH: Hấp thụ sát thương! HP không mất.`;
+                    cauTraLoiHienTaiDaSai = false;
+                } else {
+                    playerHP = Math.max(0, playerHP - bossGiat);
+                    document.getElementById(`btn-ans-${indexHocSinhChon}`).classList.add('wrong');
+                    document.getElementById(`btn-ans-${dapAnDung}`).classList.add('correct');
+                    banner.style.backgroundColor = "rgba(231,76,60,0.2)";
+                    banner.style.color = "#e74c3c";
+                    banner.style.border = "1px solid #e74c3c";
+                    banner.innerHTML = `💥 TRẢ LỜI SAI! Boss tấn công, mất -${bossGiat} HP!`;
+                    document.body.style.animation = "shakeScreen 0.15s 5";
+                    setTimeout(() => document.body.style.animation = "", 750);
+                    phatAmThanhHanhDong('monster_roar');
+                }
             }
 
             banner.style.display = 'block';
-            document.getElementById('boss-hp-bar').style.width = bossCurrentHP + "%";
-            document.getElementById('boss-hp-text').innerText = `HP: ${bossCurrentHP} / ${bossMaxHP}`;
+            capNhatHP();
 
-            document.getElementById('explain-text').innerHTML = cauHoi.explanation || "Xem kỹ quy tắc đại số sách Chân trời sáng tạo.";
+            let explainEl = document.getElementById('explain-text');
+            explainEl.innerHTML = renderLatexText(cauHoi.explanation || "Xem kỹ quy tắc đại số sách Chân trời sáng tạo.");
             document.getElementById('explain-container').style.display = 'block';
-            
+            renderMathJax(document.getElementById('explain-container'));
+
             let nutTiep = document.getElementById('next-btn');
-            if (indexCauHienTai === danhSachCauHoi.length - 1 || bossCurrentHP <= 0) {
+            if (indexCauHienTai === danhSachCauHoi.length - 1 || bossHP <= 0 || playerHP <= 0) {
                 nutTiep.innerHTML = `Kết Thúc Trận Đấu <i class="fa-solid fa-skull"></i>`;
             }
             nutTiep.style.display = 'block';
@@ -450,51 +1103,126 @@
             if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise().catch(e => {});
         }
 
+        // ============================================================
+        //  CHUYỂN CÂU & KẾT THÚC
+        // ============================================================
         function chuyenCauTiepTheo() {
             indexCauHienTai++;
-            if (indexCauHienTai < danhSachCauHoi.length && bossCurrentHP > 0) {
+            if (indexCauHienTai < danhSachCauHoi.length && bossHP > 0 && playerHP > 0) {
                 taiCauHoiHT();
             } else {
-                dungNhacNenHoiHop();
                 document.getElementById('danger-screen').style.display = 'none';
-
-                // (Lượt đã được trừ ngay khi bắt đầu trận, xem hàm docNganHangDeBoss)
-
                 document.getElementById('quiz-area').style.display = 'none';
                 document.getElementById('victory-area').style.display = 'block';
+
+                dungNhacNenHoiHop();
 
                 let theTieuDe = document.getElementById('victory-title');
                 let theMoTa = document.getElementById('victory-desc');
 
-                // ---------------- LOGIC KIỂM TRA PHẦN THƯỞNG KHI THẮNG ----------------
-                if (bossCurrentHP <= 0) {
-                    document.getElementById('boss-avatar').innerText = "💀";
-                    document.getElementById('boss-hp-text').innerText = "HP: 0 / 100";
-                    theTieuDe.innerText = "HẠ GỤC MA VƯƠNG! 🎉";
+                if (playerHP > bossHP) {
+                    document.getElementById('boss-avatar').innerText = '💀';
+                    theTieuDe.innerText = "CHIẾN THẮNG ĐẠI KHẢI! 🎉";
                     theTieuDe.style.color = "#2ecc71";
-                    
-                    // Lấy exp thưởng do GV set trong config (Mặc định 500)
-                    let rewardExp = parseInt(localStorage.getItem('boss_reward_exp')) || 500; 
-                    let studentName = sessionStorage.getItem('hoc_school_student_name');
 
-                    if(studentName) {
-                        let currentExp = parseInt(localStorage.getItem('exp_' + studentName)) || 0;
-                        localStorage.setItem('exp_' + studentName, currentExp + rewardExp);
+                    let tyLe = playerHP / HP_MAX;
+                    let expThuong = Math.floor(200 + 300 * tyLe);
+                    let xuThuong = Math.floor(50 + 100 * tyLe);
 
-                        let currentCoin = parseInt(localStorage.getItem('coin_' + studentName)) || 50;
-                        localStorage.setItem('coin_' + studentName, currentCoin + rewardExp);
-
-                        theMoTa.innerHTML = `Tuyệt vời chiến binh toán học! Bạn đã nghiền nát thanh máu của Boss hoàn toàn.<br><br><strong style="color: #f1c40f;">🎁 PHẦN THƯỞNG: +${rewardExp} EXP & +${rewardExp} Xu đã được cộng vào tài khoản!</strong>`;
+                    let ten = layTenHocSinhHienTai();
+                    if (ten) {
+                        let currentExp = parseInt(localStorage.getItem('exp_' + ten)) || 0;
+                        localStorage.setItem('exp_' + ten, currentExp + expThuong);
+                        let currentCoin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
+                        localStorage.setItem('coin_' + ten, currentCoin + xuThuong);
+                        theMoTa.innerHTML = `
+                            🏆 Chiến binh đã bảo vệ thành công vương quốc!<br>
+                            💚 HP còn lại: ${Math.round(playerHP)}% → thưởng <b style="color:#f1c40f;">+${expThuong} EXP & +${xuThuong} Xu</b>!
+                        `;
                     } else {
-                        theMoTa.innerText = "Tuyệt vời chiến binh toán học! Bạn đã nghiền nát thanh máu của Boss hoàn toàn.";
+                        theMoTa.innerText = `Chiến thắng rực rỡ! HP còn lại ${Math.round(playerHP)}%`;
                     }
                 } else {
-                    theTieuDe.innerText = "THẤT BẠI TRỞ VỀ! 💥";
                     theTieuDe.style.color = "#e74c3c";
                     document.getElementById('victory-area').style.borderColor = "#e74c3c";
-                    theMoTa.innerText = `Ma Vương vẫn còn sống với ${bossCurrentHP} HP! Hãy rèn luyện thêm công thức toán để phục thù tuần sau nhé.`;
+                    theTieuDe.innerText = "THẤT BẠI TRỞ VỀ! 💥";
+                    theMoTa.innerText = `Ma Vương vẫn còn ${Math.round(bossHP)} HP, bạn chỉ còn ${Math.round(playerHP)} HP. Hãy rèn luyện thêm!`;
                 }
             }
+        }
+
+        // ============================================================
+        //  KHỞI TẠO
+        // ============================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            let coLuot = kiemTraVaHienThiLuotBoss();
+            if (coLuot) {
+                phatAmThanhHanhDong('danger_alarm');
+
+                let ten = layTenHocSinhHienTai();
+                if (ten) {
+                    docNganHangDeBoss();
+                } else {
+                    document.querySelector('.boss-card').insertAdjacentHTML('afterend', `
+                        <div style="background:#1a2236; padding:16px; border-radius:12px; margin-top:12px; text-align:center; border:1px solid #3498db;">
+                            <p style="color:#f1c40f; font-weight:bold; font-size:0.95rem;"><i class="fa-solid fa-circle-exclamation"></i> Nhập tên để bắt đầu!</p>
+                            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:6px;">
+                                <input type="text" id="quick-name-input" placeholder="Họ và tên" style="padding:10px; border-radius:8px; background:#0b111e; border:1px solid #233354; color:white; font-size:0.95rem; flex:1; min-width:160px;">
+                                <button onclick="dangNhapNhanh()" style="background:#3498db; color:white; border:none; padding:10px 18px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.95rem;">Vào trận</button>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+        });
+
+        function dangNhapNhanh() {
+            let input = document.getElementById('quick-name-input');
+            if (!input) return;
+            let name = input.value.trim();
+            if (!name) return alert('Vui lòng nhập tên!');
+            sessionStorage.setItem('hoc_school_student_name', name);
+            sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
+            let quick = document.querySelector('.boss-card + div');
+            if (quick) quick.remove();
+            docNganHangDeBoss();
+        }
+
+        function kiemTraVaHienThiLuotBoss() {
+            let duLieu = layDuLieuLuotBoss();
+            let soLuotToiDa = laySoLuotBossToiDa();
+
+            let thongBaoEl = document.getElementById('boss-luot-status');
+            if (!thongBaoEl) {
+                thongBaoEl = document.createElement('div');
+                thongBaoEl.id = 'boss-luot-status';
+                thongBaoEl.style.cssText = 'margin-top: 12px; padding: 12px 16px; border-radius: 8px; border: 1px solid; font-size: 0.9rem; font-weight: 500; text-align: center;';
+                document.querySelector('.boss-card').after(thongBaoEl);
+            }
+
+            if (!duLieu) {
+                thongBaoEl.style.background = 'rgba(231,76,60,0.12)';
+                thongBaoEl.style.borderColor = '#e74c3c';
+                thongBaoEl.style.color = '#e74c3c';
+                thongBaoEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Chưa xác định danh tính. Vui lòng đăng nhập.`;
+                return false;
+            }
+
+            thongBaoEl.style.display = 'block';
+
+            if (duLieu.soLuotConLai <= 0) {
+                thongBaoEl.style.background = 'rgba(231,76,60,0.12)';
+                thongBaoEl.style.borderColor = '#e74c3c';
+                thongBaoEl.style.color = '#e74c3c';
+                thongBaoEl.innerHTML = `<i class="fa-solid fa-lock"></i> Em đã dùng hết <b>${soLuotToiDa} lượt</b> khiêu chiến Boss tuần này!`;
+                return false;
+            }
+
+            thongBaoEl.style.background = 'rgba(231,76,60,0.10)';
+            thongBaoEl.style.borderColor = '#e74c3c';
+            thongBaoEl.style.color = '#f1c40f';
+            thongBaoEl.innerHTML = `<i class="fa-solid fa-skull-crossbones"></i> Em còn <b>${duLieu.soLuotConLai}</b> lượt khiêu chiến Boss tuần này.`;
+            return true;
         }
     </script>
 </body>

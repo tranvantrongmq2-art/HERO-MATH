@@ -38,7 +38,6 @@
         }
         #luot-quay-info b { color: inherit; }
 
-        /* Khung chứa vòng quay - quầng hào quang huyền bí, tự "thở" theo nhịp */
         #wheel-wrapper { 
             position: relative; 
             width: 320px; 
@@ -53,7 +52,6 @@
             100% { box-shadow: 0 0 45px rgba(241, 196, 15, 0.45), 0 0 80px rgba(139, 0, 0, 0.5); }
         }
         
-        /* Vòng quay chia đều 8 ô - bảng màu huyền bí thay cho sắc màu sặc sỡ ban đầu */
         #wheel { 
             width: 100%; 
             height: 100%; 
@@ -71,19 +69,24 @@
                 #3d0c1f 315deg 360deg
             );
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            position: relative;
         }
 
         .num { 
-            position: absolute; 
+            position: absolute;
             width: 100%; 
-            height: 100%; 
-            text-align: center; 
-            padding-top: 22px; 
-            font-weight: bold; 
+            height: 100%;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 18px;
             font-family: 'Cinzel Decorative', serif;
-            font-size: 1rem;
+            font-weight: bold;
+            font-size: 1.1rem;
             color: #f1c40f; 
-            text-shadow: 0 0 6px rgba(241, 196, 15, 0.7), 1px 1px 3px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 0 8px rgba(241, 196, 15, 0.7), 1px 1px 3px rgba(0, 0, 0, 0.9);
             pointer-events: none;
             box-sizing: border-box;
             transform-origin: center center;
@@ -184,7 +187,7 @@
     <a href="index.html" class="back-link">&#8592; Về Sảnh Chính</a>
 
     <script>
-        // ========================== HỆ THỐNG GIỚI HẠN LƯỢT VÒNG QUAY ==========================
+        // ------------------- HỆ THỐNG LƯỢT QUAY -------------------
         function layTenHocSinh() {
             let ten = sessionStorage.getItem('hoc_school_student_name');
             if (ten) return ten;
@@ -247,11 +250,21 @@
             }
         }
 
-        // Lưu góc xoay LŨY KẾ của vòng quay (tăng dần qua mỗi lượt, không bao giờ
-        // đặt lại về giá trị cũ) — nhờ vậy trình duyệt luôn nhận biết "transform"
-        // đã thay đổi và chạy hiệu ứng quay mượt ở MỌI lượt, không chỉ lượt đầu.
-        let gocXoayLuyKe = 0;
+        // ---------- LẤY GÓC HIỆN TẠI CỦA VÒNG QUAY ----------
+        function getCurrentAngle(element) {
+            const style = window.getComputedStyle(element);
+            const transform = style.transform;
+            if (transform === 'none') return 0;
+            const matrix = transform.match(/matrix\(([^)]+)\)/);
+            if (!matrix) return 0;
+            const values = matrix[1].split(',').map(Number);
+            // matrix(a, b, c, d, e, f) -> a = cos(angle), b = sin(angle)
+            const angle = Math.round(Math.atan2(values[1], values[0]) * (180 / Math.PI));
+            // Đưa về khoảng 0-360
+            return ((angle % 360) + 360) % 360;
+        }
 
+        // ---------- QUAY (Reset góc mỗi lần) ----------
         function quay() {
             let ten = layTenHocSinh();
             if (!ten) { alert("Chưa xác định được danh tính! Vui lòng đăng nhập từ Sảnh Chính."); return; }
@@ -268,19 +281,32 @@
             const randomIndex = Math.floor(Math.random() * 8);
             const diemTrungThuong = vals[randomIndex];
 
-            const stopDeg = 337.5 - (randomIndex * 45);
-            // Cộng thêm vào góc lũy kế (không gán lại từ 0) để mỗi lượt luôn
-            // quay tiếp từ vị trí hiện tại, đảm bảo luôn có hiệu ứng xoay.
-            gocXoayLuyKe += 1800 + stopDeg;
-            wheel.style.transform = 'rotate(' + gocXoayLuyKe + 'deg)';
+            // Góc dừng để mũi tên chỉ đúng ô randomIndex
+            // Các ô có góc: 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5
+            // Cần xoay sao cho ô đó lên đỉnh (0°): stopDeg = 360 - góc_ô
+            const stopDeg = 337.5 - randomIndex * 45; // = 360 - (22.5 + randomIndex*45)
+
+            // Lấy góc hiện tại (0-360)
+            let currentAngle = getCurrentAngle(wheel);
+
+            // Tính khoảng cách cần xoay thêm để đến stopDeg (luôn dương)
+            let delta = (stopDeg - currentAngle + 360) % 360;
+            // Thêm ít nhất 5 vòng quay để hiệu ứng mượt
+            delta += 5 * 360;
+
+            // Tổng góc mới = currentAngle + delta
+            const newAngle = currentAngle + delta;
+            wheel.style.transform = 'rotate(' + newAngle + 'deg)';
 
             setTimeout(function() {
+                // Cộng XP và Xu
                 let expHienTai = parseInt(localStorage.getItem('exp_' + ten)) || 0;
                 localStorage.setItem('exp_' + ten, expHienTai + diemTrungThuong);
 
                 let coinHienTai = parseInt(localStorage.getItem('coin_' + ten)) || 50;
                 localStorage.setItem('coin_' + ten, coinHienTai + diemTrungThuong);
 
+                // Giảm lượt quay
                 duLieu.soLuotConLai = Math.max(0, duLieu.soLuotConLai - 1);
                 localStorage.setItem(layKeyLuot(ten), JSON.stringify(duLieu));
 

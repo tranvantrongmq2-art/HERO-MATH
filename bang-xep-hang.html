@@ -73,21 +73,196 @@
             border-color: rgba(52, 152, 219, 0.3);
             transform: translateX(5px);
         }
+
+        /* ===== MODAL GIÁO VIÊN (tương tự cửa hàng) ===== */
+        .modal-overlay {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-card {
+            background: #141d30;
+            border: 2px solid #3498db;
+            border-radius: 14px;
+            padding: 20px;
+            width: 100%;
+            max-width: 720px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: #f1c40f;
+            margin-top: 0;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #0b111e;
+            border: 1px solid #233354;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+        .btn-action {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .btn-action:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(46,204,113,0.3); }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-danger:hover { box-shadow: 0 4px 12px rgba(231,76,60,0.3); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .btn-warning:hover { box-shadow: 0 4px 12px rgba(243,156,18,0.3); }
+        .btn-secondary { background: #475569; }
+        .btn-secondary:hover { background: #334155; }
+
+        .teacher-table-wrap {
+            overflow-x: auto;
+            margin-top: 12px;
+            border-radius: 10px;
+            border: 1px solid #233354;
+        }
+        .teacher-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 700px;
+        }
+        .teacher-table th {
+            background: #1f2d4a;
+            color: #3498db;
+            text-align: left;
+            padding: 8px 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+        .teacher-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #1f2d4a;
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+        .teacher-table tr:hover td { background: rgba(30,41,67,0.4); }
+
+        .editable-cell {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .editable-cell:hover {
+            background: rgba(52,152,219,0.2);
+        }
+        .editable-cell input {
+            background: #0b111e;
+            border: 1px solid #3498db;
+            color: #fff;
+            padding: 2px 6px;
+            width: 60px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .btn-small {
+            padding: 2px 8px;
+            font-size: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .btn-small:hover { transform: scale(1.05); }
+
+        .tab-btn-teacher {
+            background: #141d30;
+            color: #a4b0be;
+            border: 1px solid #233354;
+            padding: 6px 14px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.7rem;
+            margin-right: 4px;
+        }
+        .tab-btn-teacher.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .tab-content-teacher { display: none; animation: fadeIn 0.3s ease; padding-top: 12px; }
+        .tab-content-teacher.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nhatky-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #1f2d4a;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+        }
+        .nhatky-item .time { color: #5dade2; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .modal-card { padding: 12px; max-width: 100%; }
+            .teacher-table { font-size: 0.65rem; min-width: 500px; }
+            .teacher-table th, .teacher-table td { padding: 4px 6px; }
+            .btn-small { font-size: 0.5rem; padding: 1px 5px; }
+            .editable-cell input { width: 40px; font-size: 0.6rem; }
+            .tab-btn-teacher { font-size: 0.6rem; padding: 4px 10px; }
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body>
 
     <canvas id="fireworks-canvas"></canvas>
 
     <div class="max-w-4xl mx-auto">
         
-        <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-5">
+        <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-5 flex-wrap gap-2">
             <a href="index.html" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-full border border-slate-700 transition-all text-sm shadow-lg">
                 <i class="fa-solid fa-arrow-left text-yellow-500"></i> Sảnh Chính
             </a>
-            <div class="text-right">
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Mùa Giải Đấu Toán Học</p>
-                <p class="text-xs text-green-400 font-semibold mt-0.5"><i class="fa-solid fa-circle fa-fade text-[8px] mr-1"></i> Bảng điểm cập nhật liên tục</p>
+            <div class="flex items-center gap-3">
+                <button onclick="openTeacherLogin()" class="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-full border border-slate-500 transition-all text-sm shadow-lg">
+                    <i class="fa-solid fa-user-tie"></i> Giáo viên
+                </button>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Mùa Giải Đấu Toán Học</p>
+                    <p class="text-xs text-green-400 font-semibold mt-0.5"><i class="fa-solid fa-circle fa-fade text-[8px] mr-1"></i> Bảng điểm cập nhật liên tục</p>
+                </div>
             </div>
         </div>
 
@@ -101,7 +276,7 @@
         </div>
 
         <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-12 max-w-2xl mx-auto mt-6">
-            
+            <!-- Podium 2 -->
             <div id="podium-2" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(2, this)">
                 <div class="relative flex flex-col items-center">
                     <div class="absolute -top-10 text-slate-400 text-2xl font-black float-anim" style="animation-delay: 0.5s;">🥈</div>
@@ -116,6 +291,7 @@
                 </div>
             </div>
 
+            <!-- Podium 1 -->
             <div id="podium-1" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(1, this)">
                 <div class="relative flex flex-col items-center">
                     <div class="absolute -top-12 text-yellow-400 text-3xl font-black float-anim"><i class="fa-solid fa-crown"></i></div>
@@ -130,6 +306,7 @@
                 </div>
             </div>
 
+            <!-- Podium 3 -->
             <div id="podium-3" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(3, this)">
                 <div class="relative flex flex-col items-center">
                     <div class="absolute -top-10 text-orange-500 text-2xl font-black float-anim" style="animation-delay: 1s;">🥉</div>
@@ -143,7 +320,6 @@
                     <span class="text-[9px] font-bold text-orange-400 border border-orange-600 px-1.5 py-0.5 rounded-full mt-1 bg-slate-950 uppercase" id="top3-ff-tier">Tập Sự</span>
                 </div>
             </div>
-
         </div>
 
         <div class="mb-5 flex justify-between items-center px-4">
@@ -154,11 +330,104 @@
         </div>
 
         <div class="flex flex-col gap-3 mb-12" id="leaderboard-list-container">
-            </div>
+        </div>
 
     </div>
 
+    <!-- ===== MODAL ĐĂNG NHẬP GIÁO VIÊN ===== -->
+    <div id="teacher-login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <h3><i class="fa-solid fa-lock"></i> XÁC THỰC GIÁO VIÊN</h3>
+            <p style="font-size:0.85rem; color:#cbd5e1;">Vui lòng nhập mật mã để vào Cổng Điều Hành:</p>
+            <input type="password" id="teacher-password-input" class="modal-input" placeholder="Mật mã Giáo viên" autocomplete="off" onkeydown="if(event.key==='Enter') verifyTeacherPassword()">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn-action btn-secondary" onclick="closeTeacherLogin()">Hủy bỏ</button>
+                <button class="btn-action" style="background:#e67e22;" onclick="verifyTeacherPassword()">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL QUẢN TRỊ GIÁO VIÊN ===== -->
+    <div id="teacher-panel-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 1100px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #233354; padding-bottom: 8px; margin-bottom: 12px;">
+                <h3 style="margin:0; color:#f1c40f; font-size:1.1rem;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH</h3>
+                <button class="btn-action btn-secondary" onclick="closeTeacherPanel()" style="padding: 4px 12px; font-size:0.7rem;">Đóng</button>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                <button class="tab-btn-teacher active" data-tab="tab-student" onclick="switchTeacherTab('tab-student', this)"><i class="fa-solid fa-users"></i> Chiến binh</button>
+                <button class="tab-btn-teacher" data-tab="tab-log" onclick="switchTeacherTab('tab-log', this)"><i class="fa-solid fa-clock-rotate-left"></i> Nhật ký</button>
+                <button class="tab-btn-teacher" data-tab="tab-setting" onclick="switchTeacherTab('tab-setting', this)"><i class="fa-solid fa-sliders"></i> Cài đặt</button>
+            </div>
+
+            <!-- Tab Chiến binh -->
+            <div id="tab-student" class="tab-content-teacher active">
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('lam_bai')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset LB tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vuot_ai')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset Vượt ải tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vong_quay')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset VQ tất cả</button>
+                    <button class="btn-action btn-danger" onclick="if(confirm('Xóa TOÀN BỘ dữ liệu học sinh?')){localStorage.clear(); location.reload();}" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-trash-can"></i> Xóa toàn bộ</button>
+                </div>
+                <div class="teacher-table-wrap">
+                    <table class="teacher-table" id="teacher-student-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Họ tên</th>
+                                <th>Lớp</th>
+                                <th>EXP</th>
+                                <th>Xu</th>
+                                <th>Danh hiệu</th>
+                                <th>Lượt LB</th>
+                                <th>Lượt Vượt ải</th>
+                                <th>Lượt VQ</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-student-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab Nhật ký -->
+            <div id="tab-log" class="tab-content-teacher">
+                <div style="max-height: 400px; overflow-y: auto;" id="nhat-ky-list"></div>
+            </div>
+
+            <!-- Tab Cài đặt -->
+            <div id="tab-setting" class="tab-content-teacher">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                    <div>
+                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt làm bài tối đa / ngày</label>
+                        <input type="number" id="max-luot-lam-bai" class="modal-input" style="width:100px; display:inline-block;" min="1" value="3">
+                        <button class="btn-action" onclick="saveMaxLuot('lam_bai')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                    </div>
+                    <div>
+                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt vượt ải tối đa / ngày</label>
+                        <input type="number" id="max-luot-vuot-ai" class="modal-input" style="width:100px; display:inline-block;" min="1" value="3">
+                        <button class="btn-action" onclick="saveMaxLuot('vuot_ai')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                    </div>
+                    <div>
+                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt vòng quay tối đa / ngày</label>
+                        <input type="number" id="max-luot-vong-quay" class="modal-input" style="width:100px; display:inline-block;" min="1" value="5">
+                        <button class="btn-action" onclick="saveMaxLuot('vong_quay')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                    </div>
+                </div>
+                <p style="font-size:0.7rem; color:#94a3b8; margin-top:12px;">* Các giá trị này áp dụng cho tất cả học sinh khi reset lượt.</p>
+                <div style="margin-top: 12px;">
+                    <a href="vuot-ai-tuan.html" class="btn-action" style="background:#8b5cf6; color:#fff; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-mountain"></i> Vào Vượt ải</a>
+                    <a href="lam-bai.html" class="btn-action" style="background:#3498db; color:#fff; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-book"></i> Vào Làm bài</a>
+                    <a href="vong-quay.html" class="btn-action" style="background:#f39c12; color:#000; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-rotate"></i> Vào Vòng quay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // ============================================================
+        // PHẦN HIỆN CÓ (bảng xếp hạng, pháo hoa, ...) - GIỮ NGUYÊN
+        // ============================================================
         // Hệ thống cấp bậc danh hiệu Free Fire dựa trên EXP tích lũy của học sinh
         function getFreeFireTier(exp) {
             if (exp < 10) return { name: "Tập Sự", color: "#94a3b8", bg: "rgba(148, 163, 184, 0.15)" };
@@ -183,6 +452,10 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadLeaderboardData();
             initFireworksEngine();
+            // Load cài đặt số lượt tối đa
+            document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
+            document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
+            document.getElementById('max-luot-vong-quay').value = localStorage.getItem('so_luot_vong_quay_toi_da') || 5;
         });
 
         function loadLeaderboardData() {
@@ -345,6 +618,238 @@
             for (let i = 0; i < 80; i++) {
                 particles.push(new FireworkParticle(posX, posY, colorPalette[Math.floor(Math.random() * colorPalette.length)]));
             }
+        }
+
+        // ============================================================
+        // PHẦN MỚI: CHẾ ĐỘ GIÁO VIÊN (đã sửa)
+        // ============================================================
+        function openTeacherLogin() {
+            document.getElementById('teacher-password-input').value = "";
+            document.getElementById('teacher-login-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('teacher-password-input').focus(), 100);
+        }
+        function closeTeacherLogin() {
+            document.getElementById('teacher-login-modal').style.display = 'none';
+        }
+        function verifyTeacherPassword() {
+            let matKhau = document.getElementById('teacher-password-input').value;
+            if (matKhau === "123456") {
+                closeTeacherLogin();
+                openTeacherPanel();
+            } else {
+                alert("Mật mã không chính xác!");
+            }
+        }
+        function openTeacherPanel() {
+            document.getElementById('teacher-panel-modal').style.display = 'flex';
+            renderTeacherStudentList();
+            renderNhatKy();
+        }
+        function closeTeacherPanel() {
+            document.getElementById('teacher-panel-modal').style.display = 'none';
+        }
+
+        function switchTeacherTab(tabId, btn) {
+            document.querySelectorAll('.tab-content-teacher').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn-teacher').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            if (tabId === 'tab-student') renderTeacherStudentList();
+            if (tabId === 'tab-log') renderNhatKy();
+        }
+
+        // Lấy danh sách tất cả học sinh từ localStorage (dựa trên key exp_)
+        function getAllStudents() {
+            let students = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('exp_')) {
+                    let ten = key.replace('exp_', '');
+                    let exp = parseInt(localStorage.getItem(key)) || 0;
+                    let coin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
+                    // Lấy lớp từ nhật ký hoặc từ user object
+                    let lop = "Khối 7";
+                    let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                    let timThay = nhatKy.find(item => item.name === ten);
+                    if (timThay) lop = timThay.className || "Khối 7";
+                    // Lượt làm bài
+                    let luotLB = getLuotConLai(ten, 'lam_bai');
+                    let luotVA = getLuotConLai(ten, 'vuot_ai');
+                    let luotVQ = getLuotConLai(ten, 'vong_quay');
+                    students.push({ ten, exp, coin, lop, luotLB, luotVA, luotVQ });
+                }
+            }
+            // Sắp xếp theo EXP giảm dần
+            students.sort((a,b) => b.exp - a.exp);
+            return students;
+        }
+
+        function getLuotConLai(ten, loai) {
+            let key = `luot_${loai}_${ten}`;
+            let data = JSON.parse(localStorage.getItem(key));
+            if (!data) return 0;
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            if (data.date !== homNay) return 0;
+            return data.soLuotConLai || 0;
+        }
+
+        function renderTeacherStudentList() {
+            let tbody = document.getElementById('teacher-student-tbody');
+            let students = getAllStudents();
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#7f8c8d; padding:20px;">Chưa có học sinh nào.</td></tr>`;
+                return;
+            }
+            let html = "";
+            students.forEach((s, idx) => {
+                let tier = getFreeFireTier(s.exp);
+                let tierColor = tier.color;
+                html += `<tr>
+                    <td>${idx+1}</td>
+                    <td><b>${s.ten}</b></td>
+                    <td>${s.lop}</td>
+                    <td>
+                        <span class="editable-cell" onclick="editExp('${s.ten}', this)">${s.exp}</span>
+                    </td>
+                    <td>
+                        <span class="editable-cell" onclick="editCoin('${s.ten}', this)">${s.coin}</span>
+                    </td>
+                    <td style="color:${tierColor}; font-weight:bold;">${tier.name}</td>
+                    <td>${s.luotLB}</td>
+                    <td>${s.luotVA}</td>
+                    <td>${s.luotVQ}</td>
+                    <td style="white-space:nowrap;">
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','lam_bai')" title="Reset lượt làm bài">LB</button>
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','vuot_ai')" title="Reset lượt vượt ải">VA</button>
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','vong_quay')" title="Reset vòng quay">VQ</button>
+                        <button class="btn-small btn-danger" onclick="deleteStudent('${s.ten}')"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function editExp(ten, el) {
+            let current = parseInt(el.innerText) || 0;
+            let newVal = prompt(`Nhập EXP mới cho ${ten}:`, current);
+            if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
+                let val = parseInt(newVal);
+                if (val < 0) val = 0;
+                localStorage.setItem('exp_' + ten, val);
+                el.innerText = val;
+                // Cập nhật lại bảng xếp hạng
+                loadLeaderboardData();
+                renderTeacherStudentList(); // refresh
+            }
+        }
+
+        function editCoin(ten, el) {
+            let current = parseInt(el.innerText) || 0;
+            let newVal = prompt(`Nhập số Xu mới cho ${ten}:`, current);
+            if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
+                let val = parseInt(newVal);
+                if (val < 0) val = 0;
+                localStorage.setItem('coin_' + ten, val);
+                el.innerText = val;
+                loadLeaderboardData();
+                renderTeacherStudentList();
+            }
+        }
+
+        function resetLuot(ten, loai) {
+            if (!confirm(`Reset lượt "${loai}" cho học sinh ${ten}?`)) return;
+            let key = `luot_${loai}_${ten}`;
+            let maxKey = `so_luot_${loai}_toi_da`;
+            let max = parseInt(localStorage.getItem(maxKey)) || (loai === 'lam_bai' ? 3 : (loai === 'vuot_ai' ? 3 : 5));
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            let data = { date: homNay, soLuotConLai: max };
+            localStorage.setItem(key, JSON.stringify(data));
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã reset lượt ${loai} cho ${ten} về ${max}.`);
+        }
+
+        function resetAllLuot(loai) {
+            if (!confirm(`Reset TẤT CẢ lượt "${loai}" cho toàn bộ học sinh?`)) return;
+            let students = getAllStudents();
+            let maxKey = `so_luot_${loai}_toi_da`;
+            let max = parseInt(localStorage.getItem(maxKey)) || (loai === 'lam_bai' ? 3 : (loai === 'vuot_ai' ? 3 : 5));
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            students.forEach(s => {
+                let key = `luot_${loai}_${s.ten}`;
+                let data = { date: homNay, soLuotConLai: max };
+                localStorage.setItem(key, JSON.stringify(data));
+            });
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã reset tất cả lượt ${loai} về ${max}.`);
+        }
+
+        function deleteStudent(ten) {
+            if (!confirm(`Xóa toàn bộ dữ liệu của học sinh "${ten}"?`)) return;
+            // Xóa các key liên quan
+            let keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && (key.startsWith('exp_') || key.startsWith('coin_') || key.startsWith('luot_') || key.startsWith('ruong_do_')) && key.includes(ten)) {
+                    keysToRemove.push(key);
+                }
+            }
+            // Xóa nhật ký đăng nhập có tên này
+            let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            nhatKy = nhatKy.filter(item => item.name !== ten);
+            localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy));
+
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã xóa học sinh ${ten}.`);
+        }
+
+        // Nhật ký
+        function renderNhatKy() {
+            let container = document.getElementById('nhat-ky-list');
+            let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            if (logs.length === 0) {
+                container.innerHTML = `<p style="color:#7f8c8d;">Chưa có nhật ký đăng nhập.</p>`;
+                return;
+            }
+            // Hiển thị ngược để mới nhất lên đầu
+            let reversed = [...logs].reverse();
+            let html = "";
+            reversed.forEach((item, idx) => {
+                let timeStr = item.time || item.dateTime || "Không rõ";
+                html += `<div class="nhatky-item">
+                    <span><b>${item.name}</b> - ${item.className || 'Khối 7'} ${item.classroom || ''}</span>
+                    <span class="time">${timeStr}</span>
+                    <button class="btn-small btn-danger" onclick="xoaNhatKy(${idx})" style="font-size:0.5rem;">Xóa</button>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function xoaNhatKy(index) {
+            let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            let reversed = [...logs].reverse();
+            let originalIndex = logs.length - 1 - index;
+            if (originalIndex >= 0 && originalIndex < logs.length) {
+                logs.splice(originalIndex, 1);
+                localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(logs));
+                renderNhatKy();
+            }
+        }
+
+        // Cài đặt số lượt tối đa
+        function saveMaxLuot(loai) {
+            let idMap = { 'lam_bai': 'max-luot-lam-bai', 'vuot_ai': 'max-luot-vuot-ai', 'vong_quay': 'max-luot-vong-quay' };
+            let input = document.getElementById(idMap[loai]);
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < 1) {
+                alert('Vui lòng nhập số nguyên dương.');
+                return;
+            }
+            localStorage.setItem(`so_luot_${loai}_toi_da`, val);
+            alert(`Đã lưu số lượt ${loai} tối đa: ${val}`);
         }
     </script>
 </body>
