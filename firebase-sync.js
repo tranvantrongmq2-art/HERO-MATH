@@ -42,6 +42,10 @@ import {
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
 
+// Cho phép các file khác (vd: bai-tap-tu-luan.html) dùng CHUNG 1 app/db Firebase
+// này thay vì tự initializeApp() lần nữa (tránh lỗi "Firebase App named '[DEFAULT]' already exists").
+export { db, appFirebase };
+
 // ------------------------------------------------------------------------
 // DANH SÁCH CÁC KEY localStorage TOÀN CỤC (không gắn theo học sinh cụ thể).
 // Đây là dữ liệu/cấu hình do GIÁO VIÊN tạo ra (ngân hàng đề, số lượt tối đa,

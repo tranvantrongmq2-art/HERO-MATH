@@ -407,6 +407,73 @@
             display: none;
         }
 
+        /* ===== DANH SÁCH BÀI NỘP (Học sinh) ===== */
+        .submission-list { margin-top: 20px; text-align: left; }
+        .submission-list h5 {
+            color: #b0bccc; font-size: 0.85rem; text-transform: uppercase;
+            letter-spacing: 0.5px; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;
+        }
+        .sub-item {
+            background: rgba(44, 58, 87, 0.35);
+            border: 1px solid #2c3a57;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .sub-item img {
+            width: 52px; height: 52px; object-fit: cover; border-radius: 8px;
+            border: 1px solid #2c3a57; flex-shrink: 0; cursor: zoom-in;
+        }
+        .sub-item .sub-info { flex: 1; min-width: 0; }
+        .sub-item .sub-name { font-weight: bold; font-size: 0.92rem; color: #ecf0f1; }
+        .sub-item .sub-meta { font-size: 0.78rem; color: #8694ad; margin-top: 2px; }
+        .sub-status { font-size: 0.78rem; font-weight: bold; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
+        .sub-status.cho-cham { background: rgba(52,152,219,0.15); color: #3498db; border: 1px solid rgba(52,152,219,0.4); }
+        .sub-status.da-cham { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.4); }
+        .sub-item .btn-mini-delete {
+            background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.4);
+            border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 0.8rem; flex-shrink: 0;
+        }
+        .sub-item .btn-mini-delete:hover { background: rgba(231,76,60,0.3); }
+        .sub-item.clickable { cursor: pointer; transition: border-color 0.2s; }
+        .sub-item.clickable:hover { border-color: #9b59b6; }
+
+        .empty-hint { color: #5d6d87; font-size: 0.85rem; text-align: center; padding: 10px 0; }
+
+        /* ===== KHU GIÁO VIÊN: danh sách chờ chấm toàn bộ ===== */
+        .teacher-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 14px; flex-wrap: wrap; gap: 8px;
+        }
+        .teacher-bar .pending-count {
+            background: rgba(155,89,182,0.15); color: #c79df0; border: 1px solid rgba(155,89,182,0.4);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
+        }
+        .btn-wipe-all {
+            background: linear-gradient(135deg, #c0392b, #922b21);
+            color: #fff; border: none; padding: 8px 16px; border-radius: 20px;
+            font-weight: bold; font-size: 0.8rem; cursor: pointer;
+        }
+        .btn-wipe-all:hover { transform: scale(1.03); }
+        .btn-back-list {
+            background: #1c263f; color: #cbd5e1; border: 1px solid #2c3a57;
+            padding: 8px 14px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; margin-bottom: 15px;
+        }
+        .grading-img-preview {
+            width: 100%; max-height: 320px; object-fit: contain; border-radius: 10px;
+            border: 2px solid #2c3a57; margin-bottom: 15px; background: #0f1626;
+        }
+        .img-zoom-overlay {
+            position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;
+        }
+        .img-zoom-overlay.active { display: flex; }
+        .img-zoom-overlay img { max-width: 100%; max-height: 100%; border-radius: 10px; }
+        .loading-spinner { text-align: center; color: #8694ad; padding: 15px; font-size: 0.85rem; }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -435,86 +502,117 @@
         </div>
 
         <div class="essay-card">
-            <h3><i class="fa-solid fa-graduation-cap"></i> PHÒNG TỰ LUẬN - MATH HERO</h3>
-            
-            <!-- Hiển thị tên học sinh đang làm bài -->
-            <div class="student-info">
-                <span>Học sinh: <b id="lbl-student-name">Học Sinh</b></span>
-                <span>EXP hiện tại: <b id="lbl-current-exp" style="color: #f1c40f;">0 EXP</b></span>
-            </div>
-            
-            <!-- Vùng Upload ảnh -->
-            <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
-                <i class="fa-solid fa-camera-rotate fa-3x"></i>
-                <p><b>Nhấn vào đây</b> để tải lên ảnh bài làm tự luận</p>
-                <p style="font-size: 0.8rem; color: #6a7b95;">(Hỗ trợ định dạng hình ảnh: .jpg, .png)</p>
-                
-                <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewFile(event)">
-                <img id="preview-img" alt="Xem trước bài làm">
-            </div>
 
-            <!-- Thẻ chờ chấm dành cho Học sinh sau khi nộp bài -->
-            <div id="waiting-status" class="waiting-status">
-                <p style="color: #3498db; font-weight: bold; margin: 0 0 5px 0;">
-                    <i class="fa-solid fa-clock-rotate-left"></i> ĐÃ NỘP BÀI GIẢI THÀNH CÔNG!
-                </p>
-                <p style="font-size: 0.85rem; color: #b0bccc; margin: 0;">Bài giải của con đang được lưu trên hệ thống. Hãy gửi thiết bị cho Thầy/Cô chấm điểm nhé.</p>
-                <button class="btn-unlock-admin" onclick="openPasswordModal()">
-                    <i class="fa-solid fa-lock"></i> Mở khoá Chế độ Giáo viên
-                </button>
-                <button class="btn-delete-submission" onclick="xoaBaiNop()">
-                    <i class="fa-solid fa-trash"></i> Xóa bài đã nộp
-                </button>
-            </div>
+            <!-- ================= GIAO DIỆN HỌC SINH ================= -->
+            <div id="student-view">
+                <h3><i class="fa-solid fa-graduation-cap"></i> PHÒNG TỰ LUẬN - MATH HERO</h3>
 
-            <!-- Bảng chấm điểm dành cho Giáo Viên (Được bảo mật khóa) -->
-            <div id="grading-panel" class="grading-panel">
-                <h4>
-                    <span><i class="fa-solid fa-marker"></i> ĐÁNH GIÁ CỦA GIÁO VIÊN:</span>
-                    <span style="font-size: 0.8rem; color: #e67e22;"><i class="fa-solid fa-user-shield"></i> Chế độ Admin</span>
-                </h4>
-                
-                <p style="margin: 5px 0 12px 0; font-size: 0.9rem; color: #b0bccc;">Chọn điểm số cho bài viết này:</p>
-                
-                <div class="score-buttons">
-                    <button class="score-btn" onclick="selectScore(1)">1</button>
-                    <button class="score-btn" onclick="selectScore(2)">2</button>
-                    <button class="score-btn" onclick="selectScore(3)">3</button>
-                    <button class="score-btn" onclick="selectScore(4)">4</button>
-                    <button class="score-btn" onclick="selectScore(5)">5</button>
-                    <button class="score-btn" onclick="selectScore(6)">6</button>
-                    <button class="score-btn" onclick="selectScore(7)">7</button>
-                    <button class="score-btn" onclick="selectScore(8)">8</button>
-                    <button class="score-btn" onclick="selectScore(9)">9</button>
-                    <button class="score-btn" onclick="selectScore(10)">10</button>
+                <!-- Hiển thị tên học sinh đang làm bài -->
+                <div class="student-info">
+                    <span>Học sinh: <b id="lbl-student-name">Học Sinh</b></span>
+                    <span>EXP hiện tại: <b id="lbl-current-exp" style="color: #f1c40f;">0 EXP</b></span>
                 </div>
 
-                <p style="margin: 15px 0 8px 0; font-size: 0.9rem; color: #b0bccc;">Nhận xét chi tiết hoặc lời khuyên:</p>
-                <textarea id="txt-comment" class="comment-area" placeholder="Bài giải rõ ràng, cách làm đúng hướng. Con cần cẩn thận hơn ở phần rút gọn phân số nhé..."></textarea>
+                <!-- Vùng Upload ảnh -->
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                    <i class="fa-solid fa-camera-rotate fa-3x"></i>
+                    <p><b>Nhấn vào đây</b> để nộp ảnh bài làm tự luận</p>
+                    <p style="font-size: 0.8rem; color: #6a7b95;">(Hỗ trợ định dạng hình ảnh: .jpg, .png — em có thể nộp nhiều bài/nhiều lần)</p>
 
-                <!-- Dự báo EXP sẽ nhận được -->
-                <div id="exp-preview" class="exp-preview-box"></div>
+                    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewFile(event)">
+                    <img id="preview-img" alt="Xem trước bài làm">
+                </div>
+                <div id="upload-progress" class="loading-spinner" style="display:none;"><i class="fa-solid fa-spinner fa-spin"></i> Đang nộp bài lên hệ thống...</div>
 
-                <button class="btn-submit" id="btn-submit" onclick="hoanTatChamDiem()">
-                    <i class="fa-solid fa-trophy"></i> XÁC NHẬN CHẤM ĐIỂM & BAN EXP
-                </button>
-            </div>
-            
-            <!-- Thẻ ăn mừng hoàn thành kèm nút điều hướng -->
-            <div id="victory-panel" class="victory-panel">
-                <h4><i class="fa-solid fa-circle-check"></i> CHẤM ĐIỂM HOÀN TẤT!</h4>
-                <div id="victory-content" class="victory-detail"></div>
-                
-                <!-- Sảnh hành động sau khi chấm điểm thành công -->
-                <div class="victory-actions">
-                    <a href="index.html" class="btn-victory-nav btn-nav-lobby">
-                        <i class="fa-solid fa-house"></i> Về Sảnh Chính
-                    </a>
-                    <button onclick="lamMoiTrangCham()" class="btn-victory-nav btn-nav-reset">
-                        <i class="fa-solid fa-rotate-left"></i> Chấm Tiếp Bài Khác
+                <!-- Danh sách bài đã nộp của học sinh -->
+                <div class="submission-list">
+                    <h5><i class="fa-solid fa-list-check"></i> Bài tự luận em đã nộp</h5>
+                    <div id="my-submissions-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn-unlock-admin" onclick="openPasswordModal()">
+                        <i class="fa-solid fa-lock"></i> Mở khoá Chế độ Giáo viên
                     </button>
                 </div>
             </div>
+
+            <!-- ================= GIAO DIỆN GIÁO VIÊN ================= -->
+            <div id="teacher-view" style="display:none;">
+                <h3><i class="fa-solid fa-user-shield"></i> CHẤM BÀI TỰ LUẬN - GIÁO VIÊN</h3>
+
+                <div id="teacher-list-screen">
+                    <div class="teacher-bar">
+                        <span class="pending-count" id="lbl-pending-count">0 bài chờ chấm</span>
+                        <button class="btn-wipe-all" onclick="xoaTatCaBaiTuLuan()">
+                            <i class="fa-solid fa-trash-can"></i> Xóa TẤT CẢ bài tự luận
+                        </button>
+                    </div>
+                    <div id="teacher-pending-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách bài chờ chấm...</div>
+                    </div>
+                </div>
+
+                <!-- Màn hình chấm 1 bài cụ thể -->
+                <div id="teacher-grade-screen" style="display:none;">
+                    <button class="btn-back-list" onclick="quayLaiDanhSachCho()"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</button>
+
+                    <div class="student-info">
+                        <span>Học sinh: <b id="grade-student-name" style="color:#3498db;"></b></span>
+                        <span id="grade-time" style="font-size:0.8rem;color:#8694ad;"></span>
+                    </div>
+
+                    <img id="grade-img" class="grading-img-preview" alt="Bài làm học sinh">
+
+                    <!-- Bảng chấm điểm dành cho Giáo Viên -->
+                    <div class="grading-panel" style="display:block;">
+                        <h4>
+                            <span><i class="fa-solid fa-marker"></i> ĐÁNH GIÁ CỦA GIÁO VIÊN:</span>
+                            <span style="font-size: 0.8rem; color: #e67e22;"><i class="fa-solid fa-user-shield"></i> Chế độ Admin</span>
+                        </h4>
+
+                        <p style="margin: 5px 0 12px 0; font-size: 0.9rem; color: #b0bccc;">Chọn điểm số cho bài viết này:</p>
+
+                        <div class="score-buttons">
+                            <button class="score-btn" onclick="selectScore(1)">1</button>
+                            <button class="score-btn" onclick="selectScore(2)">2</button>
+                            <button class="score-btn" onclick="selectScore(3)">3</button>
+                            <button class="score-btn" onclick="selectScore(4)">4</button>
+                            <button class="score-btn" onclick="selectScore(5)">5</button>
+                            <button class="score-btn" onclick="selectScore(6)">6</button>
+                            <button class="score-btn" onclick="selectScore(7)">7</button>
+                            <button class="score-btn" onclick="selectScore(8)">8</button>
+                            <button class="score-btn" onclick="selectScore(9)">9</button>
+                            <button class="score-btn" onclick="selectScore(10)">10</button>
+                        </div>
+
+                        <p style="margin: 15px 0 8px 0; font-size: 0.9rem; color: #b0bccc;">Nhận xét chi tiết hoặc lời khuyên:</p>
+                        <textarea id="txt-comment" class="comment-area" placeholder="Bài giải rõ ràng, cách làm đúng hướng. Con cần cẩn thận hơn ở phần rút gọn phân số nhé..."></textarea>
+
+                        <!-- Dự báo EXP sẽ nhận được -->
+                        <div id="exp-preview" class="exp-preview-box"></div>
+
+                        <button class="btn-submit" id="btn-submit" onclick="hoanTatChamDiem()">
+                            <i class="fa-solid fa-trophy"></i> XÁC NHẬN CHẤM ĐIỂM & BAN EXP
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Thẻ ăn mừng hoàn thành kèm nút điều hướng -->
+                <div id="victory-panel" class="victory-panel">
+                    <h4><i class="fa-solid fa-circle-check"></i> CHẤM ĐIỂM HOÀN TẤT!</h4>
+                    <div id="victory-content" class="victory-detail"></div>
+
+                    <div class="victory-actions">
+                        <button onclick="quayLaiDanhSachCho()" class="btn-victory-nav btn-nav-reset">
+                            <i class="fa-solid fa-rotate-left"></i> Chấm Tiếp Bài Khác
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -524,10 +622,10 @@
             <i class="fa-solid fa-key fa-2x" style="color: #e67e22; margin-bottom: 10px;"></i>
             <h4>BẢO MẬT GIÁO VIÊN</h4>
             <p style="font-size: 0.85rem; color: #b0bccc; margin: 0;">Vui lòng điền mã bảo mật của Thầy/Cô để mở khóa chấm bài.</p>
-            
+
             <input type="password" id="pwd-input" class="pwd-input" placeholder="••••" onkeydown="handlePasswordEnter(event)">
             <div id="pwd-error" class="pwd-error-msg">Mật mã chưa chính xác! Vui lòng thử lại.</div>
-            
+
             <div class="pwd-buttons">
                 <button class="pwd-btn pwd-btn-cancel" onclick="closePasswordModal()">HỦY BỎ</button>
                 <button class="pwd-btn pwd-btn-confirm" onclick="verifyPassword()">XÁC NHẬN</button>
@@ -535,130 +633,301 @@
         </div>
     </div>
 
+    <!-- Phóng to ảnh xem chi tiết -->
+    <div id="img-zoom" class="img-zoom-overlay" onclick="this.classList.remove('active')">
+        <img id="img-zoom-target" src="" alt="Xem ảnh phóng to">
+    </div>
+
     <script type="module">
-        import { taiDuLieuTuMay, dayDuLieuLenMay } from "./firebase-sync.js";
-        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-    </script>
-    <script>
-        // CẤU HÌNH MẬT KHẨU GIÁO VIÊN TẠI ĐÂY:
+        import { db, taiDuLieuTuMay } from "./firebase-sync.js";
+        import {
+            collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // ===================== CẤU HÌNH =====================
         const TEACHER_PASSWORD = "thaytrongmath";
+        const TEN_COLLECTION = "bai_tap_tu_luan"; // collection riêng cho bài tự luận, KHÔNG trộn với mathhero_students
 
         // Lấy tên học sinh từ hệ thống
         const tenHocSinh = sessionStorage.getItem('hoc_school_student_name') || 'Học Sinh';
-        let expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
-        let coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
-        
-        document.getElementById('lbl-student-name').innerText = tenHocSinh;
-        document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+        const lopHocSinh = sessionStorage.getItem('hoc_school_student_class') || '';
+        const lopCuTheHocSinh = sessionStorage.getItem('hoc_school_student_classroom') || '';
 
-        // Inject coin element right next to EXP
-        let expContainer = document.getElementById('lbl-current-exp').parentNode;
-        if (expContainer) {
-            let coinSpan = document.createElement('span');
-            coinSpan.style.marginLeft = '15px';
-            coinSpan.innerHTML = `Xu hiện tại: <b id="lbl-current-coin" style="color: #ffeb3b;">${coinHienTai} XU</b>`;
-            expContainer.parentNode.appendChild(coinSpan);
-        }
-
-        // FIREBASE SYNC: tải lại dữ liệu EXP/Xu mới nhất của ĐÚNG học sinh này từ Firestore,
-        // để giáo viên chấm điểm dựa trên số liệu chính xác (đề phòng học sinh vừa cộng điểm
-        // ở 1 máy khác, ví dụ vừa làm bài trắc nghiệm xong trước khi nộp bài tự luận này).
-        (async function taiLaiDuLieuMoiNhat() {
-            await window.__fbTaiDuLieuTuMay(tenHocSinh);
-            expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
-            coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
-            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
-            let coinLbl2 = document.getElementById('lbl-current-coin');
-            if (coinLbl2) coinLbl2.innerText = coinHienTai + " XU";
-        })();
-
-        let selectedScore = null;
+        let expHienTai = 0;
+        let coinHienTai = 0;
 
         // Bảng quy đổi EXP lũy tiến bắt đầu từ 5 điểm
-        const bangEXP = {
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0,
-            5: 20,
-            6: 40,
-            7: 70,
-            8: 100,
-            9: 150,
-            10: 250
-        };
+        const bangEXP = { 1:0, 2:0, 3:0, 4:0, 5:20, 6:40, 7:70, 8:100, 9:150, 10:250 };
 
-        // Xem trước ảnh và kích hoạt trạng thái chờ chấm điểm
-        function previewFile(event) {
+        let selectedScore = null;
+        let dangChamBaiId = null;   // doc id của bài đang được chấm
+        let dangChamBaiData = null; // dữ liệu bài đang được chấm
+
+        // ===================== KHỞI ĐỘNG TRANG =====================
+        (async function khoiDong() {
+            // Đồng bộ EXP/Xu mới nhất từ Firebase về máy trước khi hiển thị (đề phòng vừa được chấm trên máy khác)
+            await taiDuLieuTuMay(tenHocSinh);
+
+            expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
+            coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
+
+            document.getElementById('lbl-student-name').innerText = tenHocSinh;
+            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+
+            let expContainer = document.getElementById('lbl-current-exp').parentNode;
+            if (expContainer) {
+                let coinSpan = document.createElement('span');
+                coinSpan.style.marginLeft = '15px';
+                coinSpan.innerHTML = `Xu hiện tại: <b id="lbl-current-coin" style="color: #ffeb3b;">${coinHienTai} XU</b>`;
+                expContainer.parentNode.appendChild(coinSpan);
+            }
+
+            taiBaiNopCuaToi();
+        })();
+
+        // ===================== NÉN ẢNH TRƯỚC KHI NỘP =====================
+        // Resize ảnh xuống tối đa 1000px chiều ngang & nén JPEG ~0.65 để tránh
+        // vượt giới hạn 1MB/document của Firestore và đỡ tốn dung lượng lưu trữ.
+        function nenAnh(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX_W = 1000;
+                        let w = img.width, h = img.height;
+                        if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.65));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ===================== HỌC SINH: NỘP BÀI =====================
+        window.previewFile = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const previewImg = document.getElementById('preview-img');
-            const waitingStatus = document.getElementById('waiting-status');
-            const gradingPanel = document.getElementById('grading-panel');
-            const victoryPanel = document.getElementById('victory-panel');
-            
-            const reader = new FileReader();
-            reader.onload = function() {
-                previewImg.src = reader.result;
+            const progressBox = document.getElementById('upload-progress');
+
+            try {
+                progressBox.style.display = 'block';
+                const anhNen = await nenAnh(file);
+
+                previewImg.src = anhNen;
                 previewImg.style.display = 'block';
-                
-                // Trạng thái cho học sinh xem: Chờ chấm bài
-                waitingStatus.style.display = 'block';
-                gradingPanel.style.display = 'none';
-                victoryPanel.style.display = 'none';
-                clearGradingForm();
-            };
-            reader.readAsDataURL(file);
+
+                await addDoc(collection(db, TEN_COLLECTION), {
+                    hocSinh: tenHocSinh,
+                    lop: lopHocSinh,
+                    lopCuThe: lopCuTheHocSinh,
+                    anh: anhNen,
+                    thoiGianNop: new Date().toISOString(),
+                    daCham: false,
+                    diem: null,
+                    nhanXet: null,
+                    thoiGianCham: null
+                });
+
+                document.getElementById('file-input').value = '';
+                previewImg.style.display = 'none';
+                previewImg.src = '';
+                await taiBaiNopCuaToi();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi nộp bài:', loi);
+                alert('Có lỗi khi nộp bài lên hệ thống, vui lòng kiểm tra mạng và thử lại!');
+            } finally {
+                progressBox.style.display = 'none';
+            }
+        };
+
+        // Tải danh sách bài đã nộp của CHÍNH học sinh đang đăng nhập
+        async function taiBaiNopCuaToi() {
+            const box = document.getElementById('my-submissions-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const baiCuaToi = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.hocSinh === tenHocSinh) baiCuaToi.push({ id: d.id, ...data });
+                });
+                baiCuaToi.sort((a, b) => (b.thoiGianNop || '').localeCompare(a.thoiGianNop || ''));
+
+                if (baiCuaToi.length === 0) {
+                    box.innerHTML = '<p class="empty-hint">Em chưa nộp bài tự luận nào.</p>';
+                    return;
+                }
+
+                box.innerHTML = baiCuaToi.map(b => {
+                    const thoiGian = dinhDangThoiGian(b.thoiGianNop);
+                    if (b.daCham) {
+                        return `
+                        <div class="sub-item">
+                            <img src="${b.anh}" onclick="phongToAnh('${b.id}')">
+                            <div class="sub-info">
+                                <div class="sub-name">Điểm: ${b.diem}/10</div>
+                                <div class="sub-meta">${thoiGian}${b.nhanXet ? ' • "' + escapeHtmlAttr(b.nhanXet) + '"' : ''}</div>
+                            </div>
+                            <span class="sub-status da-cham">Đã chấm</span>
+                        </div>`;
+                    }
+                    return `
+                        <div class="sub-item">
+                            <img src="${b.anh}" onclick="phongToAnh('${b.id}')">
+                            <div class="sub-info">
+                                <div class="sub-name">Bài tự luận</div>
+                                <div class="sub-meta">${thoiGian}</div>
+                            </div>
+                            <span class="sub-status cho-cham">Chờ chấm</span>
+                            <button class="btn-mini-delete" onclick="xoaBaiNopCuaToi('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+                        </div>`;
+                }).join('');
+
+                // gắn ảnh tạm để phóng to
+                window.__baiCuaToi = baiCuaToi;
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi tải bài đã nộp:', loi);
+                box.innerHTML = '<p class="empty-hint">Không tải được danh sách, vui lòng thử lại.</p>';
+            }
         }
 
-        // Mở hộp thoại mật mã
-        function openPasswordModal() {
+        window.xoaBaiNopCuaToi = async function (id) {
+            if (!confirm('Em có chắc chắn muốn xóa bài đã nộp này không? Hành động này không thể hoàn tác.')) return;
+            try {
+                await deleteDoc(doc(db, TEN_COLLECTION, id));
+                await taiBaiNopCuaToi();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi xóa bài:', loi);
+                alert('Không xóa được bài, vui lòng thử lại.');
+            }
+        };
+
+        window.phongToAnh = function (id) {
+            const list = (window.__baiCuaToi || []).concat(window.__baiChoCham || []);
+            const bai = list.find(b => b.id === id);
+            if (!bai) return;
+            document.getElementById('img-zoom-target').src = bai.anh;
+            document.getElementById('img-zoom').classList.add('active');
+        };
+
+        function dinhDangThoiGian(iso) {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return ''; }
+        }
+        function escapeHtmlAttr(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        }
+
+        // ===================== MẬT KHẨU GIÁO VIÊN =====================
+        window.openPasswordModal = function () {
             const modal = document.getElementById('pwd-modal');
             const input = document.getElementById('pwd-input');
             const error = document.getElementById('pwd-error');
-            
             error.style.display = 'none';
             input.value = '';
             modal.classList.add('active');
             input.focus();
-        }
-
-        // Đóng hộp thoại mật mã
-        function closePasswordModal() {
+        };
+        window.closePasswordModal = function () {
             document.getElementById('pwd-modal').classList.remove('active');
-        }
-
-        // Cho phép nhấn Enter để xác nhận mật khẩu nhanh
-        function handlePasswordEnter(event) {
-            if (event.key === 'Enter') {
-                verifyPassword();
-            }
-        }
-
-        // Xác thực mật khẩu
-        function verifyPassword() {
+        };
+        window.handlePasswordEnter = function (event) {
+            if (event.key === 'Enter') verifyPassword();
+        };
+        window.verifyPassword = function () {
             const inputPwd = document.getElementById('pwd-input').value;
             const errorMsg = document.getElementById('pwd-error');
-            const waitingStatus = document.getElementById('waiting-status');
-            const gradingPanel = document.getElementById('grading-panel');
-
             if (inputPwd === TEACHER_PASSWORD) {
-                // Đăng nhập thành công chế độ giáo viên
                 closePasswordModal();
-                waitingStatus.style.display = 'none';
-                gradingPanel.style.display = 'block';
-                // Cuộn xuống khu vực chấm bài mượt mà
-                gradingPanel.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('student-view').style.display = 'none';
+                document.getElementById('teacher-view').style.display = 'block';
+                document.getElementById('teacher-list-screen').style.display = 'block';
+                document.getElementById('teacher-grade-screen').style.display = 'none';
+                document.getElementById('victory-panel').style.display = 'none';
+                taiDanhSachChoCham();
             } else {
-                // Báo lỗi mật khẩu
                 errorMsg.style.display = 'block';
                 document.getElementById('pwd-input').focus();
             }
+        };
+
+        // ===================== GIÁO VIÊN: DANH SÁCH CHỜ CHẤM (TẤT CẢ HỌC SINH) =====================
+        async function taiDanhSachChoCham() {
+            const box = document.getElementById('teacher-pending-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải danh sách bài chờ chấm...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const choCham = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (!data.daCham) choCham.push({ id: d.id, ...data });
+                });
+                choCham.sort((a, b) => (a.thoiGianNop || '').localeCompare(b.thoiGianNop || '')); // cũ nhất chấm trước
+
+                window.__baiChoCham = choCham;
+                document.getElementById('lbl-pending-count').innerText = choCham.length + ' bài chờ chấm';
+
+                if (choCham.length === 0) {
+                    box.innerHTML = '<p class="empty-hint"><i class="fa-solid fa-circle-check"></i> Không còn bài nào chờ chấm. Tuyệt vời!</p>';
+                    return;
+                }
+
+                box.innerHTML = choCham.map(b => `
+                    <div class="sub-item clickable" onclick="moChamBai('${b.id}')">
+                        <img src="${b.anh}" onclick="event.stopPropagation(); phongToAnh('${b.id}')">
+                        <div class="sub-info">
+                            <div class="sub-name">${escapeHtmlAttr(b.hocSinh)}</div>
+                            <div class="sub-meta">${b.lop ? escapeHtmlAttr(b.lop) + ' • ' : ''}${dinhDangThoiGian(b.thoiGianNop)}</div>
+                        </div>
+                        <span class="sub-status cho-cham">Chờ chấm</span>
+                    </div>
+                `).join('');
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi tải danh sách chờ chấm:', loi);
+                box.innerHTML = '<p class="empty-hint">Không tải được danh sách, vui lòng thử lại.</p>';
+            }
         }
 
-        // Reset các giá trị của form chấm bài
+        window.moChamBai = function (id) {
+            const bai = (window.__baiChoCham || []).find(b => b.id === id);
+            if (!bai) return;
+            dangChamBaiId = id;
+            dangChamBaiData = bai;
+
+            document.getElementById('grade-student-name').innerText = bai.hocSinh;
+            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianNop);
+            document.getElementById('grade-img').src = bai.anh;
+
+            clearGradingForm();
+            document.getElementById('teacher-list-screen').style.display = 'none';
+            document.getElementById('teacher-grade-screen').style.display = 'block';
+            document.getElementById('victory-panel').style.display = 'none';
+        };
+
+        window.quayLaiDanhSachCho = function () {
+            dangChamBaiId = null;
+            dangChamBaiData = null;
+            document.getElementById('teacher-grade-screen').style.display = 'none';
+            document.getElementById('victory-panel').style.display = 'none';
+            document.getElementById('teacher-list-screen').style.display = 'block';
+            taiDanhSachChoCham();
+        };
+
         function clearGradingForm() {
             selectedScore = null;
             document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('active'));
@@ -666,20 +935,12 @@
             document.getElementById('exp-preview').style.display = 'none';
         }
 
-        // Chọn điểm số
-        function selectScore(score) {
+        window.selectScore = function (score) {
             selectedScore = score;
-            
-            // Highlight nút điểm được chọn
             document.querySelectorAll('.score-btn').forEach(btn => {
-                if (parseInt(btn.innerText) === score) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+                btn.classList.toggle('active', parseInt(btn.innerText) === score);
             });
 
-            // Hiển thị EXP dự kiến nhận được tăng dần
             const expNhanDuoc = bangEXP[score] || 0;
             const expPreview = document.getElementById('exp-preview');
             expPreview.style.display = 'block';
@@ -695,77 +956,107 @@
                 expPreview.style.background = 'rgba(46, 204, 113, 0.08)';
                 expPreview.innerHTML = `<i class="fa-solid fa-bolt"></i> CHẠM MỐC ${score} ĐIỂM: Thưởng ngay +${expNhanDuoc} EXP lũy tiến cho học sinh!`;
             }
-        }
+        };
 
-        // Lưu điểm và cộng điểm EXP cho học sinh vào LocalStorage
-        function hoanTatChamDiem() {
+        // Hoàn tất chấm điểm: cập nhật doc bài nộp + cộng EXP/Xu thẳng lên Firestore
+        // (mathhero_students) để học sinh tự đồng bộ về máy của các em ở lần đăng nhập/tải lại sau.
+        window.hoanTatChamDiem = async function () {
             if (selectedScore === null) {
                 alert("Thầy ơi, Thầy chưa bấm chọn điểm số (1-10) kìa!");
                 return;
             }
+            if (!dangChamBaiId || !dangChamBaiData) return;
 
-            const comment = document.getElementById('txt-comment').value.trim() || 'Thầy đánh giá bài làm tốt, đạt yêu cầu đề ra!';
-            const expNhanDuoc = bangEXP[selectedScore] || 0;
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu...';
 
-            // Tiến hành cập nhật EXP thực tế vào máy
-            expHienTai += expNhanDuoc;
-            localStorage.setItem('exp_' + tenHocSinh, expHienTai);
-            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+            try {
+                const comment = document.getElementById('txt-comment').value.trim() || 'Thầy đánh giá bài làm tốt, đạt yêu cầu đề ra!';
+                const expNhanDuoc = bangEXP[selectedScore] || 0;
+                const tenHS = dangChamBaiData.hocSinh;
 
-            // Cập nhật Xu thực tế vào máy song song
-            coinHienTai += expNhanDuoc;
-            localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
-            let coinLbl = document.getElementById('lbl-current-coin');
-            if (coinLbl) coinLbl.innerText = coinHienTai + " XU";
+                // 1) Cập nhật doc bài nộp -> đã chấm
+                await updateDoc(doc(db, TEN_COLLECTION, dangChamBaiId), {
+                    daCham: true,
+                    diem: selectedScore,
+                    nhanXet: comment,
+                    thoiGianCham: new Date().toISOString()
+                });
 
-            // FIREBASE SYNC: đẩy ngay EXP/Xu vừa chấm lên Firestore.
-            window.__fbDayDuLieuLenMay(tenHocSinh);
+                // 2) Cộng EXP/Xu cho đúng học sinh đó thẳng lên Firestore (mathhero_students)
+                //    để máy của học sinh tự đồng bộ về khi các em mở lại trang.
+                const safeId = encodeURIComponent(tenHS);
+                const refHS = doc(db, "mathhero_students", safeId);
+                const snapHS = await getDoc(refHS);
+                const expCu = snapHS.exists() ? (parseInt(snapHS.data()['exp_' + tenHS]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHS)) || 0);
+                const coinCu = snapHS.exists() ? (parseInt(snapHS.data()['coin_' + tenHS]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHS)) || 50);
+                const expMoi = expCu + expNhanDuoc;
+                const coinMoi = coinCu + expNhanDuoc;
 
-            // Ẩn bảng nhập, hiện màn hình Victory
-            document.getElementById('grading-panel').style.display = 'none';
-            
-            const victoryPanel = document.getElementById('victory-panel');
-            const victoryContent = document.getElementById('victory-content');
-            
-            victoryPanel.style.display = 'block';
-            
-            // Xây dựng giao diện kết quả đẹp mắt
-            let textKhenNgoi = selectedScore >= 9 ? "XUẤT SẮC" : (selectedScore >= 7 ? "KHÁ TỐT" : "CẦN CỐ GẮNG");
-            victoryContent.innerHTML = `
-                <p>Học sinh <b>${tenHocSinh}</b> đã được đánh giá xếp loại: <span class="exp-badge">${textKhenNgoi}</span></p>
-                <p style="font-size: 1.5rem; margin: 15px 0;">Điểm số: <b style="color: #2ecc71;">${selectedScore}/10</b></p>
-                <p style="border-top: 1px solid #2c3a57; padding-top: 15px; text-align: left;">
-                    <b style="color: #9b59b6;"><i class="fa-solid fa-comment-dots"></i> Nhận xét của Thầy:</b><br>
-                    <i style="color: #b0bccc;">"${comment}"</i>
-                </p>
-                <div style="background: rgba(241, 196, 15, 0.15); padding: 10px; border-radius: 8px; margin-top: 15px; color: #f1c40f; font-weight: bold;">
-                    <i class="fa-solid fa-gem"></i> Tổng EXP tích lũy mới của con: ${expHienTai} EXP (đã cộng +${expNhanDuoc} EXP)
-                </div>
-            `;
-        }
+                await setDoc(refHS, {
+                    ['exp_' + tenHS]: expMoi,
+                    ['coin_' + tenHS]: coinMoi,
+                    _capNhatLanCuoi: new Date().toISOString()
+                }, { merge: true });
 
-        // Học sinh tự xóa bài đã nộp (ví dụ nộp nhầm ảnh) để làm lại từ đầu
-        function xoaBaiNop() {
-            if (confirm("Em có chắc chắn muốn xóa bài đã nộp này không? Hành động này không thể hoàn tác.")) {
-                lamMoiTrangCham();
+                // Nếu giáo viên đang chấm ngay trên máy của chính học sinh đó, cập nhật luôn localStorage hiển thị
+                if (tenHS === tenHocSinh) {
+                    expHienTai = expMoi; coinHienTai = coinMoi;
+                    localStorage.setItem('exp_' + tenHocSinh, expHienTai);
+                    localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
+                    document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+                }
+
+                // Hiện màn hình kết quả
+                document.getElementById('teacher-grade-screen').style.display = 'none';
+                const victoryPanel = document.getElementById('victory-panel');
+                const victoryContent = document.getElementById('victory-content');
+                victoryPanel.style.display = 'block';
+
+                let textKhenNgoi = selectedScore >= 9 ? "XUẤT SẮC" : (selectedScore >= 7 ? "KHÁ TỐT" : "CẦN CỐ GẮNG");
+                victoryContent.innerHTML = `
+                    <p>Học sinh <b>${escapeHtmlAttr(tenHS)}</b> đã được đánh giá xếp loại: <span class="exp-badge">${textKhenNgoi}</span></p>
+                    <p style="font-size: 1.5rem; margin: 15px 0;">Điểm số: <b style="color: #2ecc71;">${selectedScore}/10</b></p>
+                    <p style="border-top: 1px solid #2c3a57; padding-top: 15px; text-align: left;">
+                        <b style="color: #9b59b6;"><i class="fa-solid fa-comment-dots"></i> Nhận xét của Thầy:</b><br>
+                        <i style="color: #b0bccc;">"${escapeHtmlAttr(comment)}"</i>
+                    </p>
+                    <div style="background: rgba(241, 196, 15, 0.15); padding: 10px; border-radius: 8px; margin-top: 15px; color: #f1c40f; font-weight: bold;">
+                        <i class="fa-solid fa-gem"></i> EXP mới của ${escapeHtmlAttr(tenHS)}: ${expMoi} EXP (đã cộng +${expNhanDuoc} EXP)
+                    </div>
+                `;
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi chấm điểm:', loi);
+                alert('Có lỗi khi lưu điểm lên hệ thống, vui lòng kiểm tra mạng và thử lại!');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-trophy"></i> XÁC NHẬN CHẤM ĐIỂM & BAN EXP';
             }
-        }
+        };
 
-        // Hàm dọn dẹp và reset form để chuẩn bị chấm bài mới tinh
-        function lamMoiTrangCham() {
-            // Reset thẻ input file
-            document.getElementById('file-input').value = "";
-            
-            // Ẩn toàn bộ giao diện trạng thái và ảnh xem trước
-            document.getElementById('preview-img').style.display = "none";
-            document.getElementById('preview-img').src = "";
-            document.getElementById('waiting-status').style.display = "none";
-            document.getElementById('grading-panel').style.display = "none";
-            document.getElementById('victory-panel').style.display = "none";
-            
-            // Dọn sạch dữ liệu cũ trong form chấm điểm
-            clearGradingForm();
-        }
+        // ===================== GIÁO VIÊN: XÓA TẤT CẢ BÀI TỰ LUẬN =====================
+        // Dùng để dọn dẹp dung lượng Firestore (tránh đầy ô nhớ). Xóa CẢ bài chờ chấm
+        // VÀ bài đã chấm, vì lịch sử (điểm + nhận xét) không lưu ở đâu khác.
+        window.xoaTatCaBaiTuLuan = async function () {
+            if (!confirm('Thầy/Cô có chắc chắn muốn XÓA TOÀN BỘ bài tự luận của TẤT CẢ học sinh không?\n\nBao gồm cả bài chờ chấm lẫn bài đã chấm xong. Hành động này KHÔNG THỂ hoàn tác!')) return;
+            if (!confirm('Xác nhận LẦN CUỐI: xóa sạch toàn bộ bài tự luận trên hệ thống?')) return;
+
+            const box = document.getElementById('teacher-pending-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Đang xóa toàn bộ bài tự luận...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const xoaCacBai = [];
+                snap.forEach(d => xoaCacBai.push(deleteDoc(doc(db, TEN_COLLECTION, d.id))));
+                await Promise.all(xoaCacBai);
+                alert('Đã xóa toàn bộ bài tự luận trên hệ thống.');
+                taiDanhSachChoCham();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi xóa tất cả:', loi);
+                alert('Có lỗi khi xóa, vui lòng thử lại.');
+                taiDanhSachChoCham();
+            }
+        };
     </script>
 </body>
 </html>
