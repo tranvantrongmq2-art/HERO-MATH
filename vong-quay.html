@@ -186,6 +186,11 @@
     
     <a href="index.html" class="back-link">&#8592; Về Sảnh Chính</a>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+    </script>
     <script>
         // ------------------- HỆ THỐNG LƯỢT QUAY -------------------
         function layTenHocSinh() {
@@ -222,7 +227,7 @@
             return raw;
         }
 
-        function capNhatGiaoDien() {
+        async function capNhatGiaoDien() {
             let ten = layTenHocSinh();
             let infoEl = document.getElementById('luot-quay-info');
             let btn = document.getElementById('btn');
@@ -233,6 +238,10 @@
                 btn.disabled = true;
                 return;
             }
+
+            // FIREBASE SYNC: tải lại lượt quay mới nhất của học sinh này (đề phòng vừa đăng nhập
+            // từ máy mới, hoặc giáo viên vừa reset lượt quay ở admin.html trên máy khác).
+            await window.__fbTaiDuLieuTuMay(ten);
 
             let duLieu = layDuLieuLuot(ten);
             let soLuotMax = laySoLuotToiDa();
@@ -309,6 +318,9 @@
                 // Giảm lượt quay
                 duLieu.soLuotConLai = Math.max(0, duLieu.soLuotConLai - 1);
                 localStorage.setItem(layKeyLuot(ten), JSON.stringify(duLieu));
+
+                // FIREBASE SYNC: đẩy ngay EXP/Xu/lượt quay vừa cập nhật lên Firestore.
+                window.__fbDayDuLieuLenMay(ten);
 
                 document.getElementById('msg').innerText = 'Chúc mừng! Em quay trúng +' + diemTrungThuong + ' XP & +' + diemTrungThuong + ' Xu';
                 capNhatGiaoDien();

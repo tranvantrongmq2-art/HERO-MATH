@@ -558,6 +558,13 @@
 
     <div id="toast-box"></div>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+    </script>
     <script>
         // ============================================================
         //  HỆ THỐNG ÂM THANH
@@ -1135,6 +1142,7 @@
                         localStorage.setItem('exp_' + ten, currentExp + expThuong);
                         let currentCoin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
                         localStorage.setItem('coin_' + ten, currentCoin + xuThuong);
+                        window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC: đẩy ngay EXP/Xu vừa thưởng
                         theMoTa.innerHTML = `
                             🏆 Chiến binh đã bảo vệ thành công vương quốc!<br>
                             💚 HP còn lại: ${Math.round(playerHP)}% → thưởng <b style="color:#f1c40f;">+${expThuong} EXP & +${xuThuong} Xu</b>!
@@ -1154,7 +1162,14 @@
         // ============================================================
         //  KHỞI TẠO
         // ============================================================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            // FIREBASE SYNC: tải dữ liệu cá nhân (lượt Boss) và ngân hàng đề Boss toàn cục về trước
+            let tenSomKiemTra = layTenHocSinhHienTai();
+            await Promise.all([
+                window.__fbTaiCauHinhToanCuc(),
+                tenSomKiemTra ? window.__fbTaiDuLieuTuMay(tenSomKiemTra) : Promise.resolve()
+            ]);
+
             let coLuot = kiemTraVaHienThiLuotBoss();
             if (coLuot) {
                 phatAmThanhHanhDong('danger_alarm');
@@ -1176,13 +1191,15 @@
             }
         });
 
-        function dangNhapNhanh() {
+        async function dangNhapNhanh() {
             let input = document.getElementById('quick-name-input');
             if (!input) return;
             let name = input.value.trim();
             if (!name) return alert('Vui lòng nhập tên!');
             sessionStorage.setItem('hoc_school_student_name', name);
             sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
+            // FIREBASE SYNC: tải dữ liệu cá nhân của tên vừa nhập (nếu đã từng chơi từ máy khác)
+            await window.__fbTaiDuLieuTuMay(name);
             let quick = document.querySelector('.boss-card + div');
             if (quick) quick.remove();
             docNganHangDeBoss();

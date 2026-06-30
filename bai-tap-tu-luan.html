@@ -535,6 +535,11 @@
         </div>
     </div>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+    </script>
     <script>
         // CẤU HÌNH MẬT KHẨU GIÁO VIÊN TẠI ĐÂY:
         const TEACHER_PASSWORD = "thaytrongmath";
@@ -555,6 +560,18 @@
             coinSpan.innerHTML = `Xu hiện tại: <b id="lbl-current-coin" style="color: #ffeb3b;">${coinHienTai} XU</b>`;
             expContainer.parentNode.appendChild(coinSpan);
         }
+
+        // FIREBASE SYNC: tải lại dữ liệu EXP/Xu mới nhất của ĐÚNG học sinh này từ Firestore,
+        // để giáo viên chấm điểm dựa trên số liệu chính xác (đề phòng học sinh vừa cộng điểm
+        // ở 1 máy khác, ví dụ vừa làm bài trắc nghiệm xong trước khi nộp bài tự luận này).
+        (async function taiLaiDuLieuMoiNhat() {
+            await window.__fbTaiDuLieuTuMay(tenHocSinh);
+            expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
+            coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
+            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+            let coinLbl2 = document.getElementById('lbl-current-coin');
+            if (coinLbl2) coinLbl2.innerText = coinHienTai + " XU";
+        })();
 
         let selectedScore = null;
 
@@ -700,6 +717,9 @@
             localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
             let coinLbl = document.getElementById('lbl-current-coin');
             if (coinLbl) coinLbl.innerText = coinHienTai + " XU";
+
+            // FIREBASE SYNC: đẩy ngay EXP/Xu vừa chấm lên Firestore.
+            window.__fbDayDuLieuLenMay(tenHocSinh);
 
             // Ẩn bảng nhập, hiện màn hình Victory
             document.getElementById('grading-panel').style.display = 'none';

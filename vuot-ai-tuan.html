@@ -1536,6 +1536,13 @@
 
     <div id="toast-container"></div>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+    </script>
     <script>
         // ============================================================
         //  WEB AUDIO
@@ -1673,15 +1680,25 @@
         // ============================================================
         //  INIT
         // ============================================================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             nameP1 = sessionStorage.getItem('hoc_school_student_name');
             if (!nameP1) {
                 window.location.href = 'auth.html';
                 return;
             }
+
+            // FIREBASE SYNC: tải dữ liệu cá nhân (Xu, lượt Vượt Ải, các cờ thẻ đặc quyền va_...)
+            // và cấu hình toàn cục (ngân hàng đề Vượt Ải, số lượt tối đa, cấu hình từng Ải) từ
+            // Firestore về trước khi đọc localStorage để khởi tạo trang.
+            await Promise.all([
+                window.__fbTaiDuLieuTuMay(nameP1),
+                window.__fbTaiCauHinhToanCuc()
+            ]);
+
             coinP1 = parseInt(localStorage.getItem('coin_' + nameP1)) || 50;
             if (localStorage.getItem('coin_' + nameP1) === null) {
                 localStorage.setItem('coin_' + nameP1, coinP1);
+                window.__fbDayDuLieuLenMay(nameP1);
             }
 
             document.getElementById('lbl-setup-p1-name').innerText = nameP1;
@@ -1765,6 +1782,7 @@
             let luotConLai = (rawVA && rawVA.date === homNay) ? rawVA.soLuotConLai : soLuotMax;
             luotConLai = Math.max(0, luotConLai - 1);
             localStorage.setItem('luot_vuot_ai_' + nameP1, JSON.stringify({ date: homNay, soLuotConLai: luotConLai }));
+            window.__fbDayDuLieuLenMay(nameP1); // FIREBASE SYNC: đẩy ngay lượt vừa trừ
             capNhatHienThiLuotVuotAi();
         }
 
@@ -2310,6 +2328,8 @@
             // Reset thoiGianApDung
             window.thoiGianApDung = null;
 
+            window.__fbDayDuLieuLenMay(nameP1); // FIREBASE SYNC: đẩy ngay EXP/Xu/trạng thái Ải vừa cập nhật
+
             showResult(isVictory, coinChange, coinReward, expReward);
         }
 
@@ -2513,6 +2533,7 @@
             for (let i = 1; i <= 3; i++) {
                 clearAiStatus(i);
             }
+            window.__fbDayDuLieuLenMay(nameP1); // FIREBASE SYNC
             capNhatTrangThaiAi();
             capNhatNutAi();
             xemTrangThaiAi();
@@ -2533,6 +2554,7 @@
             const newCoin = current + amount;
             localStorage.setItem('coin_' + nameP1, newCoin);
             coinP1 = newCoin;
+            window.__fbDayDuLieuLenMay(nameP1); // FIREBASE SYNC
             document.getElementById('lbl-setup-p1-coin').innerText = coinP1 + ' Xu';
             document.getElementById('lbl-student-coin').innerText = coinP1;
             showToast('✅ Đã cộng ' + amount + ' Xu cho ' + nameP1, 'success');

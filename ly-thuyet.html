@@ -446,6 +446,10 @@
 
 <button class="btn-top" id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
 
+<script type="module">
+    import { taiCauHinhToanCuc } from "./firebase-sync.js";
+    window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+</script>
 <script>
 /* ============================================================
    DỮ LIỆU MẪU — sẽ bị thay bằng localStorage nếu có dữ liệu
@@ -718,8 +722,13 @@ function afterRender() {
 /* ============================================================
    KHỞI ĐỘNG
    ============================================================ */
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
   const container = document.getElementById('lesson-list');
+
+  // FIREBASE SYNC: tải lại danh sách bài học lý thuyết mới nhất từ Firestore (đề phòng
+  // giáo viên vừa nạp bài học từ 1 máy khác) trước khi đọc localStorage để hiển thị.
+  await window.__fbTaiCauHinhToanCuc();
+
   let stored = [];
   try { stored = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || []; } catch (e) {}
 

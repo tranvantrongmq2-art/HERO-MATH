@@ -421,11 +421,32 @@ $a^2 + b^2 = c^2$
         </div>
     </div>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, taiToanBoHocSinhTuMay, xoaHocSinhTrenMay } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+    </script>
     <script>
         // ============================================================
         //  HÀM TOAST VÀ CONFIRM
         // ============================================================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            showToast("Đang tải dữ liệu từ máy chủ...", "success");
+            // FIREBASE SYNC: tải TOÀN BỘ dữ liệu học sinh (mọi máy) + cấu hình toàn cục (ngân hàng đề,
+            // số lượt tối đa, nhật ký đăng nhập, lý thuyết...) về localStorage máy này TRƯỚC khi
+            // taiDuLieuHeThongAdmin() chạy logic cũ (vẫn quét localStorage như nguyên bản).
+            await window.__fbTaiCauHinhToanCuc();
+            let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
+            toanBoHocSinh.forEach(hs => {
+                Object.keys(hs.data).forEach(key => {
+                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
+                    localStorage.setItem(key, hs.data[key]);
+                });
+            });
             taiDuLieuHeThongAdmin();
         });
 
@@ -551,6 +572,7 @@ $a^2 + b^2 = c^2$
                 let nganHangDe = JSON.parse(localStorage.getItem('ngan_hang_de_trac_nghiem')) || [];
                 nganHangDe.push({ id: "bode_" + Date.now(), title: tenBoDe, level: mucDo, grade: khoiApDung, questions: danhSachCauHoi });
                 localStorage.setItem('ngan_hang_de_trac_nghiem', JSON.stringify(nganHangDe));
+                window.__fbDayCauHinhToanCuc('ngan_hang_de_trac_nghiem'); // FIREBASE SYNC
                 showToast(`Đã tự động biên dịch hoàn hảo ${danhSachCauHoi.length} câu hỏi độc lập!`, "success");
                 document.getElementById('txt-folder-name').value = ""; document.getElementById('txt-quiz-text').value = "";
                 hienThiDanhSachThuMucDe();
@@ -571,6 +593,7 @@ $a^2 + b^2 = c^2$
                 let nganHangDeBoss = JSON.parse(localStorage.getItem('ngan_hang_de_boss')) || [];
                 nganHangDeBoss.push({ id: "bodeboss_" + Date.now(), title: tenBoDe, grade: khoiApDung, questions: danhSachCauHoi });
                 localStorage.setItem('ngan_hang_de_boss', JSON.stringify(nganHangDeBoss));
+                window.__fbDayCauHinhToanCuc('ngan_hang_de_boss'); // FIREBASE SYNC
                 showToast(`Đã tự động biên dịch hoàn hảo ${danhSachCauHoi.length} câu hỏi cho Boss!`, "success");
                 document.getElementById('txt-boss-folder-name').value = ""; document.getElementById('txt-boss-quiz-text').value = "";
                 hienThiDanhSachThuMucDeBoss();
@@ -593,6 +616,7 @@ $a^2 + b^2 = c^2$
                 let nganHangDeVuotAi = JSON.parse(localStorage.getItem('ngan_hang_de_vuot_ai')) || [];
                 nganHangDeVuotAi.push({ id: "bodevuotai_" + Date.now(), title: tenBoDe, level: mucDo, grade: khoiApDung, questions: danhSachCauHoi });
                 localStorage.setItem('ngan_hang_de_vuot_ai', JSON.stringify(nganHangDeVuotAi));
+                window.__fbDayCauHinhToanCuc('ngan_hang_de_vuot_ai'); // FIREBASE SYNC
                 showToast(`Đã tự động biên dịch hoàn hảo ${danhSachCauHoi.length} câu hỏi cho Vượt ải!`, "success");
                 document.getElementById('txt-vuotai-folder-name').value = "";
                 document.getElementById('txt-vuotai-quiz-text').value = "";
@@ -617,8 +641,8 @@ $a^2 + b^2 = c^2$
                 container.innerHTML += `<div class="bode-item"><div><span class="badge-level level-${capDo}">${badgeText}</span> <span style="background-color:#3498db;color:#fff;padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:bold;margin-left:4px;">${khoiText}</span><span style="margin-left: 8px; font-weight:500;">${tenDe} (${soCau} câu)</span></div><button onclick="xoaChiTietBoDe('${de.id}')" class="btn-trash-warrior" style="padding: 2px 6px;"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
-        function xoaChiTietBoDe(id) { customConfirm("Thầy muốn xóa bộ đề đã chọn này không?", () => { let nganHangDe = JSON.parse(localStorage.getItem('ngan_hang_de_trac_nghiem')) || []; nganHangDe = nganHangDe.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_trac_nghiem', JSON.stringify(nganHangDe)); showToast("Đã xóa bộ đề!", "success"); hienThiDanhSachThuMucDe(); }); }
-        function clearNhiemVuTracNghiem() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề?", () => { localStorage.removeItem('ngan_hang_de_trac_nghiem'); showToast("Đã xóa toàn bộ bộ đề!", "success"); hienThiDanhSachThuMucDe(); }); }
+        function xoaChiTietBoDe(id) { customConfirm("Thầy muốn xóa bộ đề đã chọn này không?", () => { let nganHangDe = JSON.parse(localStorage.getItem('ngan_hang_de_trac_nghiem')) || []; nganHangDe = nganHangDe.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_trac_nghiem', JSON.stringify(nganHangDe)); window.__fbDayCauHinhToanCuc('ngan_hang_de_trac_nghiem'); showToast("Đã xóa bộ đề!", "success"); hienThiDanhSachThuMucDe(); }); }
+        function clearNhiemVuTracNghiem() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề?", () => { localStorage.removeItem('ngan_hang_de_trac_nghiem'); window.__fbDayCauHinhToanCuc('ngan_hang_de_trac_nghiem'); showToast("Đã xóa toàn bộ bộ đề!", "success"); hienThiDanhSachThuMucDe(); }); }
 
         function hienThiDanhSachThuMucDeBoss() {
             const container = document.getElementById('list-boss-folder-exist'); container.innerHTML = "";
@@ -631,8 +655,8 @@ $a^2 + b^2 = c^2$
                 container.innerHTML += `<div class="bode-item"><div><span class="badge-level level-hard">Boss</span> <span style="background-color:#3498db;color:#fff;padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:bold;margin-left:4px;">${khoiText}</span><span style="margin-left: 8px; font-weight:500;">${tenDe} (${soCau} câu)</span></div><button onclick="xoaChiTietBoDeBoss('${de.id}')" class="btn-trash-warrior" style="padding: 2px 6px;"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
-        function xoaChiTietBoDeBoss(id) { customConfirm("Thầy muốn xóa bộ đề Boss đã chọn này không?", () => { let nganHangDeBoss = JSON.parse(localStorage.getItem('ngan_hang_de_boss')) || []; nganHangDeBoss = nganHangDeBoss.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_boss', JSON.stringify(nganHangDeBoss)); showToast("Đã xóa bộ đề Boss!", "success"); hienThiDanhSachThuMucDeBoss(); }); }
-        function clearNhiemVuDeBoss() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề Boss?", () => { localStorage.removeItem('ngan_hang_de_boss'); showToast("Đã xóa toàn bộ bộ đề Boss!", "success"); hienThiDanhSachThuMucDeBoss(); }); }
+        function xoaChiTietBoDeBoss(id) { customConfirm("Thầy muốn xóa bộ đề Boss đã chọn này không?", () => { let nganHangDeBoss = JSON.parse(localStorage.getItem('ngan_hang_de_boss')) || []; nganHangDeBoss = nganHangDeBoss.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_boss', JSON.stringify(nganHangDeBoss)); window.__fbDayCauHinhToanCuc('ngan_hang_de_boss'); showToast("Đã xóa bộ đề Boss!", "success"); hienThiDanhSachThuMucDeBoss(); }); }
+        function clearNhiemVuDeBoss() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề Boss?", () => { localStorage.removeItem('ngan_hang_de_boss'); window.__fbDayCauHinhToanCuc('ngan_hang_de_boss'); showToast("Đã xóa toàn bộ bộ đề Boss!", "success"); hienThiDanhSachThuMucDeBoss(); }); }
 
         // ---- Hiển thị danh sách đề Vượt ải (mới) ----
         function hienThiDanhSachThuMucDeVuotAi() {
@@ -648,8 +672,8 @@ $a^2 + b^2 = c^2$
                 container.innerHTML += `<div class="bode-item"><div><span class="badge-level level-${capDo}">${badgeText}</span> <span style="background-color:#3498db;color:#fff;padding:3px 8px;border-radius:4px;font-size:0.75rem;font-weight:bold;margin-left:4px;">${khoiText}</span><span style="margin-left: 8px; font-weight:500;">${tenDe} (${soCau} câu)</span></div><button onclick="xoaChiTietBoDeVuotAi('${de.id}')" class="btn-trash-warrior" style="padding: 2px 6px;"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
-        function xoaChiTietBoDeVuotAi(id) { customConfirm("Thầy muốn xóa bộ đề Vượt ải này không?", () => { let nganHangDeVuotAi = JSON.parse(localStorage.getItem('ngan_hang_de_vuot_ai')) || []; nganHangDeVuotAi = nganHangDeVuotAi.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_vuot_ai', JSON.stringify(nganHangDeVuotAi)); showToast("Đã xóa bộ đề Vượt ải!", "success"); hienThiDanhSachThuMucDeVuotAi(); }); }
-        function clearNhiemVuDeVuotAi() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề Vượt ải?", () => { localStorage.removeItem('ngan_hang_de_vuot_ai'); showToast("Đã xóa toàn bộ bộ đề Vượt ải!", "success"); hienThiDanhSachThuMucDeVuotAi(); }); }
+        function xoaChiTietBoDeVuotAi(id) { customConfirm("Thầy muốn xóa bộ đề Vượt ải này không?", () => { let nganHangDeVuotAi = JSON.parse(localStorage.getItem('ngan_hang_de_vuot_ai')) || []; nganHangDeVuotAi = nganHangDeVuotAi.filter(de => de.id !== id); localStorage.setItem('ngan_hang_de_vuot_ai', JSON.stringify(nganHangDeVuotAi)); window.__fbDayCauHinhToanCuc('ngan_hang_de_vuot_ai'); showToast("Đã xóa bộ đề Vượt ải!", "success"); hienThiDanhSachThuMucDeVuotAi(); }); }
+        function clearNhiemVuDeVuotAi() { customConfirm("Xóa sạch toàn bộ danh sách bộ đề Vượt ải?", () => { localStorage.removeItem('ngan_hang_de_vuot_ai'); window.__fbDayCauHinhToanCuc('ngan_hang_de_vuot_ai'); showToast("Đã xóa toàn bộ bộ đề Vượt ải!", "success"); hienThiDanhSachThuMucDeVuotAi(); }); }
 
         // ---- Lý thuyết (giữ nguyên) ----
         function parseLyThuyet(noiDung) {
@@ -706,6 +730,7 @@ $a^2 + b^2 = c^2$
             let dsBaiHoc = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || [];
             dsBaiHoc.push({ id: "lt_" + Date.now(), title: chuong, grade: khoiApDung, children: children, date: new Date().toLocaleDateString('vi-VN') });
             localStorage.setItem('danh_sach_bai_hoc_ly_thuyet', JSON.stringify(dsBaiHoc));
+            window.__fbDayCauHinhToanCuc('danh_sach_bai_hoc_ly_thuyet'); // FIREBASE SYNC
             showToast(`Đã đăng "${chuong}" với ${children.length} mục con!`, "success");
             document.getElementById('txt-lt-chuong').value = "";
             document.getElementById('txt-lt-noidung').value = "";
@@ -724,8 +749,8 @@ $a^2 + b^2 = c^2$
                 container.innerHTML += `<div class="bode-item"><div>${khoiTag}<span style="font-weight:500; margin-left:8px;">${bai.title}</span>${mucTag}<span style="margin-left: 8px; color:#7f8c8d; font-size:0.8rem;">(${bai.date})</span></div><button onclick="xoaChiTietLyThuyet('${bai.id}')" class="btn-trash-warrior" style="padding: 2px 6px;"><i class="fa-solid fa-trash"></i></button></div>`;
             });
         }
-        function xoaChiTietLyThuyet(id) { customConfirm("Thầy muốn xóa bài học lý thuyết đã chọn này không?", () => { let dsBaiHoc = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || []; dsBaiHoc = dsBaiHoc.filter(bai => bai.id !== id); localStorage.setItem('danh_sach_bai_hoc_ly_thuyet', JSON.stringify(dsBaiHoc)); showToast("Đã xóa bài học!", "success"); hienThiDanhSachLyThuyet(); }); }
-        function clearBaiHocLyThuyet() { customConfirm("Xóa toàn bộ lý thuyết đã nạp?", () => { localStorage.removeItem('danh_sach_bai_hoc_ly_thuyet'); showToast("Đã dọn dẹp toàn bộ lý thuyết!", "success"); taiDuLieuHeThongAdmin(); }); }
+        function xoaChiTietLyThuyet(id) { customConfirm("Thầy muốn xóa bài học lý thuyết đã chọn này không?", () => { let dsBaiHoc = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || []; dsBaiHoc = dsBaiHoc.filter(bai => bai.id !== id); localStorage.setItem('danh_sach_bai_hoc_ly_thuyet', JSON.stringify(dsBaiHoc)); window.__fbDayCauHinhToanCuc('danh_sach_bai_hoc_ly_thuyet'); showToast("Đã xóa bài học!", "success"); hienThiDanhSachLyThuyet(); }); }
+        function clearBaiHocLyThuyet() { customConfirm("Xóa toàn bộ lý thuyết đã nạp?", () => { localStorage.removeItem('danh_sach_bai_hoc_ly_thuyet'); window.__fbDayCauHinhToanCuc('danh_sach_bai_hoc_ly_thuyet'); showToast("Đã dọn dẹp toàn bộ lý thuyết!", "success"); taiDuLieuHeThongAdmin(); }); }
 
         // ---- Quản lý học sinh và lượt (giữ nguyên cột Vượt ải) ----
         function taiLogHocSinh() {
@@ -773,28 +798,28 @@ $a^2 + b^2 = c^2$
             });
         }
 
-        function xoaChiTietWarriors(tenHs) { customConfirm(`Xóa toàn bộ dữ liệu của tài khoản "${tenHs}"?`, () => { let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; delete users[tenHs]; localStorage.setItem('math_hero_users_v2', JSON.stringify(users)); localStorage.removeItem('exp_' + tenHs); localStorage.removeItem('coin_' + tenHs); localStorage.removeItem('da_quay_' + tenHs); localStorage.removeItem('luot_lam_bai_' + tenHs); localStorage.removeItem('luot_boss_' + tenHs); localStorage.removeItem('luot_vong_quay_' + tenHs); localStorage.removeItem('luot_thach_dau_' + tenHs); localStorage.removeItem('luot_vuot_ai_' + tenHs); showToast(`Đã xóa sạch tài khoản ${tenHs}!`, "success"); taiLogHocSinh(); }); }
-        function clearToanBoHocSinh() { customConfirm("Xóa SẠCH toàn bộ danh sách học sinh và điểm EXP?", () => { localStorage.removeItem('math_hero_users_v2'); let keysReset = []; for (let i = 0; i < localStorage.length; i++) { let k = localStorage.key(i); if (k && (k.startsWith('exp_') || k.startsWith('coin_') || k.startsWith('da_quay_') || k.startsWith('luot_lam_bai_') || k.startsWith('luot_boss_') || k.startsWith('luot_vong_quay_') || k.startsWith('luot_thach_dau_') || k.startsWith('luot_vuot_ai_'))) keysReset.push(k); } keysReset.forEach(k => { localStorage.removeItem(k); }); showToast("Đã dọn sạch cơ sở dữ liệu!", "success"); taiLogHocSinh(); }); }
+        function xoaChiTietWarriors(tenHs) { customConfirm(`Xóa toàn bộ dữ liệu của tài khoản "${tenHs}"?`, () => { let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; delete users[tenHs]; localStorage.setItem('math_hero_users_v2', JSON.stringify(users)); window.__fbDayCauHinhToanCuc('math_hero_users_v2'); localStorage.removeItem('exp_' + tenHs); localStorage.removeItem('coin_' + tenHs); localStorage.removeItem('da_quay_' + tenHs); localStorage.removeItem('luot_lam_bai_' + tenHs); localStorage.removeItem('luot_boss_' + tenHs); localStorage.removeItem('luot_vong_quay_' + tenHs); localStorage.removeItem('luot_thach_dau_' + tenHs); localStorage.removeItem('luot_vuot_ai_' + tenHs); window.__fbXoaHocSinhTrenMay(tenHs); showToast(`Đã xóa sạch tài khoản ${tenHs}!`, "success"); taiLogHocSinh(); }); }
+        function clearToanBoHocSinh() { customConfirm("Xóa SẠCH toàn bộ danh sách học sinh và điểm EXP?", () => { let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; let tenCacHocSinh = Object.keys(users); localStorage.removeItem('math_hero_users_v2'); window.__fbDayCauHinhToanCuc('math_hero_users_v2'); let keysReset = []; for (let i = 0; i < localStorage.length; i++) { let k = localStorage.key(i); if (k && (k.startsWith('exp_') || k.startsWith('coin_') || k.startsWith('da_quay_') || k.startsWith('luot_lam_bai_') || k.startsWith('luot_boss_') || k.startsWith('luot_vong_quay_') || k.startsWith('luot_thach_dau_') || k.startsWith('luot_vuot_ai_'))) keysReset.push(k); } keysReset.forEach(k => { localStorage.removeItem(k); }); tenCacHocSinh.forEach(ten => window.__fbXoaHocSinhTrenMay(ten)); showToast("Đã dọn sạch cơ sở dữ liệu!", "success"); taiLogHocSinh(); }); }
 
         // ---- Reset các loại lượt ----
-        function resetLuotLamBaiChoHocSinh(tenHs) { customConfirm(`Reset lượt làm bài cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_lam_bai_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); showToast(`Đã reset lượt làm bài cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
-        function resetToanBoLuotLamBai() { customConfirm("Reset lượt làm bài cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_lam_bai_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); }); showToast("Đã reset lượt làm bài cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
+        function resetLuotLamBaiChoHocSinh(tenHs) { customConfirm(`Reset lượt làm bài cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_lam_bai_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(tenHs); showToast(`Đã reset lượt làm bài cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
+        function resetToanBoLuotLamBai() { customConfirm("Reset lượt làm bài cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_lam_bai_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(ten); }); showToast("Đã reset lượt làm bài cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
 
-        function resetLuotBossChoHocSinh(tenHs) { customConfirm(`Reset lượt săn Boss cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3; localStorage.setItem('luot_boss_' + tenHs, JSON.stringify({ soLuotConLai: soLuotMax })); showToast(`Đã reset lượt Boss cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
-        function resetToanBoLuotBoss() { customConfirm("Reset lượt săn Boss cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3; let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_boss_' + ten, JSON.stringify({ soLuotConLai: soLuotMax })); }); showToast("Đã reset lượt Boss cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
+        function resetLuotBossChoHocSinh(tenHs) { customConfirm(`Reset lượt săn Boss cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3; localStorage.setItem('luot_boss_' + tenHs, JSON.stringify({ soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(tenHs); showToast(`Đã reset lượt Boss cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
+        function resetToanBoLuotBoss() { customConfirm("Reset lượt săn Boss cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3; let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_boss_' + ten, JSON.stringify({ soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(ten); }); showToast("Đã reset lượt Boss cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
 
-        function resetLuotVongQuayChoHocSinh(tenHs) { customConfirm(`Reset lượt Vòng Quay cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_vong_quay_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); showToast(`Đã reset lượt Vòng Quay cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
-        function resetToanBoLuotVongQuay() { customConfirm("Reset lượt Vòng Quay cho TẤT CẢ học sinh hôm nay?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_vong_quay_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); }); showToast("Đã reset lượt Vòng Quay cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
+        function resetLuotVongQuayChoHocSinh(tenHs) { customConfirm(`Reset lượt Vòng Quay cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_vong_quay_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(tenHs); showToast(`Đã reset lượt Vòng Quay cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
+        function resetToanBoLuotVongQuay() { customConfirm("Reset lượt Vòng Quay cho TẤT CẢ học sinh hôm nay?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_vong_quay_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(ten); }); showToast("Đã reset lượt Vòng Quay cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
 
         // ---- Reset lượt Vượt ải ----
-        function resetLuotVuotAiChoHocSinh(tenHs) { customConfirm(`Reset lượt Vượt ải cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_vuot_ai_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); showToast(`Đã reset lượt Vượt ải cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
-        function resetToanBoLuotVuotAi() { customConfirm("Reset lượt Vượt ải cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_vuot_ai_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); }); showToast("Đã reset lượt Vượt ải cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
+        function resetLuotVuotAiChoHocSinh(tenHs) { customConfirm(`Reset lượt Vượt ải cho "${tenHs}"?`, () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); localStorage.setItem('luot_vuot_ai_' + tenHs, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(tenHs); showToast(`Đã reset lượt Vượt ải cho ${tenHs}!`, "success"); taiLogHocSinh(); }); }
+        function resetToanBoLuotVuotAi() { customConfirm("Reset lượt Vượt ải cho TẤT CẢ học sinh?", () => { let soLuotMax = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3; let homNay = new Date().toLocaleDateString('vi-VN'); let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {}; Object.keys(users).forEach(ten => { localStorage.setItem('luot_vuot_ai_' + ten, JSON.stringify({ date: homNay, soLuotConLai: soLuotMax })); window.__fbDayDuLieuLenMay(ten); }); showToast("Đã reset lượt Vượt ải cho tất cả học sinh!", "success"); taiLogHocSinh(); }); }
 
         // ---- Cấu hình số lượt ----
-        function luuSoLuotLamBai() { let val = parseInt(document.getElementById('inp-so-luot-lam-bai').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_lam_bai_toi_da', val); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt làm bài!`, "success"); }
-        function luuSoLuotBoss() { let val = parseInt(document.getElementById('inp-so-luot-boss').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_boss_toi_da', val); showToast(`Đã cập nhật: học sinh có ${val} lượt săn Boss!`, "success"); }
-        function luuSoLuotVongQuay() { let val = parseInt(document.getElementById('inp-so-luot-vong-quay').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_vong_quay_toi_da', val); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt Vòng Quay!`, "success"); }
-        function luuSoLuotVuotAi() { let val = parseInt(document.getElementById('inp-so-luot-vuot-ai').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_vuot_ai_toi_da', val); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt Vượt ải!`, "success"); }
+        function luuSoLuotLamBai() { let val = parseInt(document.getElementById('inp-so-luot-lam-bai').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_lam_bai_toi_da', val); window.__fbDayCauHinhToanCuc('so_luot_lam_bai_toi_da'); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt làm bài!`, "success"); }
+        function luuSoLuotBoss() { let val = parseInt(document.getElementById('inp-so-luot-boss').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_boss_toi_da', val); window.__fbDayCauHinhToanCuc('so_luot_boss_toi_da'); showToast(`Đã cập nhật: học sinh có ${val} lượt săn Boss!`, "success"); }
+        function luuSoLuotVongQuay() { let val = parseInt(document.getElementById('inp-so-luot-vong-quay').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_vong_quay_toi_da', val); window.__fbDayCauHinhToanCuc('so_luot_vong_quay_toi_da'); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt Vòng Quay!`, "success"); }
+        function luuSoLuotVuotAi() { let val = parseInt(document.getElementById('inp-so-luot-vuot-ai').value); if (!val || val < 1) { showToast("Số lượt không hợp lệ!", "error"); return; } localStorage.setItem('so_luot_vuot_ai_toi_da', val); window.__fbDayCauHinhToanCuc('so_luot_vuot_ai_toi_da'); showToast(`Đã cập nhật: mỗi ngày học sinh có ${val} lượt Vượt ải!`, "success"); }
 
         // ---- Nhật ký đăng nhập (giữ nguyên) ----
         function taiLogDangNhap() {
@@ -803,8 +828,8 @@ $a^2 + b^2 = c^2$
             if (nhatKy.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">Danh sách nhật ký đăng nhập trống.</td></tr>`; return; }
             for (let i = nhatKy.length - 1; i >= 0; i--) { let item = nhatKy[i]; tbody.innerHTML += `<tr><td>${item.name}</td><td><span style="color:#3498db; font-weight:bold;">${item.className || 'Khối 7'}</span></td><td><span style="color:#2ecc71; font-weight:bold;">${item.classroom || '—'}</span></td><td style="color: #bdc3c7; font-size: 0.85rem;">${item.time || 'Không rõ'}</td><td style="text-align: center;"><button onclick="xoaChiTietLogin(${i})" class="btn-trash-warrior"><i class="fa-solid fa-trash-can"></i></button></td></tr>`; }
         }
-        function xoaChiTietLogin(index) { customConfirm("Xóa dòng lịch sử đăng nhập này không?", () => { let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || []; nhatKy.splice(index, 1); localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy)); showToast("Đã xóa dòng nhật ký!", "success"); taiLogDangNhap(); }); }
-        function clearNhatKyDangNhap() { customConfirm("Xóa toàn bộ lịch sử đăng nhập?", () => { localStorage.removeItem('nhat_ky_dang_nhap'); showToast("Đã xóa sạch!", "success"); taiLogDangNhap(); }); }
+        function xoaChiTietLogin(index) { customConfirm("Xóa dòng lịch sử đăng nhập này không?", () => { let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || []; nhatKy.splice(index, 1); localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy)); window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); showToast("Đã xóa dòng nhật ký!", "success"); taiLogDangNhap(); }); }
+        function clearNhatKyDangNhap() { customConfirm("Xóa toàn bộ lịch sử đăng nhập?", () => { localStorage.removeItem('nhat_ky_dang_nhap'); window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); showToast("Đã xóa sạch!", "success"); taiLogDangNhap(); }); }
     </script>
 </body>
 </html>

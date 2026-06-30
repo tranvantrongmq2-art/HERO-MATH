@@ -158,6 +158,18 @@
 
     <div id="toast-container"></div>
 
+    <script type="module">
+        // ===== FIREBASE SYNC: tải bảng tài khoản (math_hero_users_v2) + nhật ký đăng nhập về máy =====
+        // TRƯỚC khi học sinh bấm Đăng Nhập/Đăng Ký, để đảm bảo máy này có đủ thông tin tài khoản
+        // đã tạo từ các máy khác (nếu không tải trước, học sinh đăng nhập từ máy mới sẽ bị báo "sai mật mã"
+        // vì máy đó chưa từng có dữ liệu users của em trong localStorage).
+        import { taiCauHinhToanCuc, dayCauHinhToanCuc, taiDuLieuTuMay } from './firebase-sync.js';
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDataReady = false;
+        taiCauHinhToanCuc().finally(() => { window.__fbDataReady = true; });
+    </script>
     <script>
         const amThanhNenMedia = document.getElementById('bg-fairy-music');
 
@@ -217,6 +229,7 @@
 
         function tienHanhDangKy() {
             phatAmThanhClick();
+            if (!window.__fbDataReady) { showToast("Hệ thống đang đồng bộ dữ liệu, vui lòng chờ 1-2 giây rồi thử lại!", "error"); return; }
             let ten = document.getElementById('reg-name').value.trim();
             let lop = document.getElementById('reg-class').value.trim();
             let lopCuThe = document.getElementById('reg-classroom').value.trim();
@@ -229,14 +242,16 @@
 
             users[ten] = { class: lop, classroom: lopCuThe, pass: pass };
             localStorage.setItem('math_hero_users_v2', JSON.stringify(users));
+            window.__fbDayCauHinhToanCuc('math_hero_users_v2'); // đẩy bảng tài khoản mới lên Firestore
             showToast("Tạo ấn ký thành công! Hãy đăng nhập.", "success");
             switchTab('login');
             document.getElementById('login-name').value = ten;
             document.getElementById('login-pass').value = pass;
         }
 
-        function tienHanhDangNhap() {
+        async function tienHanhDangNhap() {
             phatAmThanhClick();
+            if (!window.__fbDataReady) { showToast("Hệ thống đang đồng bộ dữ liệu, vui lòng chờ 1-2 giây rồi thử lại!", "error"); return; }
             let ten = document.getElementById('login-name').value.trim();
             let pass = document.getElementById('login-pass').value.trim();
 
@@ -255,10 +270,15 @@
             sessionStorage.setItem('hoc_school_student_name', ten);
             sessionStorage.setItem('hoc_school_student_class', lopHs);
             sessionStorage.setItem('hoc_school_student_classroom', lopCuTheHs);
+
+            // FIREBASE SYNC: tải về toàn bộ EXP/Xu/lượt chơi/rương đồ của ĐÚNG học sinh này
+            // (đề phòng học sinh đăng nhập từ 1 máy mới chưa từng có dữ liệu cá nhân trong localStorage).
+            await window.__fbTaiDuLieuTuMay(ten);
             
             let danhSachNhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             danhSachNhatKy.push({ name: ten, className: lopHs, classroom: lopCuTheHs, time: new Date().toLocaleString('vi-VN') });
             localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(danhSachNhatKy));
+            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // đẩy nhật ký đăng nhập mới lên Firestore
             
             window.location.href = 'index.html';
         }

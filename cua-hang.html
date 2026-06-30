@@ -735,6 +735,15 @@
 
     </div>
 
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, taiToanBoHocSinhTuMay, xoaHocSinhTrenMay } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+    </script>
     <script>
         let studentName = "";
         let studentClass = "";
@@ -784,7 +793,11 @@
             { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học", desc: "Cuốn sổ mini thần thánh ghi chép toàn bộ công thức cốt lõi.", price: 500, type: "real" }
         ];
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            // FIREBASE SYNC: tải toàn bộ cấu hình toàn cục (shop_items, số lượt tối đa...) về trước
+            // khi xử lý logic merge bộ vật phẩm mặc định, để tránh ghi đè nhầm dữ liệu của máy khác.
+            await window.__fbTaiCauHinhToanCuc();
+
             danhSachSanPham = JSON.parse(localStorage.getItem('math_hero_shop_items')) || DEFAULT_ITEMS;
 
             let soLuongTruoc = danhSachSanPham.length;
@@ -793,6 +806,7 @@
             danhSachSanPham = danhSachSanPham.filter(sp => !(sp.name || '').includes('Bùa Phục Hận'));
             if (danhSachSanPham.length !== soLuongTruoc) {
                 localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items');
             }
 
             let coThemVatPhamMoi = false;
@@ -804,9 +818,10 @@
             });
             if (coThemVatPhamMoi) {
                 localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items');
             }
 
-            kiemTraVaNapDanhTinh();
+            await kiemTraVaNapDanhTinh();
             // Load cài đặt số lượt tối đa vào modal
             document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
             document.getElementById('max-luot-boss').value = localStorage.getItem('so_luot_boss_toi_da') || 3;
@@ -828,7 +843,7 @@
             } 
         }
 
-        function kiemTraVaNapDanhTinh() {
+        async function kiemTraVaNapDanhTinh() {
             studentName = sessionStorage.getItem('hoc_school_student_name');
             studentClass = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
             studentClassroom = sessionStorage.getItem('hoc_school_student_classroom') || '';
@@ -867,6 +882,10 @@
                     </div>
                 `;
             } else {
+                // FIREBASE SYNC: tải lại dữ liệu cá nhân mới nhất (coin, rương đồ...) của đúng học sinh này
+                // trước khi hiển thị shop/rương đồ/chợ, đề phòng vừa đăng nhập từ máy mới.
+                await window.__fbTaiDuLieuTuMay(studentName);
+
                 const avatarMap = { 'Khối 6': '🐉', 'Khối 7': '⚔️', 'Khối 8': '🔥', 'Khối 9': '💀' };
                 const avatar = avatarMap[studentClass] || '🛡️';
 
@@ -898,21 +917,26 @@
             }
         }
 
-        function kichHoatDangNhapNhanh() {
+        async function kichHoatDangNhapNhanh() {
             let inputName = document.getElementById('quick-name-input').value.trim();
             if (!inputName) return alert("Vui lòng nhập tên của con!");
             sessionStorage.setItem('hoc_school_student_name', inputName);
             sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
-            
+
+            // FIREBASE SYNC: tải dữ liệu thật (nếu có) của tên này từ Firestore TRƯỚC khi gán
+            // EXP/Xu mặc định, để không ghi đè nhầm lên dữ liệu đã từng tích lũy ở máy khác.
+            await window.__fbTaiDuLieuTuMay(inputName);
+
             if (localStorage.getItem('exp_' + inputName) === null) {
                 localStorage.setItem('exp_' + inputName, 100);
             }
             if (localStorage.getItem('coin_' + inputName) === null) {
                 localStorage.setItem('coin_' + inputName, 50);
             }
-            
+            window.__fbDayDuLieuLenMay(inputName); // đẩy ngay EXP/Xu khởi tạo (nếu là học sinh mới)
+
             hienThiToast("Chào chiến binh " + inputName + " đã kết nối cửa hàng thành công!");
-            kiemTraVaNapDanhTinh();
+            await kiemTraVaNapDanhTinh();
         }
 
         function capNhatGiaoDienEXP() {
@@ -1000,6 +1024,7 @@
                     status: 'cho_nhan'
                 });
                 localStorage.setItem('ruong_do_' + studentName, JSON.stringify(myRuong));
+                window.__fbDayDuLieuLenMay(studentName); // FIREBASE SYNC: đẩy ngay Xu/rương đồ vừa mua
 
                 hienThiToast(`Đã sở hữu thành công "${tenSp}". Hãy mở tab Rương đồ để kiểm tra!`);
                 capNhatGiaoDienEXP();
@@ -1025,8 +1050,20 @@
             }
         }
 
-        function moModalQuanTri() {
+        async function moModalQuanTri() {
             document.getElementById('teacher-modal').style.display = 'flex';
+            hienThiToast("Đang tải danh sách học sinh từ máy chủ...", "success");
+
+            // FIREBASE SYNC: tải TOÀN BỘ dữ liệu học sinh (mọi máy) về localStorage của máy này,
+            // để giáo viên xem/sửa được đầy đủ, không chỉ học sinh từng chơi trên đúng máy đang đứng.
+            let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
+            toanBoHocSinh.forEach(hs => {
+                Object.keys(hs.data).forEach(key => {
+                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
+                    localStorage.setItem(key, hs.data[key]);
+                });
+            });
+
             hienThiModalQuanLyGia();
             renderTeacherStudentList();
             // Load cài đặt
@@ -1140,6 +1177,7 @@
                 let key = field === 'exp' ? 'exp_' + ten : 'coin_' + ten;
                 localStorage.setItem(key, val);
                 el.innerText = val;
+                window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC: đẩy ngay EXP/Xu giáo viên vừa chỉnh
                 renderTeacherStudentList();
                 // Cập nhật lại bảng xếp hạng nếu cần (nhưng không có bảng xếp hạng ở đây)
                 // Có thể cập nhật lại giao diện chính
@@ -1155,6 +1193,7 @@
             let key = `luot_${loai}_${ten}`;
             let data = { date: homNay, soLuotConLai: max };
             localStorage.setItem(key, JSON.stringify(data));
+            window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC: đẩy ngay lượt vừa reset
             renderTeacherStudentList();
             hienThiToast(`Đã reset lượt ${loai} cho ${ten} về ${max}.`);
         }
@@ -1169,6 +1208,7 @@
                 let key = `luot_${loai}_${s.ten}`;
                 let data = { date: homNay, soLuotConLai: max };
                 localStorage.setItem(key, JSON.stringify(data));
+                window.__fbDayDuLieuLenMay(s.ten); // FIREBASE SYNC: đẩy ngay lượt vừa reset cho từng học sinh
             });
             renderTeacherStudentList();
             hienThiToast(`Đã reset tất cả lượt ${loai} về ${max}.`);
@@ -1186,7 +1226,9 @@
             let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             nhatKy = nhatKy.filter(item => item.name !== ten);
             localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy));
+            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // đẩy nhật ký đã lọc bỏ học sinh này
             keysToRemove.forEach(k => localStorage.removeItem(k));
+            window.__fbXoaHocSinhTrenMay(ten); // FIREBASE SYNC: xóa hẳn document học sinh này trên Firestore
             renderTeacherStudentList();
             capNhatGiaoDienEXP();
             hienThiToast(`Đã xóa học sinh ${ten}.`);
@@ -1202,6 +1244,7 @@
                 return;
             }
             localStorage.setItem(`so_luot_${loai}_toi_da`, val);
+            window.__fbDayCauHinhToanCuc(`so_luot_${loai}_toi_da`); // FIREBASE SYNC
             hienThiToast(`Đã lưu số lượt ${loai} tối đa: ${val}`);
         }
 
@@ -1246,6 +1289,7 @@
             };
             danhSachSanPham.push(newItem);
             localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            window.__fbDayCauHinhToanCuc('math_hero_shop_items'); // FIREBASE SYNC
             document.getElementById('new-item-name').value = "";
             document.getElementById('new-item-desc').value = "";
             hienThiModalQuanLyGia();
@@ -1262,6 +1306,7 @@
                 }
             });
             localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            window.__fbDayCauHinhToanCuc('math_hero_shop_items'); // FIREBASE SYNC
             dongModalTeacher();
             renderOfficialShop();
             hienThiToast("Bảng giá hệ thống đã được cập nhật!", "success");
@@ -1379,6 +1424,7 @@
                 } else {
                     hienThiToast("Kích hoạt thành công!");
                 }
+                window.__fbDayDuLieuLenMay(studentName); // FIREBASE SYNC: đẩy ngay rương đồ/cờ thẻ vừa dùng
                 renderInventory();
             }
         }
@@ -1426,6 +1472,8 @@
             let cho = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
             cho.push({ id_market: "MK"+Date.now(), id_trans_goc: item.id_trans, seller: studentName, seller_class: studentClass, name: item.name, icon: item.icon, type: item.type, price: gia });
             localStorage.setItem('math_hero_marketplace', JSON.stringify(cho));
+            window.__fbDayDuLieuLenMay(studentName); // FIREBASE SYNC: đẩy rương đồ cá nhân
+            window.__fbDayCauHinhToanCuc('math_hero_marketplace'); // FIREBASE SYNC: đẩy chợ toàn cục
             dongModalBan(); renderInventory(); renderMarketplace();
             hienThiToast("Đã treo bán lên sàn tự do!");
         }
@@ -1436,6 +1484,8 @@
             localStorage.setItem('math_hero_marketplace', JSON.stringify(cho));
             myRuong[idx].status = 'cho_nhan';
             localStorage.setItem('ruong_do_' + studentName, JSON.stringify(myRuong));
+            window.__fbDayDuLieuLenMay(studentName); // FIREBASE SYNC: đẩy rương đồ cá nhân
+            window.__fbDayCauHinhToanCuc('math_hero_marketplace'); // FIREBASE SYNC: đẩy chợ toàn cục
             renderInventory(); renderMarketplace();
             hienThiToast("Đã thu hồi vật phẩm.");
         }
@@ -1460,7 +1510,7 @@
                 tbody.innerHTML += `<tr><td>${item.icon} <b>${item.name}</b></td><td style="color:#3498db;">${item.seller}</td><td>${item.seller_class}</td><td style="color:#ffeb3b; font-weight:bold;">${item.price} Xu</td><td>${btn}</td></tr>`;
             });
         }
-        function muaDoChoP2P(idMarket) {
+        async function muaDoChoP2P(idMarket) {
             let cho = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
             let item = cho.find(i => i.id_market === idMarket);
             if (item.type !== 'real') {
@@ -1471,6 +1521,11 @@
             if(buyerCoin < item.price) return hienThiToast("Bạn không đủ Xu!", "error");
 
             if(confirm(`Mua "${item.name}" với giá ${item.price} Xu?`)) {
+                // FIREBASE SYNC: tải lại dữ liệu MỚI NHẤT của người bán trước khi cộng tiền cho họ,
+                // để giảm rủi ro ghi đè nhầm lên số dư/rương đồ mới của họ (do người bán không phải
+                // người đang đứng ở máy này, dữ liệu localStorage máy này về họ có thể đã cũ).
+                await window.__fbTaiDuLieuTuMay(item.seller);
+
                 localStorage.setItem('coin_' + studentName, buyerCoin - item.price);
                 localStorage.setItem('coin_' + item.seller, (parseInt(localStorage.getItem('coin_' + item.seller)) || 50) + item.price);
 
@@ -1484,6 +1539,12 @@
 
                 cho = cho.filter(i => i.id_market !== idMarket);
                 localStorage.setItem('math_hero_marketplace', JSON.stringify(cho));
+
+                // FIREBASE SYNC: đẩy dữ liệu của CẢ NGƯỜI MUA và NGƯỜI BÁN, cùng với chợ toàn cục.
+                window.__fbDayDuLieuLenMay(studentName);
+                window.__fbDayDuLieuLenMay(item.seller);
+                window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+
                 capNhatGiaoDienEXP(); renderInventory(); renderMarketplace();
                 hienThiToast("Giao dịch thành công!");
             }

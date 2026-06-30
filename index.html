@@ -1617,6 +1617,14 @@
         window.addEventListener('DOMContentLoaded', khoiTao);
 
         /* ========== PHẦN ÂM THANH VÀ THÔNG TIN HỌC SINH ========== */
+    </script>
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+    </script>
+    <script>
         const amThanhNenMedia = document.getElementById('bg-fairy-music');
         const nutBatTatAmThanh = document.getElementById('btn-music-toggle');
         const iconBatTatAmThanh = document.getElementById('icon-music-toggle');
@@ -1640,13 +1648,21 @@
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             let tenLuu = sessionStorage.getItem('hoc_school_student_name');
             let lopLuu = sessionStorage.getItem('hoc_school_student_class');
             
             if (!tenLuu) {
                 window.location.href = 'auth.html'; return;
             }
+
+            // FIREBASE SYNC: tải lại dữ liệu mới nhất từ Firestore (đề phòng học sinh F5/mở lại
+            // trang index.html trực tiếp mà không qua lại auth.html, hoặc dữ liệu vừa được cập
+            // nhật từ 1 máy khác như admin.html chỉnh EXP/Xu thủ công).
+            await Promise.all([
+                window.__fbTaiDuLieuTuMay(tenLuu),
+                window.__fbTaiCauHinhToanCuc()
+            ]);
 
             document.getElementById('txt-student-name').innerText = tenLuu;
             document.getElementById('txt-student-class').innerText = lopLuu || '—';

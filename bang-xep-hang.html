@@ -424,6 +424,14 @@
         </div>
     </div>
 
+    <script type="module">
+        import { taiToanBoHocSinhTuMay, taiCauHinhToanCuc, dayCauHinhToanCuc, dayDuLieuLenMay, xoaHocSinhTrenMay } from "./firebase-sync.js";
+        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+    </script>
     <script>
         // ============================================================
         // PHẦN HIỆN CÓ (bảng xếp hạng, pháo hoa, ...) - GIỮ NGUYÊN
@@ -449,7 +457,19 @@
             'linear-gradient(135deg, #e74c3c, #9b59b6)'
         ];
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            // FIREBASE SYNC: tải TOÀN BỘ dữ liệu học sinh (mọi máy) + cấu hình toàn cục về localStorage
+            // của máy này TRƯỚC, để hàm loadLeaderboardData() cũ (quét localStorage) vẫn chạy đúng logic
+            // ban đầu nhưng giờ thấy đủ tất cả học sinh, không chỉ học sinh từng chơi trên đúng máy này.
+            await window.__fbTaiCauHinhToanCuc();
+            let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
+            toanBoHocSinh.forEach(hs => {
+                Object.keys(hs.data).forEach(key => {
+                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
+                    localStorage.setItem(key, hs.data[key]);
+                });
+            });
+
             loadLeaderboardData();
             initFireworksEngine();
             // Load cài đặt số lượt tối đa
@@ -737,6 +757,7 @@
                 if (val < 0) val = 0;
                 localStorage.setItem('exp_' + ten, val);
                 el.innerText = val;
+                window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
                 // Cập nhật lại bảng xếp hạng
                 loadLeaderboardData();
                 renderTeacherStudentList(); // refresh
@@ -751,6 +772,7 @@
                 if (val < 0) val = 0;
                 localStorage.setItem('coin_' + ten, val);
                 el.innerText = val;
+                window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
                 loadLeaderboardData();
                 renderTeacherStudentList();
             }
@@ -764,6 +786,7 @@
             let homNay = new Date().toLocaleDateString('vi-VN');
             let data = { date: homNay, soLuotConLai: max };
             localStorage.setItem(key, JSON.stringify(data));
+            window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
             renderTeacherStudentList();
             loadLeaderboardData();
             alert(`Đã reset lượt ${loai} cho ${ten} về ${max}.`);
@@ -779,6 +802,7 @@
                 let key = `luot_${loai}_${s.ten}`;
                 let data = { date: homNay, soLuotConLai: max };
                 localStorage.setItem(key, JSON.stringify(data));
+                window.__fbDayDuLieuLenMay(s.ten); // FIREBASE SYNC
             });
             renderTeacherStudentList();
             loadLeaderboardData();
@@ -799,8 +823,10 @@
             let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             nhatKy = nhatKy.filter(item => item.name !== ten);
             localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy));
+            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // FIREBASE SYNC
 
             keysToRemove.forEach(k => localStorage.removeItem(k));
+            window.__fbXoaHocSinhTrenMay(ten); // FIREBASE SYNC: xóa hẳn document học sinh trên Firestore
             renderTeacherStudentList();
             loadLeaderboardData();
             alert(`Đã xóa học sinh ${ten}.`);
@@ -835,6 +861,7 @@
             if (originalIndex >= 0 && originalIndex < logs.length) {
                 logs.splice(originalIndex, 1);
                 localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(logs));
+                window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // FIREBASE SYNC
                 renderNhatKy();
             }
         }
@@ -849,6 +876,7 @@
                 return;
             }
             localStorage.setItem(`so_luot_${loai}_toi_da`, val);
+            window.__fbDayCauHinhToanCuc(`so_luot_${loai}_toi_da`); // FIREBASE SYNC
             alert(`Đã lưu số lượt ${loai} tối đa: ${val}`);
         }
     </script>
