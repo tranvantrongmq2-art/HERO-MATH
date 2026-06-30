@@ -15,6 +15,14 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <!-- Đồng bộ dữ liệu Firebase: nạp module firebase-sync.js và gắn vào window
+         để các hàm <script> thường (không phải module) bên dưới có thể gọi được. -->
+    <script type="module">
+        import * as FirebaseSync from './firebase-sync.js';
+        window.FirebaseSync = FirebaseSync;
+        console.log("[Lam Bai] Đã nạp xong firebase-sync.js");
+    </script>
+
     <style>
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
         body { background-color: #0b0f19; color: #ffffff; margin: 0; padding: 12px; min-height: 100vh; }
@@ -249,13 +257,6 @@
         </div>
     </div>
 
-    <script type="module">
-        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc } from "./firebase-sync.js";
-        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
-        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
-    </script>
     <script>
         let khoThuMucDe = [];
         let danhSachCauHoiHienTai = [];
@@ -380,22 +381,18 @@
 
             dangTrongMotLuotLamBaiChuaXong = false;
             truLuotLamBaiSauKhiHoanThanh();
+            if (emHocSinhHienTai && window.FirebaseSync) window.FirebaseSync.dayDuLieuLenMay(emHocSinhHienTai);
             return true;
         }
 
         // Bấm nút "Trở về sảnh" trên thanh điều hướng đầu trang
-        async function xuLyBamVeTrangChu(suKien) {
+        function xuLyBamVeTrangChu(suKien) {
             phatAmThanh('click');
             if (dangTrongMotLuotLamBaiChuaXong && soCauDaTraLoi > 0) {
                 suKien.preventDefault();
                 let xacNhan = confirm(`Em mới làm ${soCauDaTraLoi}/${danhSachCauHoiHienTai.length} câu của bộ đề này. Nếu thoát ngay bây giờ, lượt làm bài sẽ được tính là ĐÃ HOÀN THÀNH (trừ 1 lượt, lưu điểm các câu em đã làm). Em có chắc chắn muốn thoát không?`);
                 if (xacNhan) {
                     thucHienHoanTatSomNeuDangLamDo();
-                    // FIREBASE SYNC: đây là thoát CHỦ ĐỘNG (có xác nhận), nên có thể chờ đẩy dữ liệu lên
-                    // Firestore trước khi chuyển trang. KHÔNG áp dụng cách này cho pagehide/beforeunload
-                    // bên dưới vì trình duyệt có thể cắt kết nối mạng giữa lúc đang gửi request.
-                    let tenHienTai = layTenHocSinhHienTai();
-                    if (tenHienTai) { try { await window.__fbDayDuLieuLenMay(tenHienTai); } catch (e) {} }
                     window.location.href = 'index.html';
                 }
             }
@@ -403,8 +400,6 @@
 
         // Đóng tab, tải lại trang, bấm nút Back/Forward của trình duyệt... cũng phải tính là đã thoát giữa chừng.
         // Không hiện confirm ở đây vì trình duyệt hiện đại không đảm bảo hiển thị được hộp thoại tùy biến lúc unload.
-        // LƯU Ý: không gọi Firebase sync ở đây vì pagehide/beforeunload không đảm bảo request mạng hoàn tất.
-        // Dữ liệu vẫn được lưu đúng vào localStorage, và sẽ tự đồng bộ lên Firestore ở lần đăng nhập kế tiếp.
         window.addEventListener('pagehide', () => { thucHienHoanTatSomNeuDangLamDo(); });
         window.addEventListener('beforeunload', () => { thucHienHoanTatSomNeuDangLamDo(); });
 
@@ -735,19 +730,29 @@
 
         // Script này được đặt ở cuối <body>, nên khi đoạn mã dưới đây chạy, toàn bộ DOM phía trên
         // (bao gồm #select-bo-de và #luot-lam-bai-status) đã chắc chắn được trình duyệt parse xong.
-        // FIREBASE SYNC: đợi tải dữ liệu cá nhân học sinh (lượt làm bài, thẻ đặc quyền...) và
-        // ngân hàng đề toàn cục từ Firestore về XONG rồi mới khởi tạo trang, để đảm bảo học sinh
-        // luôn thấy đúng bộ đề mới nhất và đúng số lượt còn lại, dù vừa đăng nhập từ máy nào.
-        (async function khoiTaoTrangLamBai() {
-            let tenHienTai = layTenHocSinhHienTai();
-            await Promise.all([
-                window.__fbTaiCauHinhToanCuc(),
-                tenHienTai ? window.__fbTaiDuLieuTuMay(tenHienTai) : Promise.resolve()
-            ]);
+        // Gọi trực tiếp ngay tại đây để tránh phụ thuộc vào thời điểm bắn của các event như
+        // DOMContentLoaded/pageshow (có thể không đồng nhất giữa các trình duyệt/tình huống điều hướng).
+        khoiTaoTrangLamBai();
+
+        // Kéo dữ liệu mới nhất từ Firebase (ngân hàng đề do admin nạp + điểm/lượt của chính học sinh này)
+        // về localStorage TRƯỚC khi nạp danh sách bộ đề và hiển thị giao diện, để tránh tình trạng
+        // máy đang mở không thấy được đề/điểm mới nhất đã được cập nhật từ máy khác.
+        async function khoiTaoTrangLamBai() {
+            if (window.FirebaseSync) {
+                try {
+                    await window.FirebaseSync.taiCauHinhToanCuc();
+                    let tenHsHienTai = layTenHocSinhHienTai();
+                    if (tenHsHienTai) await window.FirebaseSync.taiDuLieuTuMay(tenHsHienTai);
+                } catch (loi) {
+                    console.error("[Lam Bai] Lỗi khi tải dữ liệu từ Firebase:", loi);
+                }
+            } else {
+                console.warn("[Lam Bai] firebase-sync.js chưa sẵn sàng, dùng tạm dữ liệu local.");
+            }
             napDanhSachThuMucDeTuAdmin();
             capNhatGiaoDienLuotLamBai();
             hienThiDacQuyenDangChoApDung();
-        })();
+        }
 
         // Vẫn giữ thêm 'pageshow' để đảm bảo cập nhật lại đúng trạng thái lượt làm bài trong trường hợp
         // trang được khôi phục từ bộ nhớ đệm của trình duyệt khi bấm nút Back/Forward (bfcache).
@@ -795,15 +800,13 @@
             selectBox.innerHTML = htmlOptions;
         }
 
-        async function hocSinhChonBoDe(idBoDe) {
+        function hocSinhChonBoDe(idBoDe) {
             phatAmThanh('click');
 
             // Nếu học sinh đang làm dở 1 bộ đề khác (đã trả lời ít nhất 1 câu) mà đổi sang lựa chọn này
             // (hoặc quay về placeholder rỗng) -> coi như đã thoát giữa chừng, tính luôn là xong lượt đó.
             let vuaTinhXongLuotCu = thucHienHoanTatSomNeuDangLamDo();
             if (vuaTinhXongLuotCu) {
-                let tenHienTai = layTenHocSinhHienTai();
-                if (tenHienTai) { try { await window.__fbDayDuLieuLenMay(tenHienTai); } catch (e) {} }
                 alert("Em vừa thoát khỏi bộ đề đang làm dở. Lượt làm bài đó đã được tính là ĐÃ HOÀN THÀNH (trừ 1 lượt, đã lưu điểm các câu em làm được).");
             }
 
@@ -1057,9 +1060,7 @@
             // sự kiện rời trang (pagehide/beforeunload) hoặc nút "Trở về Trang Chủ" bên dưới không trừ lượt lần 2.
             dangTrongMotLuotLamBaiChuaXong = false;
             truLuotLamBaiSauKhiHoanThanh();
-
-            // FIREBASE SYNC: đẩy ngay EXP/Xu/lượt làm bài vừa cập nhật lên Firestore.
-            if (emHocSinhHienTai) { window.__fbDayDuLieuLenMay(emHocSinhHienTai); }
+            if (emHocSinhHienTai && window.FirebaseSync) window.FirebaseSync.dayDuLieuLenMay(emHocSinhHienTai);
 
             try { phatAmThanh('victory'); } catch (e) {}
             try {
