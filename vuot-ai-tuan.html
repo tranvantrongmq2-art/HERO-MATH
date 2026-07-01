@@ -1265,6 +1265,72 @@
                 justify-content: center;
             }
         }
+
+        /* Chống tràn chữ/công thức MathJax dài trên khung hẹp (áp dụng mọi kích thước) */
+        .question-top-left .q-text,
+        .form-group label,
+        .luot-vuotai-count,
+        .btn-answer,
+        .feedback-status,
+        .result-subtitle {
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* ===== TỐI ƯU THÊM CHO MÀN HÌNH RẤT NHỎ (điện thoại dọc cỡ nhỏ) ===== */
+        @media (max-width: 400px) {
+            body { padding: 8px; }
+            .header-navbar { padding: 8px 0; }
+            .header-logo { font-size: 1rem; }
+            .header-title { font-size: 0.72rem; }
+            .btn-back-lobby, .btn-teacher { font-size: 0.7rem; padding: 6px 10px; }
+
+            .setup-screen { padding: 14px 12px; }
+            .setup-screen h2 { font-size: 1.05rem; }
+
+            .luot-vuotai-panel {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 8px 10px;
+            }
+            .luot-vuotai-left { justify-content: center; }
+
+            .player-info-row {
+                flex-direction: column;
+                gap: 6px;
+                text-align: center;
+                padding: 10px 12px;
+            }
+
+            .ai-btn { font-size: 0.75rem; padding: 8px 10px; }
+            .ai-btn .ai-status { font-size: 0.6rem; }
+
+            .bet-buttons .btn-bet { font-size: 0.65rem; padding: 8px 2px; min-width: 0; }
+
+            .btn-start-duel { font-size: 1rem; padding: 12px; }
+
+            .question-top-left .q-text { font-size: 0.9rem; }
+            .lbl-round-index, .q-round { font-size: 0.68rem; }
+
+            .player-name { font-size: 0.95rem; }
+            .player-avatar { width: 34px; height: 34px; font-size: 0.8rem; }
+
+            .answers-grid { grid-template-columns: 1fr; gap: 6px; }
+            .btn-answer { font-size: 0.85rem; padding: 10px; }
+
+            .result-overlay { padding: 16px; }
+            .result-overlay h2 { font-size: 1.3rem; }
+            .result-overlay .result-icon { font-size: 3rem; }
+            .result-stats { gap: 8px; }
+            .result-stat-box { padding: 8px 10px; min-width: 60px; }
+            .result-stat-value { font-size: 1.3rem; }
+            .result-btn-group { flex-direction: column; align-items: stretch; }
+            .btn-result-action { justify-content: center; width: 100%; }
+
+            .admin-panel { padding: 14px 12px; }
+            .admin-panel h3 { font-size: 1.05rem; }
+        }
     </style>
 </head>
 <body>

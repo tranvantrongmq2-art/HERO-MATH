@@ -160,6 +160,38 @@
             border-color: #334155;
             color: #fff;
         }
+
+        /* ===================== TỐI ƯU GIAO DIỆN CHO MÀN HÌNH ĐIỆN THOẠI (DỌC) ===================== */
+        @media (max-width: 480px) {
+            body { padding: 14px; }
+            h1 { font-size: 1.4rem; }
+            #luot-quay-info { font-size: 0.9rem; max-width: 100%; }
+
+            /* Thu nhỏ vòng quay để không tràn khỏi màn hình hẹp, giữ tỉ lệ vuông */
+            #wheel-wrapper {
+                width: min(280px, 82vw);
+                height: min(280px, 82vw);
+                margin: 24px auto;
+            }
+            .pointer {
+                top: -22px;
+                border-left-width: 15px;
+                border-right-width: 15px;
+                border-top-width: 30px;
+            }
+            .num { font-size: 0.9rem; padding-top: 14px; }
+
+            .btn-quay { padding: 13px 34px; font-size: 1rem; }
+            #msg { font-size: 1.15rem; margin-top: 18px; }
+            .back-link { padding: 9px 20px; font-size: 0.9rem; }
+        }
+
+        @media (max-width: 360px) {
+            #wheel-wrapper { width: min(240px, 78vw); height: min(240px, 78vw); }
+            .num { font-size: 0.78rem; padding-top: 12px; }
+            h1 { font-size: 1.2rem; }
+            .btn-quay { padding: 12px 26px; font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
