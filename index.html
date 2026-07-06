@@ -1556,6 +1556,8 @@
                     let fontSize = saved.fontSize || 0.8;
                     apDungFontChoZone(zone, color, fontFamily, fontSize);
                 }
+                // 🔥 Xóa transform để tránh lệch vị trí
+                zone.style.transform = 'none';
             });
         }
 
@@ -1569,6 +1571,8 @@
             if (e.target.classList.contains('resize-handle')) return;
             e.preventDefault();
             zoneDangKeo = e.currentTarget;
+            // 🔥 Xóa transform ngay khi bắt đầu kéo
+            zoneDangKeo.style.transform = 'none';
             document.querySelectorAll('.editable-zone').forEach(z => z.classList.remove('active-zone'));
             zoneDangKeo.classList.add('active-zone');
             hienFontPanel(zoneDangKeo);
