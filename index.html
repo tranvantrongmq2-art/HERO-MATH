@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ----- RESET & NỀN (giống auth.html) ----- */
+        /* ----- RESET & NỀN ----- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,18 +17,18 @@
 
         body {
             margin: 0;
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            padding: 8px;
             font-family: 'Roboto', sans-serif;
             color: #ffffff;
             background: linear-gradient(45deg, #090912, #240b36, #0d324d, #1a0b2e);
             background-size: 400% 400%;
             animation: gradientBG 12s ease infinite;
-            overflow: hidden;
+            overflow-x: hidden;
             position: relative;
         }
 
@@ -49,12 +49,14 @@
             pointer-events: none;
         }
 
-        /* ----- CONTAINER CHÍNH (Glassmorphism + Neon) ----- */
+        /* ----- CONTAINER CHÍNH (Tỉ lệ 9:19, flex cột) ----- */
         .container {
             width: 100%;
             max-width: 440px;
-            height: 100vh;
-            max-height: 950px;
+            aspect-ratio: 9 / 19;
+            height: auto;
+            max-height: 100dvh;
+            overflow-y: auto;
             position: relative;
             z-index: 10;
             background: rgba(15, 10, 30, 0.6);
@@ -63,26 +65,41 @@
             border: 2px solid rgba(0, 255, 255, 0.3);
             border-radius: 28px;
             box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.6);
-            overflow: hidden;
+            transition: border-color 0.3s;
+            padding-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 255, 255, 0.3) transparent;
             display: flex;
             flex-direction: column;
-            transition: border-color 0.3s;
-            margin: 12px;
+        }
+        .container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
         }
         .container:hover {
             border-color: rgba(0, 255, 255, 0.7);
             box-shadow: 0 0 60px rgba(0, 255, 255, 0.25);
         }
 
-        /* ----- HEADER NAV (Thanh menu trên) ----- */
+        /* ----- HEADER NAV (sticky, co giãn) ----- */
         .header-navbar {
-            position: relative;
-            z-index: 20;
-            padding: 12px 12px 4px 12px;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(15, 10, 30, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 10px 12px 6px 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
             flex-shrink: 0;
+            border-radius: 28px 28px 0 0;
         }
         .nav-buttons {
             display: flex;
@@ -110,7 +127,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
             touch-action: manipulation;
-            backdrop-filter: blur(4px);
         }
         .header-signpost:hover,
         .header-signpost:active {
@@ -121,7 +137,7 @@
             transform: scale(1.05);
         }
 
-        /* ----- CARD THÔNG TIN CHIẾN BINH (RPG Plate) ----- */
+        /* ----- CARD THÔNG TIN CHIẾN BINH (co giãn) ----- */
         .student-status-card {
             position: relative;
             z-index: 20;
@@ -273,17 +289,17 @@
             opacity: 0.5;
         }
 
-        /* ----- KHU VỰC BẢN ĐỒ (Nhiệm vụ) ----- */
+        /* ----- KHU VỰC BẢN ĐỒ (chiếm hết phần còn lại) ----- */
         #main-lobby-area {
             flex: 1;
-            position: relative;
-            overflow: hidden;
             min-height: 0;
+            position: relative;
             margin: 0 8px 8px 8px;
             border-radius: 16px;
             background: radial-gradient(circle at 50% 60%, rgba(138, 43, 226, 0.15) 0%, transparent 60%),
                 radial-gradient(circle at 50% 100%, rgba(0, 255, 255, 0.08) 0%, transparent 60%);
             border: 1px solid rgba(0, 255, 255, 0.1);
+            overflow: hidden;
         }
 
         .fairy-garden-map {
@@ -292,6 +308,7 @@
             position: relative;
             overflow: hidden;
         }
+
         /* Hiệu ứng vòng xoáy nền */
         .fairy-garden-map::after {
             content: '';
@@ -331,7 +348,7 @@
             pointer-events: none;
         }
 
-        /* ----- CÁC NÚT NHIỆM VỤ (SIGNPOST) ĐƯỢC THU GỌN ----- */
+        /* ----- CÁC NÚT NHIỆM VỤ (SIGNPOST) ----- */
         .signpost-item {
             position: absolute;
             display: flex;
@@ -387,11 +404,11 @@
             white-space: nowrap;
         }
 
-        /* Vị trí & màu sắc từng nút – thu gọn kích thước */
+        /* Vị trí các nút – dùng % để tự co giãn theo khung */
         .sign-today-task {
-            width: 30%;
-            height: 18%;
-            left: 5%;
+            width: 28%;
+            height: 16%;
+            left: 6%;
             top: 14%;
             animation-delay: 0s;
             border-color: rgba(0, 198, 255, 0.4);
@@ -404,9 +421,9 @@
         }
 
         .sign-theory-vault {
-            width: 30%;
-            height: 18%;
-            left: 37%;
+            width: 28%;
+            height: 16%;
+            left: 38%;
             top: 14%;
             animation-delay: 0.4s;
             border-color: rgba(56, 239, 125, 0.4);
@@ -419,9 +436,9 @@
         }
 
         .sign-essay-challenge {
-            width: 30%;
-            height: 18%;
-            left: 69%;
+            width: 28%;
+            height: 16%;
+            left: 70%;
             top: 14%;
             animation-delay: 0.8s;
             border-color: rgba(142, 45, 226, 0.4);
@@ -435,9 +452,9 @@
 
         .sign-boss-fight {
             width: 38%;
-            height: 18%;
-            left: 5%;
-            top: 40%;
+            height: 16%;
+            left: 6%;
+            top: 38%;
             animation-delay: 1.2s;
             border-color: rgba(255, 65, 108, 0.4);
         }
@@ -450,9 +467,9 @@
 
         .sign-lucky-wheel {
             width: 38%;
-            height: 18%;
-            left: 57%;
-            top: 40%;
+            height: 16%;
+            left: 56%;
+            top: 38%;
             animation-delay: 1.6s;
             border-color: rgba(241, 39, 17, 0.4);
         }
@@ -463,39 +480,34 @@
             text-shadow: 0 0 12px #f5af19;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-            50% {
-                transform: translateY(-5px);
-            }
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        /* ----- NÚT ÂM THANH NHỎ, SÁT CẠNH DƯỚI ----- */
-        .audio-control-panel {
+        /* ----- NÚT ÂM THANH (editable zone) ----- */
+        .audio-zone {
             position: absolute;
-            bottom: 2%;
-            left: 0;
-            right: 0;
+            bottom: 4%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
             display: flex;
             justify-content: center;
-            z-index: 20;
-            pointer-events: none;
+            align-items: center;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            cursor: default;
+            min-width: 80px;
+            min-height: 32px;
         }
         .btn-toggle-music {
-            pointer-events: auto;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border: 1px solid rgba(0, 255, 255, 0.25);
             color: #00ffff;
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 30px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
@@ -507,6 +519,8 @@
             letter-spacing: 0.5px;
             touch-action: manipulation;
             font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            justify-content: center;
         }
         .btn-toggle-music.playing {
             background: linear-gradient(135deg, #ff2a85, #7b2ff7);
@@ -520,13 +534,16 @@
             color: #fff;
         }
         .btn-toggle-music i {
-            font-size: 0.7rem;
-        }
-        #sound-status-tip {
-            display: none;
+            font-size: 0.65rem;
         }
 
-        /* ----- CÁC OVERLAY, TOAST, EDIT MODE (giữ nguyên từ cũ) ----- */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ----- OVERLAY, TOAST, EDIT MODE (giữ nguyên) ----- */
         .pwd-overlay {
             position: fixed;
             top: 0;
@@ -615,9 +632,7 @@
             color: white;
             box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
         }
-        .pwd-btn-confirm:active {
-            transform: scale(0.95);
-        }
+        .pwd-btn-confirm:active { transform: scale(0.95); }
         .pwd-btn-cancel {
             background: rgba(255, 255, 255, 0.05);
             color: #a3c2db;
@@ -642,19 +657,11 @@
             max-width: 400px;
             pointer-events: none;
         }
-        #toast-container>div {
-            pointer-events: auto;
-        }
+        #toast-container>div { pointer-events: auto; }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         /* ----- EDIT MODE (giữ nguyên) ----- */
@@ -679,9 +686,7 @@
             cursor: move;
             touch-action: none;
         }
-        .edit-toolbar.show {
-            display: flex;
-        }
+        .edit-toolbar.show { display: flex; }
         .edit-toolbar-btn {
             font-family: 'Montserrat', sans-serif;
             font-size: 0.65rem;
@@ -722,9 +727,7 @@
             width: 100%;
             font-weight: bold;
         }
-        body.edit-mode-on .edit-hint {
-            display: block;
-        }
+        body.edit-mode-on .edit-hint { display: block; }
 
         .font-edit-panel {
             position: fixed;
@@ -749,9 +752,7 @@
             cursor: move;
             touch-action: none;
         }
-        .font-edit-panel.show {
-            display: flex;
-        }
+        .font-edit-panel.show { display: flex; }
         .font-edit-panel label {
             font-size: 0.7rem;
             color: #fff;
@@ -782,9 +783,7 @@
             outline: none;
             font-weight: bold;
         }
-        .font-edit-panel input[type="number"] {
-            width: 60px;
-        }
+        .font-edit-panel input[type="number"] { width: 60px; }
         .font-edit-panel .close-panel-btn {
             background: transparent;
             border: none;
@@ -807,9 +806,7 @@
             outline: 3px solid #f1c40f;
             box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5) inset;
         }
-        body.edit-mode-on .editable-zone * {
-            pointer-events: none;
-        }
+        body.edit-mode-on .editable-zone * { pointer-events: none; }
         .resize-handle {
             position: absolute;
             right: -10px;
@@ -825,9 +822,7 @@
             pointer-events: auto !important;
             box-shadow: 0 0 10px #f1c40f;
         }
-        body.edit-mode-on .editable-zone .resize-handle {
-            display: block;
-        }
+        body.edit-mode-on .editable-zone .resize-handle { display: block; }
         .zone-label {
             position: absolute;
             top: -4px;
@@ -844,9 +839,7 @@
             box-shadow: 0 -2px 10px rgba(255, 42, 133, 0.6);
             letter-spacing: 0.5px;
         }
-        body.edit-mode-on .editable-zone .zone-label {
-            display: block;
-        }
+        body.edit-mode-on .editable-zone .zone-label { display: block; }
         .lock-status-badge {
             font-size: 0.65rem;
             color: #fff;
@@ -876,63 +869,30 @@
         @media (max-width: 480px) {
             .container {
                 border-radius: 20px;
-                margin: 8px;
-                max-height: 92vh;
+                padding-bottom: 8px;
             }
             .student-status-card {
                 padding: 8px 10px;
                 margin: 4px 8px 6px 8px;
             }
-            .student-meta {
-                font-size: 0.5rem;
-            }
+            .student-meta { font-size: 0.5rem; }
             .dynamic-avatar {
                 width: 30px;
                 height: 30px;
                 font-size: 0.9rem;
             }
-            .stat-badge .stat-val {
-                font-size: 0.6rem;
-            }
-            .stat-badge .label-text {
-                font-size: 0.35rem;
-            }
-            .stat-badge .stat-icon {
-                font-size: 0.5rem;
-            }
-            .lobby-section-title {
-                font-size: 0.7rem;
-                top: 1%;
-            }
-            .signpost-title {
-                font-size: 0.5rem;
-            }
-            .signpost-sub {
-                font-size: 0.4rem;
-                padding: 1px 6px;
-            }
-            .signpost-item {
-                border-radius: 10px;
-                padding: 4px 2px;
-            }
-            .header-signpost {
-                font-size: 0.55rem;
-                padding: 3px 10px;
-            }
-            .btn-logout {
-                font-size: 0.5rem;
-                padding: 3px 10px;
-            }
-            .btn-toggle-music {
-                font-size: 0.5rem;
-                padding: 4px 12px;
-            }
-            .btn-toggle-music i {
-                font-size: 0.6rem;
-            }
-            .pwd-card {
-                padding: 24px 16px;
-            }
+            .stat-badge .stat-val { font-size: 0.6rem; }
+            .stat-badge .label-text { font-size: 0.35rem; }
+            .stat-badge .stat-icon { font-size: 0.5rem; }
+            .lobby-section-title { font-size: 0.7rem; top: 1%; }
+            .signpost-title { font-size: 0.5rem; }
+            .signpost-sub { font-size: 0.4rem; padding: 1px 6px; }
+            .signpost-item { border-radius: 10px; padding: 4px 2px; }
+            .header-signpost { font-size: 0.55rem; padding: 3px 10px; }
+            .btn-logout { font-size: 0.5rem; padding: 3px 10px; }
+            .btn-toggle-music { font-size: 0.5rem; padding: 3px 12px; }
+            .btn-toggle-music i { font-size: 0.6rem; }
+            .audio-zone { padding: 2px 6px; min-width: 60px; min-height: 26px; }
         }
 
         @media (max-height: 700px) {
@@ -944,37 +904,15 @@
                 grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
                 gap: 2px;
             }
-            .stat-badge {
-                padding: 2px 1px;
-            }
-            .stat-badge .stat-val {
-                font-size: 0.5rem;
-            }
-            .stat-badge .label-text {
-                font-size: 0.3rem;
-            }
-            .signpost-title {
-                font-size: 0.45rem;
-            }
-            .signpost-sub {
-                font-size: 0.35rem;
-                padding: 1px 5px;
-            }
-            .signpost-item {
-                padding: 3px 2px;
-            }
-            .lobby-section-title {
-                font-size: 0.6rem;
-                top: 1%;
-            }
-            .btn-toggle-music {
-                font-size: 0.45rem;
-                padding: 3px 10px;
-            }
-            .header-signpost {
-                font-size: 0.5rem;
-                padding: 2px 8px;
-            }
+            .stat-badge { padding: 2px 1px; }
+            .stat-badge .stat-val { font-size: 0.5rem; }
+            .stat-badge .label-text { font-size: 0.3rem; }
+            .signpost-title { font-size: 0.45rem; }
+            .signpost-sub { font-size: 0.35rem; padding: 1px 5px; }
+            .signpost-item { padding: 3px 2px; }
+            .lobby-section-title { font-size: 0.6rem; top: 1%; }
+            .btn-toggle-music { font-size: 0.45rem; padding: 2px 10px; }
+            .header-signpost { font-size: 0.5rem; padding: 2px 8px; }
         }
     </style>
 </head>
@@ -984,7 +922,7 @@
 
     <audio id="bg-fairy-music" src="thugian.mp3" loop autoplay></audio>
 
-    <!-- Edit Toolbar (giữ nguyên) -->
+    <!-- Edit Toolbar -->
     <div class="edit-toolbar" id="edit-toolbar">
         <span class="lock-status-badge unlocked" id="lock-badge">
             <i class="fa-solid fa-lock-open"></i> <span id="lock-status-text">Mở</span>
@@ -1090,7 +1028,7 @@
             <div class="resize-handle" data-handle-for="student-status-card"></div>
         </div>
 
-        <!-- KHU VỰC BẢN ĐỒ NHIỆM VỤ -->
+        <!-- KHU VỰC BẢN ĐỒ NHIỆM VỤ (chiếm hết phần còn lại) -->
         <div id="main-lobby-area">
             <div class="fairy-garden-map" id="fairy-garden-map">
 
@@ -1133,13 +1071,16 @@
                     <div class="resize-handle" data-handle-for="sign-lucky-wheel"></div>
                 </a>
 
-                <!-- NÚT ÂM THANH NHỎ, SÁT DƯỚI -->
-                <div class="audio-control-panel">
+                <!-- NÚT ÂM THANH (editable zone) -->
+                <div class="audio-zone editable-zone" data-zone-id="audio-zone">
+                    <span class="zone-label">Âm thanh</span>
                     <button id="btn-music-toggle" class="btn-toggle-music muted" onclick="xuLyBatTatAmThanhNen()">
                         <i id="icon-music-toggle" class="fa-solid fa-volume-xmark"></i>
                         <span id="text-music-toggle">Bật Nhạc</span>
                     </button>
+                    <div class="resize-handle" data-handle-for="audio-zone"></div>
                 </div>
+
             </div>
         </div>
 
@@ -1177,7 +1118,7 @@
 
     <div id="toast-container"></div>
 
-    <!-- ============== SCRIPT (giữ nguyên toàn bộ logic) ============== -->
+    <!-- ============== SCRIPT (giữ nguyên logic) ============== -->
     <script>
         // Particle canvas
         const canvas = document.getElementById('particle-canvas');
