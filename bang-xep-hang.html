@@ -13,34 +13,37 @@
             font-family: 'Roboto', sans-serif;
         }
         body {
-            background: radial-gradient(circle at center, #101726 0%, #070a12 100%);
+            background: radial-gradient(circle at center, #0a1120 0%, #04060b 100%);
             color: #ffffff;
             overflow-x: hidden;
             min-height: 100vh;
-        }
-        .gaming-title-glow {
-            font-family: 'Montserrat', sans-serif;
-            text-shadow: 0 0 10px rgba(241, 196, 15, 0.6), 0 0 20px rgba(241, 196, 15, 0.3);
+            line-height: 1.6;
         }
         
-        /* Hiệu ứng hào quang phát ra cho bục Podium */
+        /* Hiệu ứng chữ phát sáng giống ảnh Cửa Ngõ Vùng Đất Cấm */
+        .gaming-title-glow {
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.6), 0 0 30px rgba(34, 211, 238, 0.3);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Bục Podium với viền Neon siêu thực */
         .glow-aura-gold {
-            box-shadow: 0 0 25px rgba(241, 196, 15, 0.4);
-            border-color: #f1c40f !important;
-            background: linear-gradient(135deg, rgba(241,196,15,0.1), rgba(241,196,15,0.02)) !important;
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.35), inset 0 0 15px rgba(234, 179, 8, 0.1);
+            border-color: #eab308 !important;
+            background: rgba(234, 179, 8, 0.04) !important;
         }
         .glow-aura-silver {
-            box-shadow: 0 0 20px rgba(189, 195, 199, 0.3);
-            border-color: #bdc3c7 !important;
-            background: linear-gradient(135deg, rgba(189,195,199,0.1), rgba(189,195,199,0.02)) !important;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3), inset 0 0 15px rgba(34, 211, 238, 0.1);
+            border-color: #22d3ee !important;
+            background: rgba(34, 211, 238, 0.04) !important;
         }
         .glow-aura-bronze {
-            box-shadow: 0 0 15px rgba(211, 84, 0, 0.3);
-            border-color: #e67e22 !important;
-            background: linear-gradient(135deg, rgba(230,126,34,0.1), rgba(230,126,34,0.02)) !important;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), inset 0 0 15px rgba(236, 72, 153, 0.1);
+            border-color: #ec4899 !important;
+            background: rgba(236, 72, 153, 0.04) !important;
         }
 
-        /* Phục vụ Canvas pháo hoa đè toàn sảnh */
         #fireworks-canvas {
             position: fixed;
             top: 0;
@@ -51,7 +54,6 @@
             z-index: 9999;
         }
 
-        /* Thiết kế chuyển động lơ lửng cho vương miện và bục */
         @keyframes floatEffect {
             0% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-8px) rotate(1deg); }
@@ -61,37 +63,40 @@
             animation: floatEffect 3s ease-in-out infinite;
         }
 
-        /* Thẻ chiến binh trong danh sách chuẩn Glassmorphism */
+        /* Danh sách chiến binh phong cách High-contrast Neon Card */
         .glass-row {
-            background: rgba(22, 31, 50, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(8px);
-            transition: all 0.2s ease;
+            background: rgba(13, 22, 41, 0.75);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .glass-row:hover {
-            background: rgba(30, 41, 67, 0.85);
-            border-color: rgba(52, 152, 219, 0.3);
-            transform: translateX(5px);
+            background: rgba(18, 32, 61, 0.9);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.25);
+            transform: translateX(6px);
         }
 
-        /* ===== MODAL GIÁO VIÊN (tương tự cửa hàng) ===== */
+        /* ===== MODAL GIÁO VIÊN & ĐĂNG NHẬP THEO PHONG CÁCH ẢNH 2 ===== */
         .modal-overlay {
             position: fixed;
             top:0; left:0; right:0; bottom:0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(3, 5, 10, 0.9);
             z-index: 10000;
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
             padding: 16px;
             animation: fadeIn 0.3s ease;
         }
         .modal-card {
-            background: #141d30;
-            border: 2px solid #3498db;
-            border-radius: 14px;
-            padding: 20px;
+            background: #0d1527;
+            border: 2px solid #22d3ee;
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.25), inset 0 0 20px rgba(34, 211, 238, 0.05);
+            border-radius: 16px;
+            padding: 24px;
             width: 100%;
             max-width: 720px;
             text-align: center;
@@ -100,30 +105,76 @@
         }
         .modal-card h3 {
             font-family: 'Montserrat', sans-serif;
-            color: #f1c40f;
+            color: #22d3ee;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
             margin-top: 0;
+            font-weight: 900;
+            letter-spacing: 0.05em;
         }
         .modal-input {
             width: 100%;
-            padding: 8px 12px;
-            background: #0b111e;
-            border: 1px solid #233354;
+            padding: 12px 16px;
+            background: #050811;
+            border: 1px solid #1e293b;
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             text-align: center;
             font-weight: bold;
-            margin: 12px 0;
+            margin: 16px 0;
+            transition: all 0.3s;
         }
+        .modal-input:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+            outline: none;
+        }
+
+        /* Nút bấm phong cách Gradient cực nét từ hình ảnh của bạn */
+        .btn-magenta-glow {
+            background: linear-gradient(90deg, #d946ef 0%, #a855f7 100%);
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.4);
+            color: #fff;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-magenta-glow:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(217, 70, 239, 0.7);
+        }
+
+        .btn-cyan-glow {
+            background: linear-gradient(90deg, #38bdf8 0%, #1d4ed8 100%);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            color: #fff;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+        .btn-cyan-glow:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
+        }
+
+        .btn-dark-translucent {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .btn-dark-translucent:hover {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+
         .btn-action {
-            background: linear-gradient(135deg, #2ecc71, #27ae60);
             color: #fff;
             border: none;
-            padding: 8px 16px;
+            padding: 10px 18px;
             border-radius: 8px;
             font-weight: 800;
             cursor: pointer;
-            transition: 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -131,117 +182,113 @@
             text-transform: uppercase;
             font-size: 0.75rem;
         }
-        .btn-action:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(46,204,113,0.3); }
-        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-danger:hover { box-shadow: 0 4px 12px rgba(231,76,60,0.3); }
-        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .btn-warning:hover { box-shadow: 0 4px 12px rgba(243,156,18,0.3); }
-        .btn-secondary { background: #475569; }
-        .btn-secondary:hover { background: #334155; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { box-shadow: 0 0 18px rgba(239, 68, 68, 0.6); transform: scale(1.02); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); color: #000; }
+        .btn-warning:hover { box-shadow: 0 0 18px rgba(245, 158, 11, 0.6); transform: scale(1.02); }
 
         .teacher-table-wrap {
             overflow-x: auto;
-            margin-top: 12px;
-            border-radius: 10px;
-            border: 1px solid #233354;
+            margin-top: 14px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            background: #050811;
         }
         .teacher-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 700px;
+            font-size: 0.85rem;
+            min-width: 750px;
         }
         .teacher-table th {
-            background: #1f2d4a;
-            color: #3498db;
+            background: #0f172a;
+            color: #22d3ee;
             text-align: left;
-            padding: 8px 10px;
+            padding: 12px 14px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             white-space: nowrap;
+            border-bottom: 2px solid #1e293b;
         }
         .teacher-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #1f2d4a;
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e293b;
             color: #e2e8f0;
             vertical-align: middle;
         }
-        .teacher-table tr:hover td { background: rgba(30,41,67,0.4); }
+        .teacher-table tr:hover td { background: rgba(34, 211, 238, 0.04); }
 
         .editable-cell {
             cursor: pointer;
             transition: 0.2s;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
             display: inline-block;
+            font-weight: bold;
+            color: #38bdf8;
         }
         .editable-cell:hover {
-            background: rgba(52,152,219,0.2);
-        }
-        .editable-cell input {
-            background: #0b111e;
-            border: 1px solid #3498db;
-            color: #fff;
-            padding: 2px 6px;
-            width: 60px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-align: center;
+            background: rgba(34, 211, 238, 0.15);
+            border-color: #22d3ee;
         }
         .btn-small {
-            padding: 2px 8px;
-            font-size: 0.6rem;
-            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.65rem;
+            border-radius: 6px;
             cursor: pointer;
             border: none;
             font-weight: bold;
             white-space: nowrap;
             transition: 0.2s;
         }
-        .btn-small:hover { transform: scale(1.05); }
+        .btn-small:hover { transform: scale(1.08); }
 
         .tab-btn-teacher {
-            background: #141d30;
-            color: #a4b0be;
-            border: 1px solid #233354;
-            padding: 6px 14px;
+            background: #0f172a;
+            color: #94a3b8;
+            border: 1px solid #1e293b;
+            padding: 8px 16px;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.7rem;
-            margin-right: 4px;
+            font-size: 0.75rem;
+            margin-right: 6px;
         }
         .tab-btn-teacher.active {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+            background: #22d3ee;
+            color: #04060b;
+            border-color: #22d3ee;
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
         }
-        .tab-content-teacher { display: none; animation: fadeIn 0.3s ease; padding-top: 12px; }
+        .tab-content-teacher { display: none; animation: fadeIn 0.3s ease; padding-top: 14px; }
         .tab-content-teacher.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
         .nhatky-item {
-            padding: 4px 0;
-            border-bottom: 1px solid #1f2d4a;
+            padding: 8px 12px;
+            border-bottom: 1px solid #1e293b;
             display: flex;
             justify-content: space-between;
-            font-size: 0.75rem;
+            align-items: center;
+            font-size: 0.8rem;
             color: #cbd5e1;
+            background: rgba(255,255,255,0.01);
+            margin-bottom: 4px;
+            border-radius: 6px;
         }
-        .nhatky-item .time { color: #5dade2; }
+        .nhatky-item .time { color: #38bdf8; font-weight: bold; }
 
-        /* Responsive */
         @media (max-width: 640px) {
-            .modal-card { padding: 12px; max-width: 100%; }
-            .teacher-table { font-size: 0.65rem; min-width: 500px; }
-            .teacher-table th, .teacher-table td { padding: 4px 6px; }
-            .btn-small { font-size: 0.5rem; padding: 1px 5px; }
-            .editable-cell input { width: 40px; font-size: 0.6rem; }
-            .tab-btn-teacher { font-size: 0.6rem; padding: 4px 10px; }
+            .modal-card { padding: 16px; max-width: 100%; }
+            .teacher-table { font-size: 0.7rem; min-width: 550px; }
+            .teacher-table th, .teacher-table td { padding: 8px 8px; }
+            .tab-btn-teacher { font-size: 0.65rem; padding: 6px 12px; }
         }
     </style>
 </head>
@@ -249,125 +296,119 @@
 
     <canvas id="fireworks-canvas"></canvas>
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto px-4 py-6">
         
-        <div class="flex justify-between items-center mb-8 border-b border-gray-800 pb-5 flex-wrap gap-2">
-            <a href="index.html" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-full border border-slate-700 transition-all text-sm shadow-lg">
-                <i class="fa-solid fa-arrow-left text-yellow-500"></i> Sảnh Chính
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-5 flex-wrap gap-4">
+            <a href="index.html" class="flex items-center gap-2 btn-dark-translucent font-bold px-6 py-2.5 rounded-full transition-all text-sm shadow-lg">
+                <i class="fa-solid fa-arrow-left text-cyan-400"></i> Sảnh Chính
             </a>
-            <div class="flex items-center gap-3">
-                <button onclick="openTeacherLogin()" class="flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-white font-bold px-4 py-2 rounded-full border border-slate-500 transition-all text-sm shadow-lg">
+            <div class="flex items-center gap-4">
+                <button onclick="openTeacherLogin()" class="flex items-center gap-2 btn-cyan-glow px-5 py-2.5 rounded-full transition-all text-sm shadow-lg">
                     <i class="fa-solid fa-user-tie"></i> Giáo viên
                 </button>
                 <div class="text-right">
                     <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Mùa Giải Đấu Toán Học</p>
-                    <p class="text-xs text-green-400 font-semibold mt-0.5"><i class="fa-solid fa-circle fa-fade text-[8px] mr-1"></i> Bảng điểm cập nhật liên tục</p>
+                    <p class="text-xs text-emerald-400 font-semibold mt-0.5"><i class="fa-solid fa-circle fa-fade text-[8px] mr-1"></i> Bảng điểm cập nhật liên tục</p>
                 </div>
             </div>
         </div>
 
-        <div class="text-center mb-10">
-            <h1 class="text-3xl md:text-5xl font-black gaming-title-glow text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 tracking-wider mb-2">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-black gaming-title-glow text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 tracking-wider mb-3">
                 BẢNG VINH DANH CHIẾN BINH
             </h1>
             <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
-                Chạm vào các chiến binh trong <span class="text-yellow-400 font-bold">Top 3</span> để kích hoạt hiệu ứng pháo hoa ăn mừng rực rỡ và khúc nhạc chiến thắng!
+                Chạm vào các chiến binh trong <span class="text-cyan-400 font-bold">Top 3</span> để kích hoạt hiệu ứng pháo hoa ăn mừng rực rỡ và khúc nhạc chiến thắng!
             </p>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-12 max-w-2xl mx-auto mt-6">
-            <!-- Podium 2 -->
+        <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-14 max-w-2xl mx-auto mt-6">
             <div id="podium-2" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(2, this)">
                 <div class="relative flex flex-col items-center">
-                    <div class="absolute -top-10 text-slate-400 text-2xl font-black float-anim" style="animation-delay: 0.5s;">🥈</div>
-                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-slate-400 overflow-hidden flex items-center justify-center font-bold text-2xl md:text-3xl text-white bg-slate-700 glow-aura-silver shadow-inner" id="top2-avatar">?</div>
+                    <div class="absolute -top-10 text-2xl font-black float-anim" style="animation-delay: 0.5s;">🥈</div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-2xl md:text-3xl text-white bg-slate-800 glow-aura-silver shadow-lg" id="top2-avatar">?</div>
                 </div>
-                <div class="w-full bg-slate-800/80 border-t-4 border-slate-400 rounded-t-lg mt-3 p-3 text-center flex flex-col items-center min-h-[110px] md:min-h-[140px] justify-between shadow-2xl relative">
-                    <span class="absolute top-2 left-2 text-slate-400 font-black text-sm">#2</span>
-                    <p class="font-extrabold text-xs md:text-sm text-slate-200 mt-2 truncate w-full" id="top2-name">Đang chờ...</p>
+                <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[120px] md:min-h-[150px] justify-between shadow-2xl relative border-cyan-400">
+                    <span class="absolute top-2 left-2 text-cyan-400 font-black text-xs md:text-sm">#2</span>
+                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top2-name">Đang chờ...</p>
                     <p class="text-cyan-400 font-bold text-xs" id="top2-class">---</p>
-                    <div class="bg-slate-900 px-2 py-0.5 rounded text-[10px] text-slate-300 font-bold mt-1" id="top2-exp">0 EXP</div>
-                    <span class="text-[9px] font-bold text-slate-400 border border-slate-600 px-1.5 py-0.5 rounded-full mt-1 bg-slate-950 uppercase" id="top2-ff-tier">Tập Sự</span>
+                    <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-cyan-300 font-bold mt-1 shadow-inner" id="top2-exp">0 EXP</div>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top2-ff-tier">Tập Sự</span>
                 </div>
             </div>
 
-            <!-- Podium 1 -->
             <div id="podium-1" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(1, this)">
                 <div class="relative flex flex-col items-center">
                     <div class="absolute -top-12 text-yellow-400 text-3xl font-black float-anim"><i class="fa-solid fa-crown"></i></div>
-                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-yellow-400 overflow-hidden flex items-center justify-center font-bold text-3xl md:text-4xl text-white bg-amber-600 glow-aura-gold shadow-inner" id="top1-avatar">?</div>
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-3xl md:text-4xl text-white bg-slate-800 glow-aura-gold shadow-lg" id="top1-avatar">?</div>
                 </div>
-                <div class="w-full bg-slate-800 border-t-4 border-yellow-400 rounded-t-lg mt-3 p-4 text-center flex flex-col items-center min-h-[140px] md:min-h-[180px] justify-between shadow-2xl relative">
-                    <span class="absolute top-2 left-2 text-yellow-400 font-black text-sm">#1</span>
-                    <p class="font-black text-sm md:text-base text-yellow-400 mt-2 truncate w-full" id="top1-name">Đang chờ...</p>
-                    <p class="text-green-400 font-bold text-xs" id="top1-class">---</p>
-                    <div class="bg-amber-950/50 border border-amber-500 px-3 py-0.5 rounded text-xs text-yellow-400 font-black mt-1" id="top1-exp">0 EXP</div>
-                    <span class="text-[9px] font-black text-yellow-400 border border-yellow-500 px-2 py-0.5 rounded-full mt-1 bg-yellow-950/40 uppercase tracking-wide" id="top1-ff-tier">Tập Sự</span>
+                <div class="w-full bg-slate-900 border-t-4 rounded-t-xl mt-4 p-4 text-center flex flex-col items-center min-h-[150px] md:min-h-[190px] justify-between shadow-2xl relative border-yellow-500">
+                    <span class="absolute top-2 left-2 text-yellow-400 font-black text-xs md:text-sm">#1</span>
+                    <p class="font-black text-base text-yellow-400 mt-2 truncate w-full tracking-wide" id="top1-name">Đang chờ...</p>
+                    <p class="text-emerald-400 font-bold text-xs" id="top1-class">---</p>
+                    <div class="bg-yellow-950/40 border border-yellow-600/50 px-3 py-1 rounded text-xs text-yellow-400 font-black mt-1 shadow-inner" id="top1-exp">0 EXP</div>
+                    <span class="text-[9px] font-black text-yellow-400 border border-yellow-500 px-2 py-0.5 rounded-full mt-1 bg-yellow-950/60 uppercase tracking-widest" id="top1-ff-tier">Tập Sự</span>
                 </div>
             </div>
 
-            <!-- Podium 3 -->
             <div id="podium-3" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(3, this)">
                 <div class="relative flex flex-col items-center">
-                    <div class="absolute -top-10 text-orange-500 text-2xl font-black float-anim" style="animation-delay: 1s;">🥉</div>
-                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 border-orange-500 overflow-hidden flex items-center justify-center font-bold text-2xl md:text-3xl text-white bg-orange-800 glow-aura-bronze shadow-inner" id="top3-avatar">?</div>
+                    <div class="absolute -top-10 text-2xl font-black float-anim" style="animation-delay: 1s;">🥉</div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-2xl md:text-3xl text-white bg-slate-800 glow-aura-bronze shadow-lg" id="top3-avatar">?</div>
                 </div>
-                <div class="w-full bg-slate-800/80 border-t-4 border-orange-500 rounded-t-lg mt-3 p-3 text-center flex flex-col items-center min-h-[90px] md:min-h-[120px] justify-between shadow-2xl relative">
-                    <span class="absolute top-2 left-2 text-orange-500 font-black text-sm">#3</span>
-                    <p class="font-extrabold text-xs md:text-sm text-slate-200 mt-2 truncate w-full" id="top3-name">Đang chờ...</p>
-                    <p class="text-orange-400 font-bold text-xs" id="top3-class">---</p>
-                    <div class="bg-slate-900 px-2 py-0.5 rounded text-[10px] text-slate-300 font-bold mt-1" id="top3-exp">0 EXP</div>
-                    <span class="text-[9px] font-bold text-orange-400 border border-orange-600 px-1.5 py-0.5 rounded-full mt-1 bg-slate-950 uppercase" id="top3-ff-tier">Tập Sự</span>
+                <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[105px] md:min-h-[135px] justify-between shadow-2xl relative border-pink-500">
+                    <span class="absolute top-2 left-2 text-pink-400 font-black text-xs md:text-sm">#3</span>
+                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top3-name">Đang chờ...</p>
+                    <p class="text-pink-400 font-bold text-xs" id="top3-class">---</p>
+                    <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-pink-300 font-bold mt-1 shadow-inner" id="top3-exp">0 EXP</div>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top3-ff-tier">Tập Sự</span>
                 </div>
             </div>
         </div>
 
-        <div class="mb-5 flex justify-between items-center px-4">
-            <h2 class="text-base md:text-lg font-black tracking-wide text-slate-300 flex items-center gap-2">
-                <i class="fa-solid fa-ranking-star text-green-400"></i> DANH SÁCH CHIẾN BINH THAM GIA VÒNG ĐẤU
+        <div class="mb-5 flex justify-between items-center px-2">
+            <h2 class="text-sm md:text-base font-black tracking-wider text-slate-300 flex items-center gap-2 uppercase">
+                <i class="fa-solid fa-ranking-star text-cyan-400"></i> Danh Sách Chiến Binh Tham Gia Vòng Đấu
             </h2>
-            <span class="text-xs text-slate-500 font-bold" id="total-warriors-count">Tổng số: 0</span>
+            <span class="text-xs text-slate-400 font-bold bg-slate-900 px-3 py-1.5 rounded-md border border-slate-800 shadow-inner" id="total-warriors-count">Tổng số: 0</span>
         </div>
 
-        <div class="flex flex-col gap-3 mb-12" id="leaderboard-list-container">
+        <div class="flex flex-col gap-3.5 mb-14" id="leaderboard-list-container">
         </div>
 
     </div>
 
-    <!-- ===== MODAL ĐĂNG NHẬP GIÁO VIÊN ===== -->
     <div id="teacher-login-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-card">
-            <h3><i class="fa-solid fa-lock"></i> XÁC THỰC GIÁO VIÊN</h3>
-            <p style="font-size:0.85rem; color:#cbd5e1;">Vui lòng nhập mật mã để vào Cổng Điều Hành:</p>
+        <div class="modal-card" style="max-width: 420px;">
+            <h3><i class="fa-solid fa-lock mb-2 block text-3xl"></i> XÁC THỰC GIÁO VIÊN</h3>
+            <p style="font-size:0.85rem; color:#94a3b8; font-weight: 500;">Vui lòng nhập mật mã để mở Cổng Điều Hành:</p>
             <input type="password" id="teacher-password-input" class="modal-input" placeholder="Mật mã Giáo viên" autocomplete="off" onkeydown="if(event.key==='Enter') verifyTeacherPassword()">
-            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn-action btn-secondary" onclick="closeTeacherLogin()">Hủy bỏ</button>
-                <button class="btn-action" style="background:#e67e22;" onclick="verifyTeacherPassword()">Xác Nhận</button>
+            <div class="flex gap-3 justify-center mt-2">
+                <button class="btn-dark-translucent px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider" onclick="closeTeacherLogin()">Hủy bỏ</button>
+                <button class="btn-magenta-glow px-6 py-2 rounded-lg text-xs tracking-wider" onclick="verifyTeacherPassword()">Xác Nhận</button>
             </div>
         </div>
     </div>
 
-    <!-- ===== MODAL QUẢN TRỊ GIÁO VIÊN ===== -->
     <div id="teacher-panel-modal" class="modal-overlay" style="display: none;">
         <div class="modal-card" style="max-width: 1100px; text-align: left;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #233354; padding-bottom: 8px; margin-bottom: 12px;">
-                <h3 style="margin:0; color:#f1c40f; font-size:1.1rem;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH</h3>
-                <button class="btn-action btn-secondary" onclick="closeTeacherPanel()" style="padding: 4px 12px; font-size:0.7rem;">Đóng</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 14px;">
+                <h3 style="margin:0; color:#22d3ee; font-size:1.2rem;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH QUẢN TRỊ</h3>
+                <button class="btn-dark-translucent" onclick="closeTeacherPanel()" style="padding: 6px 14px; font-size:0.75rem; border-radius: 6px; font-weight: bold;">ĐÓNG</button>
             </div>
 
-            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
                 <button class="tab-btn-teacher active" data-tab="tab-student" onclick="switchTeacherTab('tab-student', this)"><i class="fa-solid fa-users"></i> Chiến binh</button>
                 <button class="tab-btn-teacher" data-tab="tab-log" onclick="switchTeacherTab('tab-log', this)"><i class="fa-solid fa-clock-rotate-left"></i> Nhật ký</button>
                 <button class="tab-btn-teacher" data-tab="tab-setting" onclick="switchTeacherTab('tab-setting', this)"><i class="fa-solid fa-sliders"></i> Cài đặt</button>
             </div>
 
-            <!-- Tab Chiến binh -->
             <div id="tab-student" class="tab-content-teacher active">
-                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
-                    <button class="btn-action btn-warning" onclick="resetAllLuot('lam_bai')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset LB tất cả</button>
-                    <button class="btn-action btn-warning" onclick="resetAllLuot('vuot_ai')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset Vượt ải tất cả</button>
-                    <button class="btn-action btn-warning" onclick="resetAllLuot('vong_quay')" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-rotate"></i> Reset VQ tất cả</button>
-                    <button class="btn-action btn-danger" onclick="if(confirm('Xóa TOÀN BỘ dữ liệu học sinh?')){localStorage.clear(); location.reload();}" style="font-size:0.65rem; padding:4px 10px;"><i class="fa-solid fa-trash-can"></i> Xóa toàn bộ</button>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('lam_bai')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset LB tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vuot_ai')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset Vượt ải tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vong_quay')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset VQ tất cả</button>
+                    <button class="btn-action btn-danger" onclick="if(confirm('Xóa TOÀN BỘ dữ liệu học sinh?')){localStorage.clear(); location.reload();}" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-trash-can"></i> Xóa toàn bộ</button>
                 </div>
                 <div class="teacher-table-wrap">
                     <table class="teacher-table" id="teacher-student-table">
@@ -377,7 +418,7 @@
                                 <th>Họ tên</th>
                                 <th>Lớp</th>
                                 <th>EXP</th>
-                                <th>Xu</th>
+                                <th>Điểm</th>
                                 <th>Danh hiệu</th>
                                 <th>Lượt LB</th>
                                 <th>Lượt Vượt ải</th>
@@ -390,35 +431,39 @@
                 </div>
             </div>
 
-            <!-- Tab Nhật ký -->
             <div id="tab-log" class="tab-content-teacher">
-                <div style="max-height: 400px; overflow-y: auto;" id="nhat-ky-list"></div>
+                <div style="max-height: 400px; overflow-y: auto; background: #050811; padding: 10px; border-radius: 8px; border: 1px solid #1e293b;" id="nhat-ky-list"></div>
             </div>
 
-            <!-- Tab Cài đặt -->
             <div id="tab-setting" class="tab-content-teacher">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
-                    <div>
-                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt làm bài tối đa / ngày</label>
-                        <input type="number" id="max-luot-lam-bai" class="modal-input" style="width:100px; display:inline-block;" min="1" value="3">
-                        <button class="btn-action" onclick="saveMaxLuot('lam_bai')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 8px;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt làm bài tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-lam-bai" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="3">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('lam_bai')">Lưu</button>
+                        </div>
                     </div>
-                    <div>
-                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt vượt ải tối đa / ngày</label>
-                        <input type="number" id="max-luot-vuot-ai" class="modal-input" style="width:100px; display:inline-block;" min="1" value="3">
-                        <button class="btn-action" onclick="saveMaxLuot('vuot_ai')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt vượt ải tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-vuot-ai" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="3">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('vuot_ai')">Lưu</button>
+                        </div>
                     </div>
-                    <div>
-                        <label style="color:#a4b0be; font-size:0.7rem; display:block;">Số lượt vòng quay tối đa / ngày</label>
-                        <input type="number" id="max-luot-vong-quay" class="modal-input" style="width:100px; display:inline-block;" min="1" value="5">
-                        <button class="btn-action" onclick="saveMaxLuot('vong_quay')" style="padding:4px 12px; font-size:0.65rem;">Lưu</button>
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt vòng quay tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-vong-quay" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="5">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('vong_quay')">Lưu</button>
+                        </div>
                     </div>
                 </div>
-                <p style="font-size:0.7rem; color:#94a3b8; margin-top:12px;">* Các giá trị này áp dụng cho tất cả học sinh khi reset lượt.</p>
-                <div style="margin-top: 12px;">
-                    <a href="vuot-ai-tuan.html" class="btn-action" style="background:#8b5cf6; color:#fff; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-mountain"></i> Vào Vượt ải</a>
-                    <a href="lam-bai.html" class="btn-action" style="background:#3498db; color:#fff; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-book"></i> Vào Làm bài</a>
-                    <a href="vong-quay.html" class="btn-action" style="background:#f39c12; color:#000; text-decoration:none; padding:4px 12px; font-size:0.65rem;"><i class="fa-solid fa-rotate"></i> Vào Vòng quay</a>
+                <p style="font-size:0.75rem; color:#64748b; margin-top:14px; font-weight: 500;">* Các giá trị này áp dụng cho tất cả học sinh khi hệ thống tiến hành reset lượt.</p>
+                <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <a href="vuot-ai-tuan.html" class="btn-action" style="background:#8b5cf6; color:#fff; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-mountain"></i> Vào Vượt ải</a>
+                    <a href="lam-bai.html" class="btn-action" style="background:#3498db; color:#fff; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-book"></i> Vào Làm bài</a>
+                    <a href="vong-quay.html" class="btn-action" style="background:#f39c12; color:#000; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-rotate"></i> Vào Vòng quay</a>
                 </div>
             </div>
         </div>
@@ -434,9 +479,8 @@
     </script>
     <script>
         // ============================================================
-        // PHẦN HIỆN CÓ (bảng xếp hạng, pháo hoa, ...) - GIỮ NGUYÊN
+        // PHẦN HIỆN CÓ (bảng xếp hạng, pháo hoa, ...) - GIỮ NGUYÊN LOGIC
         // ============================================================
-        // Hệ thống cấp bậc danh hiệu Free Fire dựa trên EXP tích lũy của học sinh
         function getFreeFireTier(exp) {
             if (exp < 10) return { name: "Tập Sự", color: "#94a3b8", bg: "rgba(148, 163, 184, 0.15)" };
             if (exp < 50) return { name: "Quân Hàm Đồng", color: "#cd7f32", bg: "rgba(205, 127, 50, 0.2)" };
@@ -458,9 +502,6 @@
         ];
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // FIREBASE SYNC: tải TOÀN BỘ dữ liệu học sinh (mọi máy) + cấu hình toàn cục về localStorage
-            // của máy này TRƯỚC, để hàm loadLeaderboardData() cũ (quét localStorage) vẫn chạy đúng logic
-            // ban đầu nhưng giờ thấy đủ tất cả học sinh, không chỉ học sinh từng chơi trên đúng máy này.
             await window.__fbTaiCauHinhToanCuc();
             let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
             toanBoHocSinh.forEach(hs => {
@@ -472,7 +513,6 @@
 
             loadLeaderboardData();
             initFireworksEngine();
-            // Load cài đặt số lượt tối đa
             document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
             document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
             document.getElementById('max-luot-vong-quay').value = localStorage.getItem('so_luot_vong_quay_toi_da') || 5;
@@ -481,7 +521,6 @@
         function loadLeaderboardData() {
             let finalWarriors = [];
 
-            // Quét dữ liệu điểm học sinh từ localStorage
             for (let i = 0; i < localStorage.length; i++) {
                 let key = localStorage.key(i);
                 if (key && key.startsWith('exp_')) {
@@ -497,16 +536,13 @@
                 }
             }
 
-            // Sắp xếp giảm dần theo điểm EXP
             finalWarriors.sort((a, b) => b.exp - a.exp);
             document.getElementById('total-warriors-count').innerText = `Tổng số: ${finalWarriors.length} Chiến binh`;
 
-            // Đổ dữ liệu vào bục Top 3
             setupPodiumCard(1, finalWarriors[0]);
             setupPodiumCard(2, finalWarriors[1]);
             setupPodiumCard(3, finalWarriors[2]);
 
-            // Đổ toàn bộ danh sách xuống bảng phía dưới
             const listContainer = document.getElementById('leaderboard-list-container');
             if (finalWarriors.length === 0) {
                 listContainer.innerHTML = `<div class="text-center p-8 text-slate-500 italic text-sm border border-dashed border-slate-800 rounded-xl">Vòng chơi mới đã bắt đầu hoặc sảnh chưa có học sinh tham gia.</div>`;
@@ -520,27 +556,33 @@
                 let chuCaiDau = tuMoi[tuMoi.length - 1] ? tuMoi[tuMoi.length - 1].charAt(0).toUpperCase() : "?";
                 let bgAvatar = avatarBackgrounds[current.name.length % avatarBackgrounds.length];
 
+                /* Tối ưu cấu trúc CSS dòng để chống lỗi co font, chồng lấp chữ */
                 listContainer.innerHTML += `
-                    <div class="glass-row flex items-center justify-between p-3.5 rounded-xl gap-4">
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm font-black ${index < 3 ? 'text-yellow-400' : 'text-slate-500'} w-6 text-center">#${index + 1}</span>
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center font-black text-white text-base shadow-md" style="background: ${bgAvatar}">
+                    <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
+                            <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
                                 ${chuCaiDau}
                             </div>
-                            <div class="text-left">
-                                <p class="font-extrabold text-sm md:text-base text-slate-200">
-                                    ${current.name} 
-                                    <span class="ml-2 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded" style="background: ${tier.bg}; color: ${tier.color}; text-shadow: 0 0 5px ${tier.color}50">
-                                        [${tier.name}]
+                            <div class="text-left min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="font-extrabold text-base text-white truncate tracking-wide">${current.name}</p> 
+                                    <span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 shadow-sm border" style="background: ${tier.bg}; color: ${tier.color}; border-color: ${tier.color}40; text-shadow: 0 0 5px ${tier.color}50">
+                                        ${tier.name}
                                     </span>
-                                </p>
-                                <p class="text-xs text-cyan-400 font-semibold">Lớp: ${current.class}</p>
+                                </div>
+                                <p class="text-xs text-cyan-400 font-bold mt-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${current.class}</p>
                             </div>
                         </div>
-                        <div class="flex flex-col items-end">
-                            <span class="text-[10px] font-bold uppercase text-slate-500">Tài sản</span>
-                            <span class="text-sm font-black text-yellow-400"><i class="fa-solid fa-star text-[10px] mr-0.5"></i> ${current.exp} EXP</span>
-                            <span class="text-sm font-black text-yellow-400" style="color: #ffeb3b"><i class="fa-solid fa-coins text-[10px] mr-0.5" style="color: #ffeb3b"></i> ${localStorage.getItem('coin_' + current.name) || 50} Xu</span>
+                        <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Kinh nghiệm</span>
+                                <span class="text-sm md:text-base font-black text-emerald-400"><i class="fa-solid fa-star text-xs mr-0.5"></i> ${current.exp} <span class="text-[10px] text-slate-400 font-medium">EXP</span></span>
+                            </div>
+                            <div class="flex flex-col items-end min-w-[75px]">
+                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Tài sản</span>
+                                <span class="text-sm md:text-base font-black text-amber-400"><i class="fa-solid fa-coins text-xs mr-0.5"></i> ${localStorage.getItem('coin_' + current.name) || 50} <span class="text-[10px] text-slate-400 font-medium">Điểm</span></span>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -551,7 +593,7 @@
             if (!player) {
                 document.getElementById(`top${rank}-name`).innerText = "Đang chờ...";
                 document.getElementById(`top${rank}-class`).innerText = "---";
-                document.getElementById(`top${rank}-exp`).innerHTML = "0 EXP<br><span style='color: #ffeb3b'><i class='fa-solid fa-coins text-[10px]'></i> 0 Xu</span>";
+                document.getElementById(`top${rank}-exp`).innerHTML = "0 EXP<br><span style='color: #ffeb3b'><i class='fa-solid fa-coins text-[10px]'></i> 0 Điểm</span>";
                 document.getElementById(`top${rank}-ff-tier`).innerText = "Tập Sự";
                 document.getElementById(`top${rank}-ff-tier`).style.color = "#94a3b8";
                 document.getElementById(`top${rank}-avatar`).innerText = "?";
@@ -562,7 +604,7 @@
             document.getElementById(`top${rank}-name`).innerText = player.name;
             document.getElementById(`top${rank}-class`).innerText = `Lớp: ${player.class}`;
             let pCoins = localStorage.getItem('coin_' + player.name) || 50;
-            document.getElementById(`top${rank}-exp`).innerHTML = `${player.exp} EXP<br><span style="color: #ffeb3b"><i class="fa-solid fa-coins text-[10px]"></i> ${pCoins} Xu</span>`;
+            document.getElementById(`top${rank}-exp`).innerHTML = `${player.exp} EXP<br><span style="color: #ffd700"><i class="fa-solid fa-coins text-[10px]"></i> ${pCoins} Điểm</span>`;
 
             let ffTier = getFreeFireTier(player.exp);
             let tierEl = document.getElementById(`top${rank}-ff-tier`);
@@ -634,14 +676,14 @@
             const rect = element.getBoundingClientRect();
             const posX = rect.left + rect.width / 2, posY = rect.top + rect.height / 3;
             playPodiumVictoryFanfare(rank);
-            let colorPalette = rank === 1 ? ['#ffd700', '#ff9f43', '#ffffff'] : (rank === 2 ? ['#bdc3c7', '#ecf0f1', '#7f8c8d'] : ['#e67e22', '#d35400', '#f39c12']);
+            let colorPalette = rank === 1 ? ['#ffd700', '#ff9f43', '#ffffff'] : (rank === 2 ? ['#22d3ee', '#e2e8f0', '#0284c7'] : ['#ec4899', '#f43f5e', '#f472b6']);
             for (let i = 0; i < 80; i++) {
                 particles.push(new FireworkParticle(posX, posY, colorPalette[Math.floor(Math.random() * colorPalette.length)]));
             }
         }
 
         // ============================================================
-        // PHẦN MỚI: CHẾ ĐỘ GIÁO VIÊN (đã sửa)
+        // CHẾ ĐỘ GIÁO VIÊN
         // ============================================================
         function openTeacherLogin() {
             document.getElementById('teacher-password-input').value = "";
@@ -653,7 +695,7 @@
         }
         function verifyTeacherPassword() {
             let matKhau = document.getElementById('teacher-password-input').value;
-            if (matKhau === "123456") {
+            if (matKhau === "thaytrongmath") {
                 closeTeacherLogin();
                 openTeacherPanel();
             } else {
@@ -678,7 +720,6 @@
             if (tabId === 'tab-log') renderNhatKy();
         }
 
-        // Lấy danh sách tất cả học sinh từ localStorage (dựa trên key exp_)
         function getAllStudents() {
             let students = [];
             for (let i = 0; i < localStorage.length; i++) {
@@ -687,19 +728,16 @@
                     let ten = key.replace('exp_', '');
                     let exp = parseInt(localStorage.getItem(key)) || 0;
                     let coin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
-                    // Lấy lớp từ nhật ký hoặc từ user object
                     let lop = "Khối 7";
                     let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
                     let timThay = nhatKy.find(item => item.name === ten);
                     if (timThay) lop = timThay.className || "Khối 7";
-                    // Lượt làm bài
                     let luotLB = getLuotConLai(ten, 'lam_bai');
                     let luotVA = getLuotConLai(ten, 'vuot_ai');
                     let luotVQ = getLuotConLai(ten, 'vong_quay');
                     students.push({ ten, exp, coin, lop, luotLB, luotVA, luotVQ });
                 }
             }
-            // Sắp xếp theo EXP giảm dần
             students.sort((a,b) => b.exp - a.exp);
             return students;
         }
@@ -717,7 +755,7 @@
             let tbody = document.getElementById('teacher-student-tbody');
             let students = getAllStudents();
             if (students.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#7f8c8d; padding:20px;">Chưa có học sinh nào.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#64748b; padding:24px; font-weight:500;">Chưa có dữ liệu học sinh tham gia sảnh đấu này.</td></tr>`;
                 return;
             }
             let html = "";
@@ -726,18 +764,18 @@
                 let tierColor = tier.color;
                 html += `<tr>
                     <td>${idx+1}</td>
-                    <td><b>${s.ten}</b></td>
-                    <td>${s.lop}</td>
+                    <td><b class="text-white font-bold">${s.ten}</b></td>
+                    <td><span class="text-slate-300 font-medium">${s.lop}</span></td>
                     <td>
                         <span class="editable-cell" onclick="editExp('${s.ten}', this)">${s.exp}</span>
                     </td>
                     <td>
-                        <span class="editable-cell" onclick="editCoin('${s.ten}', this)">${s.coin}</span>
+                        <span class="editable-cell" style="color:#f59e0b;" onclick="editCoin('${s.ten}', this)">${s.coin}</span>
                     </td>
-                    <td style="color:${tierColor}; font-weight:bold;">${tier.name}</td>
-                    <td>${s.luotLB}</td>
-                    <td>${s.luotVA}</td>
-                    <td>${s.luotVQ}</td>
+                    <td style="color:${tierColor}; font-weight:900; tracking-wide">${tier.name}</td>
+                    <td class="font-bold text-slate-300">${s.luotLB}</td>
+                    <td class="font-bold text-slate-300">${s.luotVA}</td>
+                    <td class="font-bold text-slate-300">${s.luotVQ}</td>
                     <td style="white-space:nowrap;">
                         <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','lam_bai')" title="Reset lượt làm bài">LB</button>
                         <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','vuot_ai')" title="Reset lượt vượt ải">VA</button>
@@ -757,22 +795,21 @@
                 if (val < 0) val = 0;
                 localStorage.setItem('exp_' + ten, val);
                 el.innerText = val;
-                window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
-                // Cập nhật lại bảng xếp hạng
+                window.__fbDayDuLieuLenMay(ten);
                 loadLeaderboardData();
-                renderTeacherStudentList(); // refresh
+                renderTeacherStudentList();
             }
         }
 
         function editCoin(ten, el) {
             let current = parseInt(el.innerText) || 0;
-            let newVal = prompt(`Nhập số Xu mới cho ${ten}:`, current);
+            let newVal = prompt(`Nhập số Điểm mới cho ${ten}:`, current);
             if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
                 let val = parseInt(newVal);
                 if (val < 0) val = 0;
                 localStorage.setItem('coin_' + ten, val);
                 el.innerText = val;
-                window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
+                window.__fbDayDuLieuLenMay(ten);
                 loadLeaderboardData();
                 renderTeacherStudentList();
             }
@@ -786,7 +823,7 @@
             let homNay = new Date().toLocaleDateString('vi-VN');
             let data = { date: homNay, soLuotConLai: max };
             localStorage.setItem(key, JSON.stringify(data));
-            window.__fbDayDuLieuLenMay(ten); // FIREBASE SYNC
+            window.__fbDayDuLieuLenMay(ten);
             renderTeacherStudentList();
             loadLeaderboardData();
             alert(`Đã reset lượt ${loai} cho ${ten} về ${max}.`);
@@ -802,7 +839,7 @@
                 let key = `luot_${loai}_${s.ten}`;
                 let data = { date: homNay, soLuotConLai: max };
                 localStorage.setItem(key, JSON.stringify(data));
-                window.__fbDayDuLieuLenMay(s.ten); // FIREBASE SYNC
+                window.__fbDayDuLieuLenMay(s.ten);
             });
             renderTeacherStudentList();
             loadLeaderboardData();
@@ -811,7 +848,6 @@
 
         function deleteStudent(ten) {
             if (!confirm(`Xóa toàn bộ dữ liệu của học sinh "${ten}"?`)) return;
-            // Xóa các key liên quan
             let keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 let key = localStorage.key(i);
@@ -819,36 +855,35 @@
                     keysToRemove.push(key);
                 }
             }
-            // Xóa nhật ký đăng nhập có tên này
             let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             nhatKy = nhatKy.filter(item => item.name !== ten);
             localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy));
-            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // FIREBASE SYNC
+            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap');
 
             keysToRemove.forEach(k => localStorage.removeItem(k));
-            window.__fbXoaHocSinhTrenMay(ten); // FIREBASE SYNC: xóa hẳn document học sinh trên Firestore
+            window.__fbXoaHocSinhTrenMay(ten);
             renderTeacherStudentList();
             loadLeaderboardData();
             alert(`Đã xóa học sinh ${ten}.`);
         }
 
-        // Nhật ký
         function renderNhatKy() {
             let container = document.getElementById('nhat-ky-list');
             let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             if (logs.length === 0) {
-                container.innerHTML = `<p style="color:#7f8c8d;">Chưa có nhật ký đăng nhập.</p>`;
+                container.innerHTML = `<p style="color:#64748b; font-style:italic; font-size:0.85rem; padding:10px;">Chưa lưu nhận nhật ký đăng nhập nào.</p>`;
                 return;
             }
-            // Hiển thị ngược để mới nhất lên đầu
             let reversed = [...logs].reverse();
             let html = "";
             reversed.forEach((item, idx) => {
                 let timeStr = item.time || item.dateTime || "Không rõ";
                 html += `<div class="nhatky-item">
-                    <span><b>${item.name}</b> - ${item.className || 'Khối 7'} ${item.classroom || ''}</span>
-                    <span class="time">${timeStr}</span>
-                    <button class="btn-small btn-danger" onclick="xoaNhatKy(${idx})" style="font-size:0.5rem;">Xóa</button>
+                    <span><b class="text-white">${item.name}</b> - <span class="text-slate-400 font-medium">${item.className || 'Khối 7'} ${item.classroom || ''}</span></span>
+                    <div class="flex items-center gap-3">
+                        <span class="time">${timeStr}</span>
+                        <button class="btn-small btn-danger" onclick="xoaNhatKy(${idx})" style="font-size:0.6rem; padding: 2px 6px;">Xóa</button>
+                    </div>
                 </div>`;
             });
             container.innerHTML = html;
@@ -856,27 +891,25 @@
 
         function xoaNhatKy(index) {
             let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
-            let reversed = [...logs].reverse();
             let originalIndex = logs.length - 1 - index;
             if (originalIndex >= 0 && originalIndex < logs.length) {
                 logs.splice(originalIndex, 1);
                 localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(logs));
-                window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap'); // FIREBASE SYNC
+                window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap');
                 renderNhatKy();
             }
         }
 
-        // Cài đặt số lượt tối đa
         function saveMaxLuot(loai) {
             let idMap = { 'lam_bai': 'max-luot-lam-bai', 'vuot_ai': 'max-luot-vuot-ai', 'vong_quay': 'max-luot-vong-quay' };
             let input = document.getElementById(idMap[loai]);
             let val = parseInt(input.value);
             if (isNaN(val) || val < 1) {
-                alert('Vui lòng nhập số nguyên dương.');
+                alert('Vui lòng nhập số nguyên dương hợp lệ.');
                 return;
             }
             localStorage.setItem(`so_luot_${loai}_toi_da`, val);
-            window.__fbDayCauHinhToanCuc(`so_luot_${loai}_toi_da`); // FIREBASE SYNC
+            window.__fbDayCauHinhToanCuc(`so_luot_${loai}_toi_da`);
             alert(`Đã lưu số lượt ${loai} tối đa: ${val}`);
         }
     </script>
