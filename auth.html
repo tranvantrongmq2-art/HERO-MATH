@@ -75,7 +75,7 @@
         .login-title {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-align: center;
             color: #ffffff;
             text-transform: uppercase;
@@ -394,7 +394,7 @@
                 border-width: 1px;
             }
             .login-title {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
             }
             .lore-box p {
                 font-size: 0.75rem;
@@ -431,14 +431,14 @@
 
     <div class="login-card">
 
-        <div class="login-title">CỬA NGÕ VÙNG ĐẤT CẤM</div>
-        <div class="login-subtitle">Xác thực danh tính để bước vào thế giới Hero Math</div>
+        <div class="login-title">CỔNG HỌC VIỆN HERO-MATH</div>
+        <div class="login-subtitle">Rèn luyện tư duy • Kỷ luật tự giác • Bứt phá bản thân</div>
 
         <div class="lore-box">
-            <div class="lore-title"><i class="fa-solid fa-scroll"></i> MẬT LỆNH TỪ KHÔNG GIAN</div>
-            <p>Ngàn năm trước, khi Lục địa Toán Học bị bao phủ bởi màn sương hỗn mang, vị Đại Pháp Sư tối cao đã dùng <b>Đại Pháp Trận Logic</b> để phong ấn chúa tể bóng tối. Nhưng giờ đây, các vết nứt thời gian đang rách toác... Lũ quỷ vô diện đang tràn ra, nuốt chửng tri thức của nhân loại.</p>
-            <p>Tiếng chuông cổ kính từ tháp ngà đang ngân vang để tìm kiếm những <b>Dũng Sĩ Kế Thừa</b> mang tư duy sắc bén. Ngươi có dám bước qua ranh giới này, dùng trí tuệ giải mã ẩn đố để đánh thức phong ấn cổ xưa?</p>
-            <p class="lore-call"><i class="fa-solid fa-fire-flame-curved"></i> Hãy ghi lại danh xưng hoặc lập giao ước mới bên dưới!</p>
+            <div class="lore-title"><i class="fa-solid fa-compass"></i> HÀNH TRÌNH CHINH PHỤC BẢN THÂN</div>
+            <p>Hành trình trở thành Anh Hùng Toán Học không bắt đầu từ phép thuật, mà bắt đầu từ <b>SỰ KỶ LUẬT VÀ KIÊN TRÌ MỖI NGÀY</b>.</p>
+            <p>Mỗi bài toán giải quyết trọn vẹn là một bước tiến. Mỗi thói quen tốt ở nhà là một điểm sức mạnh. Bạn đã sẵn sàng chiến thắng sự lười biếng để khai phá tiềm năng vô hạn của chính mình?</p>
+            <p class="lore-call"><i class="fa-solid fa-seedling"></i> Hãy ghi lại danh xưng hoặc đăng ký tài khoản mới bên dưới!</p>
         </div>
 
         <div class="tabs">
@@ -455,7 +455,7 @@
                 <label><i class="fa-solid fa-key"></i> Mật mã</label>
                 <input type="password" id="login-pass" placeholder="Nhập mật mã..." autocomplete="off" />
             </div>
-            <button class="btn-enter" onclick="tienHanhDangNhap()">TIẾN VÀO SẢNH <i class="fa-solid fa-wand-magic-sparkles"></i></button>
+            <button class="btn-enter" onclick="tienHanhDangNhap()">BẮT ĐẦU HÀNH TRÌNH <i class="fa-solid fa-rocket"></i></button>
         </div>
 
         <div id="form-register" style="display: none;">
@@ -464,7 +464,7 @@
                 <input type="text" id="reg-name" placeholder="Ví dụ: Trần Văn Trong" autocomplete="off" />
             </div>
             <div class="form-group">
-                <label><i class="fa-solid fa-dungeon"></i> Khối lớp</label>
+                <label><i class="fa-solid fa-graduation-cap"></i> Khối lớp</label>
                 <select id="reg-class">
                     <option value="">-- Chọn khối lớp đang học --</option>
                     <option value="Khối 6">Khối 6</option>
@@ -481,10 +481,10 @@
                 <label><i class="fa-solid fa-key"></i> Tạo mật mã</label>
                 <input type="password" id="reg-pass" placeholder="Tạo mật mã dễ nhớ..." autocomplete="off" />
             </div>
-            <button class="btn-enter" onclick="tienHanhDangKy()">TẠO ẤN KÝ <i class="fa-solid fa-khanda"></i></button>
+            <button class="btn-enter" onclick="tienHanhDangKy()">ĐĂNG KÝ HỌC VIÊN <i class="fa-solid fa-user-plus"></i></button>
         </div>
 
-        <button class="btn-exit-game" onclick="thoatKhoiTroChoi()"><i class="fa-solid fa-door-open"></i> Thoát, không chơi nữa</button>
+        <button class="btn-exit-game" onclick="thoatKhoiTroChoi()"><i class="fa-solid fa-house"></i> Trở về trang chủ</button>
     </div>
 
     <div id="toast-container"></div>
@@ -649,7 +649,7 @@
 
         function thoatKhoiTroChoi() {
             phatAmThanhClick();
-            let xacNhan = confirm("Em có chắc chắn muốn thoát và không chơi nữa không?");
+            let xacNhan = confirm("Em có chắc chắn muốn trở về trang chủ không?");
             if (xacNhan) {
                 try { amThanhNenMedia.pause(); } catch (e) {}
                 window.location.href = "https://www.google.com";
