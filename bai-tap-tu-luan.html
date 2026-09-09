@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>SẢNH TỰ LUẬN - QUẢN TRỊ GIÁO VIÊN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* RESET & BASE */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* THEME: DEEP SPACE CYBER-FANTASY */
+        body {
+            background: radial-gradient(circle at 50% 0%, #1a0933, #05020a, #000000);
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrolling outside the app wrapper */
+        }
+
+        /* ----- APP CONTAINER (OPTIMIZED FOR 9:19 MOBILE) ----- */
+        .container {
+            width: 100%;
+            max-width: 430px; /* iPhone Pro Max width approx */
+            height: 100vh;
+            max-height: 950px;
+            position: relative;
+            background: linear-gradient(180deg, rgba(20,10,40,0.4) 0%, rgba(0,0,10,0.8) 100%);
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+            overflow-y: auto; /* Allow scrolling inside the app */
+            overflow-x: hidden;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tùy chỉnh thanh cuộn cho Container */
+        .container::-webkit-scrollbar { width: 4px; }
+        .container::-webkit-scrollbar-track { background: transparent; }
+        .container::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.3); border-radius: 10px; }
+
+        /* Nút thoát nhanh góc */
+        .header-action-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 100%;
+            z-index: 10;
+        }
+        .btn-quick-exit {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(90deg, #ff0055, #990033);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #ff4d4d;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            text-transform: uppercase;
+        }
+        .btn-quick-exit:hover, .btn-quick-exit:active {
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* Card chính (Glassmorphism RPG) */
+        .essay-card {
+            background: linear-gradient(135deg, rgba(30, 15, 60, 0.85), rgba(10, 5, 20, 0.95));
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(138, 43, 226, 0.6);
+            border-top: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 24px 16px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(138, 43, 226, 0.2);
+            position: relative;
+            width: 100%;
+            flex-grow: 1;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        h3 {
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 900;
+            color: #fff;
+            font-size: 1.2rem;
+            text-align: center;
+            margin: 0 0 20px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #8a2be2;
+            text-transform: uppercase;
+        }
+
+        /* Thông tin học sinh (Status Bar) */
+        .student-info {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #00ffff;
+            box-shadow: inset 0 0 10px rgba(0,255,255,0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .student-info b { color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        .student-info #lbl-current-exp { color: #00ffff; text-shadow: 0 0 8px #00ffff; font-weight: 900; }
+        .student-info #lbl-current-coin { color: #f1c40f; text-shadow: 0 0 8px #f1c40f; font-weight: 900; }
+
+        /* Vùng tải ảnh (Magic Portal) */
+        .upload-area {
+            border: 2px dashed #00ffff;
+            background: rgba(0, 255, 255, 0.05);
+            padding: 30px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0,255,255,0.1) inset;
+            animation: pulseBorder 2s infinite alternate;
+        }
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 5px rgba(0,255,255,0.1) inset; border-color: rgba(0, 255, 255, 0.4); }
+            100% { box-shadow: 0 0 20px rgba(0,255,255,0.3) inset; border-color: rgba(0, 255, 255, 1); }
+        }
+        .upload-area:hover, .upload-area:active {
+            background: rgba(0, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0,255,255,0.4) inset;
+        }
+        .upload-area i {
+            color: #00ffff;
+            margin-bottom: 12px;
+            text-shadow: 0 0 15px #00ffff;
+        }
+        .upload-area p { margin: 6px 0; color: #e0eaff; font-size: 0.95rem; }
+        .upload-area p b { color: #fff; font-family: 'Montserrat', sans-serif; text-transform: uppercase;}
+        
+        #preview-img {
+            max-width: 100%;
+            max-height: 220px;
+            margin-top: 16px;
+            border-radius: 12px;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+            display: none;
+        }
+
+        /* Danh sách bài nộp */
+        .submission-list { margin-top: 20px; text-align: left; }
+        .submission-list h5 {
+            color: #a3c2db;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+        
+        .sub-item {
+            background: rgba(10, 5, 20, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+        .sub-item:hover { transform: translateX(4px); border-color: #00ffff; background: rgba(20, 10, 40, 0.9); }
+        .sub-item img {
+            width: 56px; height: 56px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #00ffff;
+            flex-shrink: 0; cursor: zoom-in;
+            box-shadow: 0 0 10px rgba(0,255,255,0.2);
+        }
+        .sub-item .sub-info { flex: 1; min-width: 0; }
+        .sub-item .sub-name { font-weight: 900; font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: #fff; }
+        .sub-item .sub-meta { font-size: 0.75rem; color: #8a9bb0; margin-top: 4px; }
+        
+        /* Badges */
+        .sub-status {
+            font-size: 0.7rem; font-family: 'Montserrat', sans-serif; font-weight: 900;
+            padding: 4px 12px; border-radius: 20px; white-space: nowrap; text-transform: uppercase;
+        }
+        .sub-status.cho-cham {
+            background: rgba(0, 198, 255, 0.15); color: #00c6ff;
+            border: 1px solid rgba(0, 198, 255, 0.5); box-shadow: 0 0 10px rgba(0,198,255,0.3);
+        }
+        .sub-status.da-cham {
+            background: rgba(56, 239, 125, 0.15); color: #38ef7d;
+            border: 1px solid rgba(56, 239, 125, 0.5); box-shadow: 0 0 10px rgba(56,239,125,0.3);
+        }
+        .sub-status.ai-cham {
+            background: rgba(0, 198, 255, 0.15); color: #7f5af0;
+            border: 1px solid rgba(127, 90, 240, 0.6); box-shadow: 0 0 10px rgba(127,90,240,0.4);
+        }
+        .sub-status.dang-cham-ai {
+            background: rgba(241, 196, 15, 0.15); color: #f1c40f;
+            border: 1px solid rgba(241, 196, 15, 0.5); box-shadow: 0 0 10px rgba(241,196,15,0.3);
+        }
+
+        /* Khối cài đặt AI chấm bài (Giáo viên) */
+        .ai-settings-box {
+            background: rgba(127, 90, 240, 0.1); border: 1px solid rgba(127, 90, 240, 0.5);
+            border-radius: 14px; padding: 12px 14px; margin-bottom: 16px;
+            font-size: 0.8rem; color: #dcd6ff;
+        }
+        .ai-settings-box .ai-toggle-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            margin-bottom: 8px;
+        }
+        .ai-settings-box label.switch-lbl { display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; }
+        .ai-settings-box input[type="checkbox"] { width: 18px; height: 18px; accent-color: #7f5af0; cursor: pointer; }
+        .ai-key-status { font-size: 0.72rem; }
+        .ai-key-status.ok { color: #38ef7d; }
+        .ai-key-status.missing { color: #ff2a85; }
+
+        .ai-key-input-row { display: flex; gap: 8px; margin-top: 10px; }
+        .ai-key-input {
+            flex: 1; min-width: 0; padding: 10px 12px; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(127,90,240,0.5); border-radius: 10px; color: #fff;
+            font-size: 0.85rem; letter-spacing: 0.5px; transition: all 0.3s;
+        }
+        .ai-key-input:focus { outline: none; border-color: #7f5af0; box-shadow: 0 0 12px rgba(127,90,240,0.4); }
+        .ai-key-input::placeholder { color: rgba(220,214,255,0.4); }
+        .btn-ai-key-eye {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #dcd6ff;
+            border-radius: 10px; width: 42px; flex-shrink: 0; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-ai-key-eye:hover { background: rgba(127,90,240,0.2); color: #fff; }
+
+        .ai-key-btn-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+        .btn-ai-key-action {
+            flex: 1; min-width: 90px; padding: 9px 10px; border-radius: 10px; border: 1px solid;
+            font-size: 0.75rem; font-weight: 900; cursor: pointer; text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif; transition: all 0.2s;
+        }
+        .btn-save-key { background: rgba(127,90,240,0.18); color: #b9a6ff; border-color: rgba(127,90,240,0.6); }
+        .btn-save-key:hover { background: #7f5af0; color: #fff; box-shadow: 0 0 15px rgba(127,90,240,0.5); }
+        .btn-test-key { background: rgba(0,198,255,0.15); color: #00c6ff; border-color: rgba(0,198,255,0.5); }
+        .btn-test-key:hover { background: #00c6ff; color: #05020a; box-shadow: 0 0 15px rgba(0,198,255,0.5); }
+        .btn-test-key:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-clear-key { background: rgba(255,42,133,0.12); color: #ff2a85; border-color: rgba(255,42,133,0.4); }
+        .btn-clear-key:hover { background: #ff2a85; color: #fff; box-shadow: 0 0 15px rgba(255,42,133,0.5); }
+
+        .ai-key-hint { font-size: 0.68rem; color: #8a9bb0; margin-top: 8px; line-height: 1.4; font-style: italic; }
+
+        .ai-source-note {
+            display: none;
+            background: rgba(0,255,255,0.08); border: 1px solid rgba(0,255,255,0.3);
+            border-radius: 10px; padding: 10px 12px; font-size: 0.75rem; color: #00ffff;
+            margin-bottom: 14px; line-height: 1.5;
+        }
+
+        .ai-list-heading {
+            display: flex; align-items: center; gap: 8px; margin: 18px 0 10px 0;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 0.8rem;
+            color: #7f5af0; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(127,90,240,0.3); padding-bottom: 8px;
+        }
+
+        /* Ảnh đã dọn dẹp (tiết kiệm dung lượng) */
+        .thumb-placeholder {
+            width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0;
+            background: rgba(255,255,255,0.04); border: 1px dashed rgba(163,194,219,0.5);
+            display: flex; align-items: center; justify-content: center;
+            color: #8a9bb0; font-size: 1rem;
+        }
+        .img-cleared-note {
+            font-size: 0.7rem; color: #8a9bb0; font-style: italic; margin-top: 4px;
+        }
+        .btn-cleanup-images {
+            background: rgba(0, 198, 255, 0.12); color: #00c6ff; border: 1px solid rgba(0, 198, 255, 0.5);
+            padding: 8px 16px; border-radius: 30px; font-weight: 900; font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem; cursor: pointer; text-transform: uppercase; transition: all 0.3s;
+        }
+        .btn-cleanup-images:hover { background: #00c6ff; color: #05020a; box-shadow: 0 0 15px rgba(0,198,255,0.6); }
+        .btn-cleanup-images:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .sub-item .btn-mini-delete {
+            background: rgba(255, 42, 133, 0.15); color: #ff2a85;
+            border: 1px solid rgba(255, 42, 133, 0.5); border-radius: 8px;
+            padding: 6px 10px; cursor: pointer; font-size: 0.8rem; flex-shrink: 0; transition: all 0.2s;
+        }
+        .sub-item .btn-mini-delete:hover { background: #ff2a85; color: #fff; box-shadow: 0 0 15px rgba(255,42,133,0.6); }
+        .sub-item.clickable { cursor: pointer; }
+        
+        .empty-hint {
+            color: #a3c2db; font-size: 0.85rem; text-align: center; padding: 20px 0; font-style: italic;
+        }
+
+        /* Nút tính năng */
+        .btn-unlock-admin {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #fff; border: 1px solid #00ffff; padding: 14px 20px;
+            border-radius: 12px; font-family: 'Montserrat', sans-serif; font-weight: 900;
+            cursor: pointer; margin-top: 16px; font-size: 0.85rem;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4); transition: all 0.3s;
+            width: 100%; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-unlock-admin:hover, .btn-unlock-admin:active {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(142, 45, 226, 0.6); border-color: #fff;
+        }
+
+        /* GIÁO VIÊN: Bảng chấm điểm */
+        .grading-panel {
+            margin-top: 20px; text-align: left;
+            background: rgba(0, 0, 10, 0.8);
+            padding: 20px; border-radius: 16px;
+            border: 1px solid #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.2) inset;
+            display: none; animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .grading-panel h4 {
+            margin-top: 0; color: #00ffff; margin-bottom: 16px; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: space-between;
+            font-family: 'Montserrat', sans-serif; text-shadow: 0 0 8px #00ffff;
+        }
+        
+        .score-buttons {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px;
+        }
+        .score-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(138,43,226,0.6);
+            color: #fff; padding: 12px 0; font-size: 1.1rem; font-family: 'Montserrat', sans-serif; font-weight: 900;
+            border-radius: 10px; cursor: pointer; transition: all 0.3s;
+        }
+        .score-btn:hover { border-color: #00ffff; background: rgba(0,255,255,0.1); }
+        .score-btn.active {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            border-color: #fff; box-shadow: 0 0 15px rgba(0,198,255,0.8);
+            transform: scale(1.08); color: #fff;
+        }
+
+        .comment-area {
+            width: 100%; height: 80px;
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(138,43,226,0.5);
+            border-radius: 12px; color: #fff; padding: 12px; font-family: inherit;
+            font-size: 0.9rem; resize: none; box-sizing: border-box;
+            margin-bottom: 16px; transition: border-color 0.3s;
+        }
+        .comment-area:focus { border-color: #00ffff; outline: none; box-shadow: 0 0 10px rgba(0,255,255,0.3); }
+
+        .exp-preview-box {
+            background: rgba(56, 239, 125, 0.1); border: 1px solid rgba(56, 239, 125, 0.4);
+            border-radius: 12px; padding: 12px; font-size: 0.9rem; text-align: center;
+            margin-bottom: 20px; color: #38ef7d; font-weight: 700; display: none;
+            box-shadow: 0 0 15px rgba(56,239,125,0.2);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #f12711, #f5af19);
+            color: white; border: none; padding: 16px; font-size: 1rem;
+            font-family: 'Montserrat', sans-serif; font-weight: 900;
+            border-radius: 40px; cursor: pointer; width: 100%;
+            box-shadow: 0 5px 20px rgba(245,175,25,0.4); transition: all 0.3s;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-submit:hover, .btn-submit:active { transform: scale(1.03); box-shadow: 0 8px 25px rgba(245,175,25,0.7); }
+
+        /* Kết quả chấm bài */
+        .victory-panel {
+            background: rgba(20, 10, 40, 0.9); border: 2px solid #38ef7d;
+            padding: 24px; border-radius: 16px; margin-top: 20px;
+            display: none; text-align: center; box-shadow: 0 0 30px rgba(56,239,125,0.3);
+            animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .victory-panel h4 {
+            color: #38ef7d; font-size: 1.3rem; margin: 0 0 12px 0;
+            font-family: 'Cinzel Decorative', serif; text-shadow: 0 0 15px rgba(56,239,125,0.6);
+        }
+        .victory-detail { font-size: 0.95rem; line-height: 1.6; color: #ecf0f1; }
+        .exp-badge {
+            display: inline-block; background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 900;
+            padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 0 15px rgba(0,198,255,0.5);
+        }
+
+        .btn-victory-nav {
+            padding: 12px 24px; font-size: 0.9rem; font-family: 'Montserrat', sans-serif; font-weight: 900;
+            border: none; border-radius: 40px; cursor: pointer; display: inline-flex; justify-content: center;
+            align-items: center; gap: 8px; text-decoration: none; color: white; transition: all 0.3s;
+            width: 100%; margin-top: 20px; text-transform: uppercase;
+        }
+        .btn-nav-reset { background: linear-gradient(135deg, #8e2de2, #4a00e0); box-shadow: 0 5px 15px rgba(142,45,226,0.4); }
+        .btn-nav-reset:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(142,45,226,0.6); }
+
+        /* Modal mật khẩu */
+        .pwd-modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,10,0.95); display: flex; justify-content: center; align-items: center;
+            z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .pwd-modal.active { opacity: 1; pointer-events: auto; }
+        
+        .pwd-box {
+            background: linear-gradient(180deg, rgba(20, 10, 40, 0.9), rgba(5, 0, 15, 0.95));
+            border: 2px solid #00ffff; border-radius: 24px; padding: 30px 24px;
+            width: 100%; max-width: 360px; box-shadow: 0 0 40px rgba(0, 255, 255, 0.2);
+            text-align: center; transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pwd-modal.active .pwd-box { transform: scale(1); }
+        
+        .pwd-box h4 {
+            color: #00ffff; margin-top: 0; margin-bottom: 10px; font-size: 1.3rem;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; text-shadow: 0 0 15px rgba(0,255,255,0.6);
+        }
+        .pwd-input {
+            width: 100%; padding: 14px; background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(0,255,255,0.3); border-radius: 12px;
+            color: #fff; font-size: 1.4rem; text-align: center; letter-spacing: 8px; font-weight: bold;
+            box-sizing: border-box; margin: 16px 0; transition: all 0.3s;
+        }
+        .pwd-input:focus { border-color: #ff2a85; outline: none; box-shadow: 0 0 20px rgba(255,42,133,0.4); }
+        
+        .pwd-buttons { display: flex; gap: 12px; }
+        .pwd-btn {
+            flex: 1; padding: 14px; border: none; border-radius: 12px;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; cursor: pointer; text-transform: uppercase;
+            font-size: 0.9rem; transition: all 0.2s;
+        }
+        .pwd-btn-cancel { background: rgba(255,255,255,0.1); color: #a3c2db; border: 1px solid rgba(255,255,255,0.2); }
+        .pwd-btn-cancel:active { background: rgba(255,42,133,0.2); color: #ff2a85; border-color: #ff2a85; }
+        .pwd-btn-confirm { background: linear-gradient(135deg, #00c6ff, #0072ff); color: #fff; box-shadow: 0 5px 15px rgba(0,198,255,0.4); }
+        .pwd-error-msg { color: #ff2a85; font-size: 0.9rem; margin-top: -8px; margin-bottom: 16px; font-weight: bold; text-shadow: 0 0 5px rgba(255,42,133,0.5); display: none; }
+
+        /* GIÁO VIÊN: Thanh điều hướng */
+        .teacher-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+        .teacher-bar .pending-count {
+            background: rgba(0,255,255,0.15); color: #00ffff; border: 1px solid rgba(0,255,255,0.4);
+            padding: 6px 16px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(0,255,255,0.2);
+        }
+        .btn-wipe-all {
+            background: rgba(255, 42, 133, 0.15); color: #ff2a85; border: 1px solid rgba(255, 42, 133, 0.5);
+            padding: 8px 16px; border-radius: 30px; font-weight: 900; font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem; cursor: pointer; text-transform: uppercase; transition: all 0.3s;
+        }
+        .btn-wipe-all:hover { background: #ff2a85; color: #fff; box-shadow: 0 0 15px rgba(255,42,133,0.6); }
+        
+        .btn-back-list {
+            background: rgba(0,0,0,0.6); color: #a3c2db; border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px 18px; border-radius: 30px; font-size: 0.85rem; font-weight: bold;
+            cursor: pointer; margin-bottom: 20px; transition: all 0.3s;
+        }
+        .btn-back-list:hover { background: rgba(0,255,255,0.15); color: #00ffff; border-color: #00ffff; }
+        
+        .grading-img-preview {
+            width: 100%; max-height: 300px; object-fit: contain;
+            border-radius: 16px; border: 2px solid #8a2be2; margin-bottom: 16px;
+            background: rgba(0,0,0,0.8); box-shadow: 0 0 20px rgba(138,43,226,0.3);
+        }
+        
+        /* Modal Phóng to ảnh */
+        .img-zoom-overlay {
+            position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,5,0.95);
+            display: none; justify-content: center; align-items: center; z-index: 20000; padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .img-zoom-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .img-zoom-overlay img { max-width: 100%; max-height: 100%; border-radius: 16px; box-shadow: 0 0 40px rgba(0,255,255,0.3); border: 2px solid #00ffff; }
+        
+        .loading-spinner { text-align: center; color: #00ffff; padding: 20px; font-size: 0.9rem; font-weight: bold; text-shadow: 0 0 10px #00ffff;}
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 0% { transform: scale(0.8); opacity: 0; } 60% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* GIÁO VIÊN: Quản lý ảnh đã chấm (giữ lại / đặt làm bài mẫu) */
+        .img-filter-tabs { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+        .img-filter-tab {
+            background: rgba(255,255,255,0.06); color:#a3c2db; border:1px solid rgba(255,255,255,0.2);
+            padding:6px 14px; border-radius:20px; font-size:0.75rem; font-weight:900; cursor:pointer;
+            font-family:'Montserrat', sans-serif; text-transform:uppercase; transition:all 0.3s;
+        }
+        .img-filter-tab.active { background: rgba(0,255,255,0.2); color:#00ffff; border-color:#00ffff; box-shadow:0 0 10px rgba(0,255,255,0.3); }
+
+        .btn-open-images {
+            background: rgba(241,196,15,0.12); color:#f1c40f; border:1px solid rgba(241,196,15,0.5);
+            padding:8px 16px; border-radius:30px; font-weight:900; font-family:'Montserrat', sans-serif;
+            font-size:0.8rem; cursor:pointer; text-transform:uppercase; transition:all 0.3s;
+        }
+        .btn-open-images:hover { background:#f1c40f; color:#05020a; box-shadow:0 0 15px rgba(241,196,15,0.6); }
+
+        .img-mgmt-item { flex-wrap: wrap; }
+        .img-mgmt-item .sub-info { flex-basis: 100%; order: 2; margin-top: 6px; }
+        .img-mgmt-item .badge-row { order: 3; flex-basis: 100%; }
+        .img-mgmt-actions { display:flex; gap:6px; flex-wrap:wrap; order:4; flex-basis:100%; margin-top:10px; }
+
+        .btn-tag-mini {
+            border-radius:8px; padding:7px 10px; font-size:0.68rem; font-weight:900; cursor:pointer;
+            border:1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); color:#dcd6ff;
+            transition: all 0.2s; text-transform:uppercase; font-family:'Montserrat', sans-serif;
+        }
+        .btn-tag-mini.on-keep { background: rgba(0,198,255,0.2); color:#00c6ff; border-color:#00c6ff; }
+        .btn-tag-mini.on-sample { background: rgba(241,196,15,0.2); color:#f1c40f; border-color:#f1c40f; }
+        .btn-tag-mini.act-edit { background: rgba(127,90,240,0.15); color:#7f5af0; border-color:rgba(127,90,240,0.5); }
+        .btn-tag-mini.act-delete { background: rgba(255,42,133,0.12); color:#ff2a85; border-color:rgba(255,42,133,0.4); }
+        .btn-tag-mini:hover { filter:brightness(1.3); transform: translateY(-1px); }
+
+        .badge-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+        .mini-flag { font-size:0.65rem; padding:2px 8px; border-radius:10px; font-weight:900; text-transform:uppercase; }
+        .mini-flag.giu { background: rgba(0,198,255,0.15); color:#00c6ff; border:1px solid rgba(0,198,255,0.4); }
+        .mini-flag.mau { background: rgba(241,196,15,0.15); color:#f1c40f; border:1px solid rgba(241,196,15,0.4); }
+
+        /* Kho bài mẫu (dành cho học sinh xem để tham khảo/sửa bài) */
+        .sample-gallery { margin-top: 22px; }
+        .sample-item {
+            background: rgba(241,196,15,0.06); border:1px solid rgba(241,196,15,0.35);
+            border-radius: 12px; padding: 12px; margin-bottom: 12px; display:flex; gap:12px; align-items:center;
+        }
+        .sample-item img { width:56px; height:56px; object-fit:cover; border-radius:10px; border:1px solid #f1c40f; cursor:zoom-in; flex-shrink:0; }
+        .sample-item .sub-info { flex:1; min-width:0; }
+        .sample-item .sample-score { color:#f1c40f; font-weight:900; font-family:'Montserrat', sans-serif; font-size:0.85rem; }
+        .sample-item .sample-note { font-size:0.75rem; color:#dcd6ff; margin-top:4px; font-style:italic; }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 12px 10px; }
+            .essay-card { padding: 20px 12px; }
+            h3 { font-size: 1.1rem; }
+            .student-info { font-size: 0.75rem; padding: 10px; }
+            .upload-area { padding: 20px 12px; }
+            .sub-item { padding: 10px; }
+            .sub-item img { width: 48px; height: 48px; }
+            .thumb-placeholder { width: 48px; height: 48px; }
+            .score-btn { font-size: 0.95rem; padding: 10px 0; }
+            .btn-submit { font-size: 0.9rem; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-action-row">
+            <a href="index.html" class="btn-quick-exit">
+                <i class="fa-solid fa-arrow-left"></i> Sảnh Chính
+            </a>
+            <span style="font-size: 0.7rem; color: #00ffff; font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 0 8px rgba(0,255,255,0.6);">Nhiệm vụ Tự Luận</span>
+        </div>
+
+        <div class="essay-card">
+
+            <div id="student-view">
+                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> THỬ THÁCH TỰ LUẬN</h3>
+
+                <div class="student-info">
+                    <span>Anh hùng: <b id="lbl-student-name">Học Sinh</b></span>
+                    <span>Năng lượng: <b id="lbl-current-exp">0 EXP</b> &nbsp;|&nbsp; Điểm: <b id="lbl-current-coin">0</b></span>
+                </div>
+
+                <div class="upload-area" id="upload-area" onclick="document.getElementById('file-input').click()">
+                    <i class="fa-solid fa-camera-retro fa-3x"></i>
+                    <p><b>Nhấn vào đây</b> để truyền tải hình ảnh phép thuật (bài làm)</p>
+                    <p style="font-size: 0.75rem; color: #a3c2db;">(Hỗ trợ .jpg, .png — có thể truyền nhiều lần)</p>
+                    <input type="file" id="file-input" accept="image/*" style="display:none" onchange="previewFile(event)">
+                    <img id="preview-img" alt="Xem trước bài làm">
+                </div>
+                <div id="upload-progress" class="loading-spinner" style="display:none;"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang truyền dữ liệu...</div>
+
+                <div class="submission-list">
+                    <h5><i class="fa-solid fa-scroll"></i> Cuộn thư đã gửi</h5>
+                    <div id="my-submissions-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Kích hoạt kết nối...</div>
+                    </div>
+                </div>
+
+                <div class="sample-gallery" id="sample-gallery-wrap" style="display:none;">
+                    <h5><i class="fa-solid fa-star"></i> Kho Bài Mẫu (Master chọn lọc)</h5>
+                    <div id="sample-gallery-list"></div>
+                </div>
+
+                <div style="text-align: center; margin-top: 24px;">
+                    <button class="btn-unlock-admin" onclick="openPasswordModal()">
+                        <i class="fa-solid fa-eye"></i> Nhãn Quan Giáo Viên
+                    </button>
+                </div>
+            </div>
+
+            <div id="teacher-view" style="display:none;">
+                <h3><i class="fa-solid fa-user-shield"></i> HỘI ĐỒNG PHÁP SƯ (CHẤM BÀI)</h3>
+
+                <div id="teacher-list-screen">
+                    <div class="ai-settings-box">
+                        <div class="ai-toggle-row">
+                            <label class="switch-lbl">
+                                <input type="checkbox" id="chk-auto-ai" onchange="doiTrangThaiAutoAI()">
+                                <i class="fa-solid fa-robot"></i> Tự động chấm bằng AI khi HS nộp bài
+                            </label>
+                        </div>
+                        <div class="ai-key-status" id="lbl-ai-key-status">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i> Đang kiểm tra API Key...
+                        </div>
+
+                        <div class="ai-key-input-row">
+                            <input type="password" id="input-gemini-key" class="ai-key-input" placeholder="Dán Gemini API Key vào đây (AIza...)" autocomplete="off">
+                            <button type="button" class="btn-ai-key-eye" id="btn-toggle-key-eye" onclick="toggleHienApiKey()" title="Hiện/ẩn key">
+                                <i class="fa-solid fa-eye" id="icon-toggle-key-eye"></i>
+                            </button>
+                        </div>
+                        <div class="ai-key-btn-row">
+                            <button type="button" class="btn-ai-key-action btn-save-key" onclick="luuApiKeyGemini()">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu Key
+                            </button>
+                            <button type="button" class="btn-ai-key-action btn-test-key" id="btn-test-key" onclick="kiemTraApiKeyGemini()">
+                                <i class="fa-solid fa-plug-circle-check"></i> Kiểm tra
+                            </button>
+                            <button type="button" class="btn-ai-key-action btn-clear-key" onclick="xoaApiKeyGemini()">
+                                <i class="fa-solid fa-trash-can"></i> Xóa
+                            </button>
+                        </div>
+                        <div class="ai-key-hint">Key được lưu riêng trên trình duyệt này (localStorage), dùng chung cho cả trang "Nạp Đề" và trang này.</div>
+                    </div>
+
+                    <div class="teacher-bar">
+                        <span class="pending-count" id="lbl-pending-count">0 bài chờ chấm</span>
+                        <button class="btn-open-images" onclick="moQuanLyAnh()">
+                            <i class="fa-solid fa-images"></i> Quản Lý Ảnh
+                        </button>
+                        <button class="btn-cleanup-images" id="btn-cleanup-images" onclick="donDepAnhDaCham()">
+                            <i class="fa-solid fa-broom"></i> Dọn Ảnh Đã Chấm
+                        </button>
+                        <button class="btn-wipe-all" onclick="xoaTatCaBaiTuLuan()">
+                            <i class="fa-solid fa-dumpster-fire"></i> Hủy Tất Cả
+                        </button>
+                    </div>
+                    <div id="teacher-pending-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khôi phục dữ liệu...</div>
+                    </div>
+
+                    <div class="ai-list-heading"><i class="fa-solid fa-robot"></i> Bài do AI chấm gần đây (nhấn để xem/sửa)</div>
+                    <div id="teacher-ai-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải...</div>
+                    </div>
+                </div>
+
+                <div id="teacher-images-screen" style="display:none;">
+                    <button class="btn-back-list" onclick="dongQuanLyAnh()"><i class="fa-solid fa-arrow-left"></i> Trở về hàng đợi</button>
+
+                    <div class="ai-source-note" style="display:block; color:#f1c40f; background: rgba(241,196,15,0.08); border-color: rgba(241,196,15,0.3);">
+                        <i class="fa-solid fa-images"></i> Xem lại ảnh bài làm đã chấm (kể cả do AI chấm). Master có thể <b>Giữ ảnh</b> để tránh bị dọn dẹp, hoặc <b>Đặt làm bài mẫu</b> để đưa vào Kho Bài Mẫu cho học sinh khác tham khảo.
+                    </div>
+
+                    <div class="img-filter-tabs">
+                        <button class="img-filter-tab active" data-filter="all" onclick="locDanhSachQuanLyAnh('all')">Tất cả</button>
+                        <button class="img-filter-tab" data-filter="giu" onclick="locDanhSachQuanLyAnh('giu')">Đã giữ</button>
+                        <button class="img-filter-tab" data-filter="mau" onclick="locDanhSachQuanLyAnh('mau')">Bài mẫu</button>
+                    </div>
+
+                    <div id="teacher-images-list">
+                        <div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải ảnh đã chấm...</div>
+                    </div>
+                </div>
+
+                <div id="teacher-grade-screen" style="display:none;">
+                    <button class="btn-back-list" onclick="quayLaiDanhSachCho()"><i class="fa-solid fa-arrow-left"></i> Trở về hàng đợi</button>
+
+                    <div class="student-info">
+                        <span>Chiến binh: <b id="grade-student-name" style="color:#00ffff; text-shadow:0 0 5px #00ffff;"></b></span>
+                        <span id="grade-time" style="font-size:0.75rem;color:#a3c2db;"></span>
+                    </div>
+
+                    <img id="grade-img" class="grading-img-preview" alt="Bài làm học sinh">
+
+                    <div class="grading-panel" style="display:block;">
+                        <h4>
+                            <span><i class="fa-solid fa-pen-nib"></i> Phán Quyết</span>
+                            <span style="font-size:0.75rem; color:#ff2a85; text-shadow:0 0 5px #ff2a85; border: 1px solid #ff2a85; padding: 2px 8px; border-radius: 10px;"><i class="fa-solid fa-star"></i> Master</span>
+                        </h4>
+
+                        <div id="ai-source-note" class="ai-source-note">
+                            <i class="fa-solid fa-robot"></i> Đây là kết quả <b>gợi ý bởi AI</b>. Master vui lòng kiểm tra kỹ nội dung bài làm rồi xác nhận hoặc chỉnh sửa lại điểm/nhận xét trước khi lưu chính thức.
+                        </div>
+
+                        <p style="margin:4px 0 12px 0; font-size:0.85rem; color:#a3c2db;">Ban phát cấp độ (1-10):</p>
+
+                        <div class="score-buttons">
+                            <button class="score-btn" onclick="selectScore(1)">1</button>
+                            <button class="score-btn" onclick="selectScore(2)">2</button>
+                            <button class="score-btn" onclick="selectScore(3)">3</button>
+                            <button class="score-btn" onclick="selectScore(4)">4</button>
+                            <button class="score-btn" onclick="selectScore(5)">5</button>
+                            <button class="score-btn" onclick="selectScore(6)">6</button>
+                            <button class="score-btn" onclick="selectScore(7)">7</button>
+                            <button class="score-btn" onclick="selectScore(8)">8</button>
+                            <button class="score-btn" onclick="selectScore(9)">9</button>
+                            <button class="score-btn" onclick="selectScore(10)">10</button>
+                        </div>
+
+                        <p style="margin:16px 0 8px 0; font-size:0.85rem; color:#a3c2db;">Thông điệp từ Hội đồng:</p>
+                        <textarea id="txt-comment" class="comment-area" placeholder="VD: Sức mạnh logic tuyệt vời. Tuy nhiên ở bước 3, con cần làm rõ hơn cách giải phóng biến x..."></textarea>
+
+                        <div id="exp-preview" class="exp-preview-box"></div>
+
+                        <button class="btn-submit" id="btn-submit" onclick="hoanTatChamDiem()">
+                            <i class="fa-solid fa-bolt"></i> XÁC NHẬN CHẤM & PHÂN PHÁT EXP
+                        </button>
+                    </div>
+                </div>
+
+                <div id="victory-panel" class="victory-panel">
+                    <h4><i class="fa-solid fa-shield-cat"></i> NHIỆM VỤ HOÀN TẤT!</h4>
+                    <div id="victory-content" class="victory-detail"></div>
+                    <div class="victory-actions">
+                        <button onclick="quayLaiDanhSachCho()" class="btn-victory-nav btn-nav-reset">
+                            <i class="fa-solid fa-rotate-left"></i> Chấm Tiếp Bài Khác
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="pwd-modal" class="pwd-modal">
+        <div class="pwd-box">
+            <i class="fa-solid fa-user-astronaut fa-3x" style="color: #00ffff; margin-bottom: 12px; text-shadow: 0 0 15px rgba(0,255,255,0.6);"></i>
+            <h4>TRUY CẬP HỆ THỐNG</h4>
+            <p style="font-size:0.85rem; color:#a3c2db; margin:0 0 16px 0;">Yêu cầu mã định danh quyền lực.</p>
+            <input type="password" id="pwd-input" class="pwd-input" placeholder="••••" onkeydown="handlePasswordEnter(event)">
+            <div id="pwd-error" class="pwd-error-msg">Năng lượng từ chối. Sai mã!</div>
+            <div class="pwd-buttons">
+                <button class="pwd-btn pwd-btn-cancel" onclick="closePasswordModal()">HỦY BỎ</button>
+                <button class="pwd-btn pwd-btn-confirm" onclick="verifyPassword()">THÂM NHẬP</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="img-zoom" class="img-zoom-overlay" onclick="this.classList.remove('active')">
+        <img id="img-zoom-target" src="" alt="Xem ảnh phóng to">
+    </div>
+
+    <script type="module">
+        import { db, taiDuLieuTuMay } from "./firebase-sync.js";
+        import {
+            collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // ===================== CẤU HÌNH =====================
+        const TEACHER_PASSWORD = "thaytrongmath";
+        const TEN_COLLECTION = "bai_tap_tu_luan";
+        const GEMINI_MODEL = "gemini-3.6-flash"; // Đồng bộ với trang Nạp Đề (napde.html)
+
+        const tenHocSinh = sessionStorage.getItem('hoc_school_student_name') || 'Học Sinh';
+        const lopHocSinh = sessionStorage.getItem('hoc_school_student_class') || '';
+        const lopCuTheHocSinh = sessionStorage.getItem('hoc_school_student_classroom') || '';
+
+        let expHienTai = 0;
+        let coinHienTai = 0;
+
+        // Bảng quy đổi EXP
+        const bangEXP = { 1:0, 2:0, 3:0, 4:0, 5:20, 6:40, 7:70, 8:100, 9:150, 10:250 };
+
+        let selectedScore = null;
+        let dangChamBaiId = null;
+        let dangChamBaiData = null;
+
+        // ===================== KHỞI ĐỘNG =====================
+        (async function khoiDong() {
+            await taiDuLieuTuMay(tenHocSinh);
+
+            expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
+            coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
+
+            document.getElementById('lbl-student-name').innerText = tenHocSinh;
+            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+            document.getElementById('lbl-current-coin').innerText = coinHienTai;
+
+            taiBaiNopCuaToi();
+            taiKhoBaiMau();
+
+            // Nếu đang ở giao diện giáo viên (trường hợp F5 lại trang), làm mới trạng thái AI
+            capNhatGiaoDienCaiDatAI();
+        })();
+
+        // ===================== TÍCH HỢP AI CHẤM BÀI (GEMINI) =====================
+        // API Key được lấy chung từ trang "Nạp Đề" (napde.html), lưu trong localStorage
+        // dưới khóa 'gemini_api_key' — dùng chung origin nên đọc trực tiếp được.
+        function layApiKeyGemini() {
+            return (localStorage.getItem('gemini_api_key') || '').trim();
+        }
+
+        function dangBatAutoAI() {
+            const v = localStorage.getItem('auto_ai_grading_enabled');
+            return v === null ? true : v === '1'; // Mặc định BẬT nếu chưa từng cấu hình
+        }
+
+        window.doiTrangThaiAutoAI = function () {
+            const bat = document.getElementById('chk-auto-ai').checked;
+            localStorage.setItem('auto_ai_grading_enabled', bat ? '1' : '0');
+        };
+
+        function capNhatGiaoDienCaiDatAI() {
+            const chk = document.getElementById('chk-auto-ai');
+            const lblKey = document.getElementById('lbl-ai-key-status');
+            const inputKey = document.getElementById('input-gemini-key');
+            if (!chk || !lblKey) return;
+
+            chk.checked = dangBatAutoAI();
+
+            const apiKey = layApiKeyGemini();
+            if (apiKey) {
+                lblKey.className = 'ai-key-status ok';
+                lblKey.innerHTML = '<i class="fa-solid fa-circle-check"></i> Đã kết nối Gemini API (Key dùng chung cho trang này và trang Nạp Đề)';
+            } else {
+                lblKey.className = 'ai-key-status missing';
+                lblKey.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Chưa có API Key. Master dán Gemini API Key vào ô bên dưới rồi bấm "Lưu Key" để bật chấm tự động.';
+            }
+
+            // Chỉ đổ lại giá trị vào ô nhập nếu người dùng chưa gõ gì (tránh ghi đè lúc đang gõ dở)
+            if (inputKey && document.activeElement !== inputKey && !inputKey.value) {
+                inputKey.value = apiKey || '';
+            }
+        }
+
+        // ===== GIÁO VIÊN: NHẬP / LƯU / KIỂM TRA API KEY GEMINI NGAY TẠI TRANG NÀY =====
+        window.toggleHienApiKey = function () {
+            const inputKey = document.getElementById('input-gemini-key');
+            const icon = document.getElementById('icon-toggle-key-eye');
+            if (!inputKey) return;
+            const dangAn = inputKey.type === 'password';
+            inputKey.type = dangAn ? 'text' : 'password';
+            if (icon) icon.className = dangAn ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        };
+
+        window.luuApiKeyGemini = function () {
+            const inputKey = document.getElementById('input-gemini-key');
+            if (!inputKey) return;
+            const key = inputKey.value.trim();
+            if (!key) {
+                alert('Master chưa nhập API Key. Vui lòng dán Key vào ô trước khi lưu.');
+                return;
+            }
+            localStorage.setItem('gemini_api_key', key);
+            capNhatGiaoDienCaiDatAI();
+            alert('Đã lưu API Key thành công! Master có thể bấm "Kiểm tra" để chắc chắn Key hoạt động.');
+        };
+
+        window.xoaApiKeyGemini = function () {
+            if (!confirm('Xóa API Key Gemini đã lưu trên trình duyệt này? Tính năng chấm bài tự động bằng AI sẽ ngừng hoạt động cho đến khi nhập Key mới.')) return;
+            localStorage.removeItem('gemini_api_key');
+            const inputKey = document.getElementById('input-gemini-key');
+            if (inputKey) inputKey.value = '';
+            capNhatGiaoDienCaiDatAI();
+        };
+
+        // Gọi thử API Gemini (endpoint danh sách model, không tốn quota chấm bài) để xác nhận Key hợp lệ
+        window.kiemTraApiKeyGemini = async function () {
+            const inputKey = document.getElementById('input-gemini-key');
+            const btnTest = document.getElementById('btn-test-key');
+            const key = (inputKey?.value || '').trim() || layApiKeyGemini();
+            if (!key) {
+                alert('Master chưa nhập API Key để kiểm tra.');
+                return;
+            }
+            if (btnTest) { btnTest.disabled = true; btnTest.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang kiểm tra...'; }
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}?key=${key}`);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message || 'Key không hợp lệ');
+                alert('✅ API Key hợp lệ và kết nối thành công tới Gemini!');
+                if (key !== layApiKeyGemini()) {
+                    localStorage.setItem('gemini_api_key', key);
+                    capNhatGiaoDienCaiDatAI();
+                }
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi kiểm tra API Key:', loi);
+                alert('❌ Không kiểm tra được Key: ' + (loi.message || 'Lỗi không xác định') + '\n\nMaster kiểm tra lại Key đã copy đúng chưa, hoặc Key còn hiệu lực không.');
+            } finally {
+                if (btnTest) { btnTest.disabled = false; btnTest.innerHTML = '<i class="fa-solid fa-plug-circle-check"></i> Kiểm tra'; }
+            }
+        };
+
+        // Gọi Gemini để chấm 1 bài làm dựa trên ảnh (trả về {diem, nhanXet} hoặc null nếu chưa có API Key)
+        async function chamBaiBangAI(anhDataUrl) {
+            const apiKey = layApiKeyGemini();
+            if (!apiKey) return null;
+
+            const base64Data = (anhDataUrl.split(',')[1]) || anhDataUrl;
+
+            const systemPrompt = `Bạn là giáo viên Toán THCS đang chấm bài tự luận của học sinh qua ảnh chụp bài làm viết tay.
+Hãy đọc kỹ nội dung bài làm trong ảnh, đánh giá tính đúng đắn của lời giải, cách trình bày và lập luận.
+Chấm điểm theo thang 1-10 (số nguyên), tiêu chí tham khảo:
+- 1-4: Sai nhiều, hướng làm chưa đúng hoặc chưa đạt yêu cầu.
+- 5-6: Đúng cơ bản nhưng còn thiếu sót, trình bày chưa rõ ràng.
+- 7-8: Đúng, lập luận hợp lý, trình bày khá tốt.
+- 9-10: Xuất sắc, chính xác hoàn toàn, trình bày rõ ràng, chặt chẽ.
+
+Nếu ảnh không đọc rõ hoặc không phải bài làm toán, hãy chấm điểm 5 và ghi rõ điều đó trong nhận xét.
+
+Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdown \`\`\`json, không thêm chữ nào khác), đúng định dạng:
+{"diem": <số nguyên từ 1 đến 10>, "nhanXet": "<nhận xét ngắn gọn, cụ thể, mang tính xây dựng bằng tiếng Việt, tối đa 3 câu>"}`;
+
+            const parts = [
+                { text: systemPrompt },
+                { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+            ];
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts }] })
+            });
+
+            const data = await response.json();
+            if (data.error) throw new Error(data.error.message || 'Lỗi không xác định từ Gemini API');
+
+            let rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+            const ketQua = JSON.parse(rawText);
+            let diem = parseInt(ketQua.diem);
+            if (isNaN(diem)) diem = 5;
+            diem = Math.max(1, Math.min(10, diem));
+            const nhanXet = (ketQua.nhanXet || '').toString().trim() || 'AI chưa đưa ra nhận xét cụ thể cho bài này.';
+
+            return { diem, nhanXet };
+        }
+
+        // Tự động chấm 1 bài vừa nộp bằng AI, cộng EXP/Coin cho học sinh hiện tại
+        async function tuDongChamBangAI(baiId, anhDataUrl) {
+            const progressBox = document.getElementById('upload-progress');
+            try {
+                const ketQua = await chamBaiBangAI(anhDataUrl);
+                if (!ketQua) return; // Không có API Key -> giữ nguyên trạng thái "chờ chấm"
+
+                const expNhanDuoc = bangEXP[ketQua.diem] || 0;
+
+                await updateDoc(doc(db, TEN_COLLECTION, baiId), {
+                    daCham: true,
+                    diem: ketQua.diem,
+                    nhanXet: ketQua.nhanXet,
+                    thoiGianCham: new Date().toISOString(),
+                    nguonCham: 'ai',
+                    expDaCong: expNhanDuoc
+                });
+
+                const safeId = encodeURIComponent(tenHocSinh);
+                const refHS = doc(db, "mathhero_students", safeId);
+                const snapHS = await getDoc(refHS);
+                const expCu = snapHS.exists() ? (parseInt(snapHS.data()['exp_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0);
+                const coinCu = snapHS.exists() ? (parseInt(snapHS.data()['coin_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50);
+                const expMoi = expCu + expNhanDuoc;
+                const coinMoi = coinCu + expNhanDuoc;
+
+                await setDoc(refHS, {
+                    ['exp_' + tenHocSinh]: expMoi,
+                    ['coin_' + tenHocSinh]: coinMoi,
+                    _capNhatLanCuoi: new Date().toISOString()
+                }, { merge: true });
+
+                expHienTai = expMoi; coinHienTai = coinMoi;
+                localStorage.setItem('exp_' + tenHocSinh, expHienTai);
+                localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
+                document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+                document.getElementById('lbl-current-coin').innerText = coinHienTai;
+
+                if (progressBox) {
+                    progressBox.innerHTML = `<i class="fa-solid fa-robot"></i> AI đã chấm: ${ketQua.diem}/10 (+${expNhanDuoc} EXP)`;
+                    setTimeout(() => { progressBox.style.display = 'none'; }, 1800);
+                }
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi chấm bằng AI:', loi);
+                if (progressBox) {
+                    progressBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> AI chấm lỗi, bài sẽ chờ giáo viên chấm thủ công.';
+                    setTimeout(() => { progressBox.style.display = 'none'; }, 2500);
+                }
+            } finally {
+                await taiBaiNopCuaToi();
+            }
+        }
+
+        // Nén ảnh
+        function nenAnh(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX_W = 1000;
+                        let w = img.width, h = img.height;
+                        if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, w, h);
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.65));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ===== HỌC SINH: NỘP BÀI =====
+        window.previewFile = async function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const previewImg = document.getElementById('preview-img');
+            const progressBox = document.getElementById('upload-progress');
+            let daChuyenSangChamAI = false;
+
+            try {
+                progressBox.style.display = 'block';
+                const anhNen = await nenAnh(file);
+
+                previewImg.src = anhNen;
+                previewImg.style.display = 'block';
+
+                const docRef = await addDoc(collection(db, TEN_COLLECTION), {
+                    hocSinh: tenHocSinh,
+                    lop: lopHocSinh,
+                    lopCuThe: lopCuTheHocSinh,
+                    anh: anhNen,
+                    thoiGianNop: new Date().toISOString(),
+                    daCham: false,
+                    diem: null,
+                    nhanXet: null,
+                    thoiGianCham: null,
+                    nguonCham: null,
+                    expDaCong: 0
+                });
+
+                document.getElementById('file-input').value = '';
+                previewImg.style.display = 'none';
+                previewImg.src = '';
+                await taiBaiNopCuaToi();
+
+                // ===== Tự động chấm bằng AI (nếu giáo viên đã bật & có API Key) =====
+                if (dangBatAutoAI() && layApiKeyGemini()) {
+                    daChuyenSangChamAI = true;
+                    progressBox.style.display = 'block';
+                    progressBox.innerHTML = '<i class="fa-solid fa-robot fa-beat-fade"></i> AI đang đọc và chấm bài của bạn...';
+                    await tuDongChamBangAI(docRef.id, anhNen);
+                }
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi nộp bài:', loi);
+                alert('Có lỗi khi truyền ảnh, vui lòng thử lại!');
+            } finally {
+                if (!daChuyenSangChamAI) {
+                    progressBox.style.display = 'none';
+                }
+            }
+        };
+
+        // Tải bài đã nộp của học sinh
+        async function taiBaiNopCuaToi() {
+            const box = document.getElementById('my-submissions-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khởi tạo dữ liệu...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const baiCuaToi = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.hocSinh === tenHocSinh) baiCuaToi.push({ id: d.id, ...data });
+                });
+                baiCuaToi.sort((a, b) => (b.thoiGianNop || '').localeCompare(a.thoiGianNop || ''));
+
+                if (baiCuaToi.length === 0) {
+                    box.innerHTML = '<p class="empty-hint">Lịch sử truyền tin trống. Hãy hoàn thành nhiệm vụ và gửi ảnh bài làm.</p>';
+                    return;
+                }
+
+                box.innerHTML = baiCuaToi.map(b => {
+                    const thoiGian = dinhDangThoiGian(b.thoiGianNop);
+                    if (b.daCham) {
+                        const laAI = b.nguonCham === 'ai';
+                        return `
+                        <div class="sub-item">
+                            ${taoThumbHtml(b, `onclick="phongToAnh('${b.id}')"`)}
+                            <div class="sub-info">
+                                <div class="sub-name">Đánh giá: ${b.diem}/10</div>
+                                <div class="sub-meta">${thoiGian}${b.nhanXet ? ' • Lời sấm truyền: "' + escapeHtmlAttr(b.nhanXet) + '"' : ''}</div>
+                            </div>
+                            <span class="sub-status ${laAI ? 'ai-cham' : 'da-cham'}">${laAI ? 'AI đã chấm' : 'Hoàn tất'}</span>
+                        </div>`;
+                    }
+                    return `
+                        <div class="sub-item">
+                            ${taoThumbHtml(b, `onclick="phongToAnh('${b.id}')"`)}
+                            <div class="sub-info">
+                                <div class="sub-name">Mật thư đang gửi</div>
+                                <div class="sub-meta">${thoiGian}</div>
+                            </div>
+                            <span class="sub-status cho-cham">Chờ duyệt</span>
+                            <button class="btn-mini-delete" onclick="xoaBaiNopCuaToi('${b.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>`;
+                }).join('');
+
+                window.__baiCuaToi = baiCuaToi;
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi tải bài:', loi);
+                box.innerHTML = '<p class="empty-hint">Không bắt được tín hiệu, vui lòng tải lại.</p>';
+            }
+        }
+
+        window.xoaBaiNopCuaToi = async function (id) {
+            if (!confirm('Năng lượng sẽ biến mất nếu bạn xóa bản thu này. Bạn chắc chứ?')) return;
+            try {
+                await deleteDoc(doc(db, TEN_COLLECTION, id));
+                await taiBaiNopCuaToi();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi xóa bài:', loi);
+                alert('Có luồng nhiễu, không xóa được!');
+            }
+        };
+
+        window.phongToAnh = function (id) {
+            const list = (window.__baiCuaToi || [])
+                .concat(window.__baiChoCham || [])
+                .concat(window.__baiAiDaCham || [])
+                .concat(window.__baiQuanLyAnh || [])
+                .concat(window.__baiMauCongKhai || []);
+            const bai = list.find(b => b.id === id);
+            if (!bai) return;
+            if (!bai.anh) {
+                alert('Ảnh gốc của bài này đã được hệ thống dọn dẹp để tiết kiệm dung lượng sau khi chấm xong. Điểm và nhận xét vẫn được giữ nguyên.');
+                return;
+            }
+            document.getElementById('img-zoom-target').src = bai.anh;
+            document.getElementById('img-zoom').classList.add('active');
+        };
+
+        function dinhDangThoiGian(iso) {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return ''; }
+        }
+        function escapeHtmlAttr(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        }
+
+        // Trả về HTML cho ảnh thumbnail, hoặc icon thay thế nếu ảnh đã bị dọn dẹp để tiết kiệm dung lượng
+        function taoThumbHtml(bai, onclickAttr) {
+            if (bai.anh) {
+                return `<img src="${bai.anh}" ${onclickAttr}>`;
+            }
+            return `<div class="thumb-placeholder" title="Ảnh đã được dọn dẹp để tiết kiệm dung lượng"><i class="fa-solid fa-broom"></i></div>`;
+        }
+
+        // ===== GIÁO VIÊN: DỌN DẸP ẢNH CỦA CÁC BÀI ĐÃ CHẤM (TIẾT KIỆM DUNG LƯỢNG) =====
+        window.donDepAnhDaCham = async function () {
+            if (!confirm('Dọn dẹp ảnh gốc của các bài ĐÃ CHẤM (kể cả do AI chấm) để giải phóng dung lượng?\n\nCác bài đã được đánh dấu "Giữ ảnh" hoặc "Bài mẫu" sẽ KHÔNG bị xóa ảnh.\nĐiểm số và nhận xét sẽ được GIỮ NGUYÊN cho các bài còn lại, chỉ ảnh gốc bị xóa và không xem lại được nữa.')) return;
+
+            const btn = document.getElementById('btn-cleanup-images');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang dọn dẹp...'; }
+
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const capNhat = [];
+                let boQuaSoLuong = 0;
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.daCham && data.anh) {
+                        if (data.daGiuAnh || data.laBaiMau) { boQuaSoLuong++; return; }
+                        capNhat.push(updateDoc(doc(db, TEN_COLLECTION, d.id), { anh: '', anhDaXoa: true }));
+                    }
+                });
+                await Promise.all(capNhat);
+
+                alert(`Đã dọn dẹp ảnh của ${capNhat.length} bài đã chấm.${boQuaSoLuong > 0 ? ' Đã giữ lại ' + boQuaSoLuong + ' ảnh được đánh dấu Giữ/Bài mẫu.' : ''} Dung lượng đã được giải phóng!`);
+                taiDanhSachChoCham();
+                taiBaiNopCuaToi();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi dọn dẹp ảnh:', loi);
+                alert('Không thể dọn dẹp lúc này, vui lòng thử lại.');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-broom"></i> Dọn Ảnh Đã Chấm'; }
+            }
+        };
+
+        // ===== MẬT KHẨU GIÁO VIÊN =====
+        window.openPasswordModal = function () {
+            const modal = document.getElementById('pwd-modal');
+            const input = document.getElementById('pwd-input');
+            const error = document.getElementById('pwd-error');
+            error.style.display = 'none';
+            input.value = '';
+            modal.classList.add('active');
+            input.focus();
+        };
+        window.closePasswordModal = function () {
+            document.getElementById('pwd-modal').classList.remove('active');
+        };
+        window.handlePasswordEnter = function (event) {
+            if (event.key === 'Enter') verifyPassword();
+        };
+        window.verifyPassword = function () {
+            const inputPwd = document.getElementById('pwd-input').value;
+            const errorMsg = document.getElementById('pwd-error');
+            if (inputPwd === TEACHER_PASSWORD) {
+                closePasswordModal();
+                document.getElementById('student-view').style.display = 'none';
+                document.getElementById('teacher-view').style.display = 'block';
+                document.getElementById('teacher-list-screen').style.display = 'block';
+                document.getElementById('teacher-images-screen').style.display = 'none';
+                document.getElementById('teacher-grade-screen').style.display = 'none';
+                document.getElementById('victory-panel').style.display = 'none';
+                capNhatGiaoDienCaiDatAI();
+                taiDanhSachChoCham();
+            } else {
+                errorMsg.style.display = 'block';
+                document.getElementById('pwd-input').focus();
+            }
+        };
+
+        // ===== GIÁO VIÊN: DANH SÁCH CHỜ CHẤM + DANH SÁCH AI ĐÃ CHẤM =====
+        async function taiDanhSachChoCham() {
+            capNhatGiaoDienCaiDatAI();
+
+            const box = document.getElementById('teacher-pending-list');
+            const boxAI = document.getElementById('teacher-ai-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khôi phục luồng dữ liệu...</div>';
+            if (boxAI) boxAI.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải...</div>';
+
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const choCham = [];
+                const aiDaCham = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    const item = { id: d.id, ...data };
+                    if (!data.daCham) choCham.push(item);
+                    else if (data.nguonCham === 'ai') aiDaCham.push(item);
+                });
+                choCham.sort((a, b) => (a.thoiGianNop || '').localeCompare(b.thoiGianNop || ''));
+                aiDaCham.sort((a, b) => (b.thoiGianCham || '').localeCompare(a.thoiGianCham || ''));
+
+                window.__baiChoCham = choCham;
+                window.__baiAiDaCham = aiDaCham.slice(0, 30); // Chỉ hiển thị 30 bài AI chấm gần nhất
+                document.getElementById('lbl-pending-count').innerText = choCham.length + ' nhiệm vụ chờ xử';
+
+                if (choCham.length === 0) {
+                    box.innerHTML = '<p class="empty-hint"><i class="fa-solid fa-check-double"></i> Không gian tĩnh lặng. Không còn bài tập nào!</p>';
+                } else {
+                    box.innerHTML = choCham.map(b => `
+                        <div class="sub-item clickable" onclick="moChamBai('${b.id}')">
+                            ${taoThumbHtml(b, `onclick="event.stopPropagation(); phongToAnh('${b.id}')"`)}
+                            <div class="sub-info">
+                                <div class="sub-name">${escapeHtmlAttr(b.hocSinh)}</div>
+                                <div class="sub-meta">${b.lop ? escapeHtmlAttr(b.lop) + ' • ' : ''}${dinhDangThoiGian(b.thoiGianNop)}</div>
+                            </div>
+                            <span class="sub-status cho-cham">Thẩm định</span>
+                        </div>
+                    `).join('');
+                }
+
+                if (boxAI) {
+                    if (window.__baiAiDaCham.length === 0) {
+                        boxAI.innerHTML = '<p class="empty-hint">Chưa có bài nào được AI chấm.</p>';
+                    } else {
+                        boxAI.innerHTML = window.__baiAiDaCham.map(b => `
+                            <div class="sub-item clickable" onclick="moXemLaiBaiAI('${b.id}')">
+                                ${taoThumbHtml(b, `onclick="event.stopPropagation(); phongToAnh('${b.id}')"`)}
+                                <div class="sub-info">
+                                    <div class="sub-name">${escapeHtmlAttr(b.hocSinh)} — ${b.diem}/10</div>
+                                    <div class="sub-meta">${b.lop ? escapeHtmlAttr(b.lop) + ' • ' : ''}${dinhDangThoiGian(b.thoiGianCham)}</div>
+                                </div>
+                                <span class="sub-status ai-cham">AI đã chấm</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi tải danh sách chờ chấm:', loi);
+                box.innerHTML = '<p class="empty-hint">Không kết nối được hội đồng, vui lòng thử lại.</p>';
+                if (boxAI) boxAI.innerHTML = '<p class="empty-hint">Không kết nối được hội đồng, vui lòng thử lại.</p>';
+            }
+        }
+
+        // ===== GIÁO VIÊN: QUẢN LÝ ẢNH ĐÃ CHẤM (GIỮ LẠI / ĐẶT LÀM BÀI MẪU) =====
+        let boLocQuanLyAnhHienTai = 'all';
+
+        window.moQuanLyAnh = async function () {
+            document.getElementById('teacher-list-screen').style.display = 'none';
+            document.getElementById('teacher-grade-screen').style.display = 'none';
+            document.getElementById('victory-panel').style.display = 'none';
+            document.getElementById('teacher-images-screen').style.display = 'block';
+            await taiDanhSachQuanLyAnh();
+        };
+
+        window.dongQuanLyAnh = function () {
+            document.getElementById('teacher-images-screen').style.display = 'none';
+            document.getElementById('teacher-list-screen').style.display = 'block';
+            taiDanhSachChoCham();
+        };
+
+        window.locDanhSachQuanLyAnh = function (loc) {
+            boLocQuanLyAnhHienTai = loc;
+            document.querySelectorAll('.img-filter-tab').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === loc);
+            });
+            renderDanhSachQuanLyAnh();
+        };
+
+        async function taiDanhSachQuanLyAnh() {
+            const box = document.getElementById('teacher-images-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải ảnh đã chấm...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const daChamCoAnh = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.daCham && data.anh) daChamCoAnh.push({ id: d.id, ...data });
+                });
+                daChamCoAnh.sort((a, b) => (b.thoiGianCham || b.thoiGianNop || '').localeCompare(a.thoiGianCham || a.thoiGianNop || ''));
+                window.__baiQuanLyAnh = daChamCoAnh;
+                renderDanhSachQuanLyAnh();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi tải danh sách ảnh:', loi);
+                box.innerHTML = '<p class="empty-hint">Không tải được danh sách ảnh, vui lòng thử lại.</p>';
+            }
+        }
+
+        function renderDanhSachQuanLyAnh() {
+            const box = document.getElementById('teacher-images-list');
+            let list = window.__baiQuanLyAnh || [];
+            if (boLocQuanLyAnhHienTai === 'giu') list = list.filter(b => b.daGiuAnh);
+            else if (boLocQuanLyAnhHienTai === 'mau') list = list.filter(b => b.laBaiMau);
+
+            if (list.length === 0) {
+                box.innerHTML = '<p class="empty-hint">Không có ảnh nào phù hợp bộ lọc này.</p>';
+                return;
+            }
+
+            box.innerHTML = list.map(b => {
+                const laAI = b.nguonCham === 'ai';
+                const badges = `
+                    <div class="badge-row">
+                        <span class="sub-status ${laAI ? 'ai-cham' : 'da-cham'}">${laAI ? 'AI chấm' : 'GV chấm'}</span>
+                        ${b.daGiuAnh ? '<span class="mini-flag giu"><i class="fa-solid fa-lock"></i> Đã giữ</span>' : ''}
+                        ${b.laBaiMau ? '<span class="mini-flag mau"><i class="fa-solid fa-star"></i> Bài mẫu</span>' : ''}
+                    </div>`;
+                return `
+                <div class="sub-item img-mgmt-item">
+                    ${taoThumbHtml(b, `onclick="phongToAnh('${b.id}')"`)}
+                    <div class="sub-info">
+                        <div class="sub-name">${escapeHtmlAttr(b.hocSinh)} — ${b.diem}/10</div>
+                        <div class="sub-meta">${b.lop ? escapeHtmlAttr(b.lop) + ' • ' : ''}${dinhDangThoiGian(b.thoiGianCham || b.thoiGianNop)}</div>
+                    </div>
+                    ${badges}
+                    <div class="img-mgmt-actions">
+                        <button class="btn-tag-mini ${b.daGiuAnh ? 'on-keep' : ''}" onclick="toggleGiuAnhBai('${b.id}')">
+                            <i class="fa-solid ${b.daGiuAnh ? 'fa-lock' : 'fa-lock-open'}"></i> ${b.daGiuAnh ? 'Đã giữ' : 'Giữ ảnh'}
+                        </button>
+                        <button class="btn-tag-mini ${b.laBaiMau ? 'on-sample' : ''}" onclick="toggleBaiMauBai('${b.id}')">
+                            <i class="fa-solid fa-star"></i> ${b.laBaiMau ? 'Bỏ bài mẫu' : 'Đặt làm mẫu'}
+                        </button>
+                        <button class="btn-tag-mini act-edit" onclick="moSuaBaiTuQuanLyAnh('${b.id}')">
+                            <i class="fa-solid fa-pen"></i> Sửa điểm
+                        </button>
+                        <button class="btn-tag-mini act-delete" onclick="xoaAnhBaiDon('${b.id}')">
+                            <i class="fa-solid fa-trash-can"></i> Xóa ảnh
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // Bật/tắt "Giữ ảnh" — ảnh sẽ không bị dọn dẹp bởi nút "Dọn Ảnh Đã Chấm"
+        window.toggleGiuAnhBai = async function (id) {
+            const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
+            if (!bai) return;
+            const giaTriMoi = !bai.daGiuAnh;
+            try {
+                await updateDoc(doc(db, TEN_COLLECTION, id), { daGiuAnh: giaTriMoi });
+                bai.daGiuAnh = giaTriMoi;
+                renderDanhSachQuanLyAnh();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi cập nhật giữ ảnh:', loi);
+                alert('Không thể cập nhật lúc này, vui lòng thử lại.');
+            }
+        };
+
+        // Bật/tắt "Bài mẫu" — đưa vào (hoặc gỡ khỏi) Kho Bài Mẫu hiển thị cho học sinh khác
+        window.toggleBaiMauBai = async function (id) {
+            const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
+            if (!bai) return;
+
+            try {
+                if (!bai.laBaiMau) {
+                    const ghiChu = prompt('Ghi chú cho bài mẫu này (học sinh khác sẽ nhìn thấy), để trống nếu không cần:', bai.ghiChuMau || '');
+                    if (ghiChu === null) return; // Master bấm Hủy
+                    const hienTen = confirm('Hiển thị TÊN học sinh trên bài mẫu này?\nOK = Hiển thị tên — Hủy = Ẩn danh');
+                    await updateDoc(doc(db, TEN_COLLECTION, id), {
+                        laBaiMau: true,
+                        ghiChuMau: ghiChu.trim(),
+                        baiMauHienTen: hienTen,
+                        daGiuAnh: true // Bài mẫu luôn được giữ ảnh, tránh bị dọn dẹp
+                    });
+                    bai.laBaiMau = true; bai.ghiChuMau = ghiChu.trim(); bai.baiMauHienTen = hienTen; bai.daGiuAnh = true;
+                } else {
+                    if (!confirm('Gỡ bài này khỏi Kho Bài Mẫu chung?')) return;
+                    await updateDoc(doc(db, TEN_COLLECTION, id), { laBaiMau: false });
+                    bai.laBaiMau = false;
+                }
+                renderDanhSachQuanLyAnh();
+                taiKhoBaiMau();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi cập nhật bài mẫu:', loi);
+                alert('Không thể cập nhật lúc này, vui lòng thử lại.');
+            }
+        };
+
+        // Xóa ảnh của MỘT bài cụ thể (điểm/nhận xét vẫn giữ nguyên)
+        window.xoaAnhBaiDon = async function (id) {
+            if (!confirm('Xóa ảnh gốc của bài này? Điểm và nhận xét vẫn được giữ nguyên, chỉ ảnh không xem lại được nữa.')) return;
+            try {
+                await updateDoc(doc(db, TEN_COLLECTION, id), { anh: '', anhDaXoa: true, laBaiMau: false, daGiuAnh: false });
+                await taiDanhSachQuanLyAnh();
+                taiKhoBaiMau();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi xóa ảnh:', loi);
+                alert('Không thể xóa ảnh lúc này, vui lòng thử lại.');
+            }
+        };
+
+        // ===== HỌC SINH: KHO BÀI MẪU (do giáo viên chọn lọc từ các bài đã chấm) =====
+        async function taiKhoBaiMau() {
+            const wrap = document.getElementById('sample-gallery-wrap');
+            const box = document.getElementById('sample-gallery-list');
+            if (!wrap || !box) return;
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const mauList = [];
+                snap.forEach(d => {
+                    const data = d.data();
+                    if (data.laBaiMau && data.anh) mauList.push({ id: d.id, ...data });
+                });
+                mauList.sort((a, b) => (b.thoiGianCham || '').localeCompare(a.thoiGianCham || ''));
+                window.__baiMauCongKhai = mauList;
+
+                if (mauList.length === 0) {
+                    wrap.style.display = 'none';
+                    return;
+                }
+                wrap.style.display = 'block';
+                box.innerHTML = mauList.map(b => `
+                    <div class="sample-item">
+                        <img src="${b.anh}" onclick="phongToAnh('${b.id}')" alt="Bài mẫu">
+                        <div class="sub-info">
+                            <div class="sample-score">${b.baiMauHienTen ? escapeHtmlAttr(b.hocSinh) + ' — ' : ''}${b.diem}/10</div>
+                            ${(b.ghiChuMau || b.nhanXet) ? '<div class="sample-note">"' + escapeHtmlAttr(b.ghiChuMau || b.nhanXet) + '"</div>' : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi tải kho bài mẫu:', loi);
+            }
+        }
+
+        // Ghi nhớ giáo viên đang ở màn hình nào trước khi mở phiếu chấm,
+        // để bấm "Trở về" thì quay lại đúng chỗ (hàng đợi hoặc Quản lý ảnh).
+        let manHinhTruocKhiCham = 'list';
+
+        window.moChamBai = function (id) {
+            const bai = (window.__baiChoCham || []).find(b => b.id === id);
+            if (!bai) return;
+            dangChamBaiId = id;
+            dangChamBaiData = bai;
+            manHinhTruocKhiCham = 'list';
+
+            document.getElementById('grade-student-name').innerText = bai.hocSinh;
+            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianNop);
+            document.getElementById('grade-img').src = bai.anh;
+
+            clearGradingForm();
+            document.getElementById('teacher-list-screen').style.display = 'none';
+            document.getElementById('teacher-images-screen').style.display = 'none';
+            document.getElementById('teacher-grade-screen').style.display = 'block';
+            document.getElementById('victory-panel').style.display = 'none';
+        };
+
+        // Mở lại 1 bài đã được AI chấm để giáo viên xem/chỉnh sửa
+        window.moXemLaiBaiAI = function (id) {
+            const bai = (window.__baiAiDaCham || []).find(b => b.id === id);
+            if (!bai) return;
+            dangChamBaiId = id;
+            dangChamBaiData = bai;
+            manHinhTruocKhiCham = 'list';
+
+            document.getElementById('grade-student-name').innerText = bai.hocSinh;
+            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianNop);
+            document.getElementById('grade-img').src = bai.anh;
+
+            clearGradingForm();
+            document.getElementById('ai-source-note').style.display = 'block';
+            if (bai.diem) selectScore(bai.diem);
+            document.getElementById('txt-comment').value = bai.nhanXet || '';
+
+            document.getElementById('teacher-list-screen').style.display = 'none';
+            document.getElementById('teacher-images-screen').style.display = 'none';
+            document.getElementById('teacher-grade-screen').style.display = 'block';
+            document.getElementById('victory-panel').style.display = 'none';
+        };
+
+        // Mở phiếu chấm/sửa điểm từ màn hình Quản lý ảnh (bài do AI hoặc giáo viên chấm đều mở được)
+        window.moSuaBaiTuQuanLyAnh = function (id) {
+            const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
+            if (!bai) return;
+            dangChamBaiId = id;
+            dangChamBaiData = bai;
+            manHinhTruocKhiCham = 'images';
+
+            document.getElementById('grade-student-name').innerText = bai.hocSinh;
+            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianCham || bai.thoiGianNop);
+            document.getElementById('grade-img').src = bai.anh;
+
+            clearGradingForm();
+            document.getElementById('ai-source-note').style.display = bai.nguonCham === 'ai' ? 'block' : 'none';
+            if (bai.diem) selectScore(bai.diem);
+            document.getElementById('txt-comment').value = bai.nhanXet || '';
+
+            document.getElementById('teacher-list-screen').style.display = 'none';
+            document.getElementById('teacher-images-screen').style.display = 'none';
+            document.getElementById('teacher-grade-screen').style.display = 'block';
+            document.getElementById('victory-panel').style.display = 'none';
+        };
+
+        window.quayLaiDanhSachCho = function () {
+            dangChamBaiId = null;
+            dangChamBaiData = null;
+            document.getElementById('teacher-grade-screen').style.display = 'none';
+            document.getElementById('victory-panel').style.display = 'none';
+            if (manHinhTruocKhiCham === 'images') {
+                document.getElementById('teacher-list-screen').style.display = 'none';
+                moQuanLyAnh();
+            } else {
+                document.getElementById('teacher-images-screen').style.display = 'none';
+                document.getElementById('teacher-list-screen').style.display = 'block';
+                taiDanhSachChoCham();
+            }
+        };
+
+        function clearGradingForm() {
+            selectedScore = null;
+            document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('txt-comment').value = '';
+            document.getElementById('exp-preview').style.display = 'none';
+            document.getElementById('ai-source-note').style.display = 'none';
+        }
+
+        window.selectScore = function (score) {
+            selectedScore = score;
+            document.querySelectorAll('.score-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.innerText) === score);
+            });
+
+            const expNhanDuoc = bangEXP[score] || 0;
+            const expPreview = document.getElementById('exp-preview');
+            expPreview.style.display = 'block';
+
+            if (score < 5) {
+                expPreview.style.color = '#ff2a85';
+                expPreview.style.borderColor = 'rgba(255,42,133,0.4)';
+                expPreview.style.background = 'rgba(255,42,133,0.1)';
+                expPreview.style.boxShadow = '0 0 15px rgba(255,42,133,0.2)';
+                expPreview.innerHTML = `<i class="fa-solid fa-skull"></i> Không đủ sức mạnh (dưới 5). Không nhận EXP.`;
+            } else {
+                expPreview.style.color = '#38ef7d';
+                expPreview.style.borderColor = 'rgba(56,239,125,0.4)';
+                expPreview.style.background = 'rgba(56,239,125,0.1)';
+                expPreview.style.boxShadow = '0 0 15px rgba(56,239,125,0.2)';
+                expPreview.innerHTML = `<i class="fa-solid fa-bolt-lightning"></i> Khả năng xuất chúng: Kích hoạt +${expNhanDuoc} EXP!`;
+            }
+        };
+
+        window.hoanTatChamDiem = async function () {
+            if (selectedScore === null) {
+                alert("Master chưa ấn định cấp độ (1-10)!");
+                return;
+            }
+            if (!dangChamBaiId || !dangChamBaiData) return;
+
+            const btnSubmit = document.getElementById('btn-submit');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> HỆ THỐNG ĐANG GHI NHẬN...';
+
+            try {
+                const comment = document.getElementById('txt-comment').value.trim() || 'Master chứng nhận sức mạnh của con. Đạt yêu cầu!';
+                const expNhanDuoc = bangEXP[selectedScore] || 0;
+                // Nếu bài này đã được AI cộng EXP trước đó (đang xem lại/sửa), chỉ cộng thêm phần CHÊNH LỆCH
+                // để tránh cộng trùng EXP cho học sinh.
+                const expDaCongTruoc = dangChamBaiData.expDaCong || 0;
+                const expChenhLech = expNhanDuoc - expDaCongTruoc;
+                const tenHS = dangChamBaiData.hocSinh;
+
+                // Nếu bài này đã được Master đánh dấu "Giữ ảnh" hoặc "Bài mẫu" (qua màn hình Quản Lý Ảnh),
+                // thì KHÔNG xóa ảnh khi lưu điểm/nhận xét — giữ nguyên để còn xem lại và dùng làm bài mẫu.
+                const giuLaiAnh = !!(dangChamBaiData.daGiuAnh || dangChamBaiData.laBaiMau);
+                const capNhatDiem = {
+                    daCham: true,
+                    diem: selectedScore,
+                    nhanXet: comment,
+                    thoiGianCham: new Date().toISOString(),
+                    nguonCham: 'giao_vien',
+                    expDaCong: expNhanDuoc
+                };
+                if (!giuLaiAnh) {
+                    capNhatDiem.anh = '';
+                    capNhatDiem.anhDaXoa = true;
+                }
+
+                await updateDoc(doc(db, TEN_COLLECTION, dangChamBaiId), capNhatDiem);
+
+                const safeId = encodeURIComponent(tenHS);
+                const refHS = doc(db, "mathhero_students", safeId);
+                const snapHS = await getDoc(refHS);
+                const expCu = snapHS.exists() ? (parseInt(snapHS.data()['exp_' + tenHS]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHS)) || 0);
+                const coinCu = snapHS.exists() ? (parseInt(snapHS.data()['coin_' + tenHS]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHS)) || 50);
+                const expMoi = expCu + expChenhLech;
+                const coinMoi = coinCu + expChenhLech;
+
+                await setDoc(refHS, {
+                    ['exp_' + tenHS]: expMoi,
+                    ['coin_' + tenHS]: coinMoi,
+                    _capNhatLanCuoi: new Date().toISOString()
+                }, { merge: true });
+
+                if (tenHS === tenHocSinh) {
+                    expHienTai = expMoi; coinHienTai = coinMoi;
+                    localStorage.setItem('exp_' + tenHocSinh, expHienTai);
+                    localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
+                    document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
+                    document.getElementById('lbl-current-coin').innerText = coinHienTai;
+                }
+
+                document.getElementById('teacher-grade-screen').style.display = 'none';
+                const victoryPanel = document.getElementById('victory-panel');
+                const victoryContent = document.getElementById('victory-content');
+                victoryPanel.style.display = 'block';
+
+                let textKhenNgoi = selectedScore >= 9 ? "THẦN THOẠI" : (selectedScore >= 7 ? "TINH ANH" : "TÂN BINH");
+                victoryContent.innerHTML = `
+                    <p>Chiến binh <b>${escapeHtmlAttr(tenHS)}</b> đạt đẳng cấp: <span class="exp-badge">${textKhenNgoi}</span></p>
+                    <p style="font-size:1.4rem; margin:14px 0; font-family:'Montserrat', sans-serif;">Cấp độ: <b style="color:#38ef7d; text-shadow: 0 0 10px #38ef7d;">${selectedScore}/10</b></p>
+                    <p style="border-top:1px dashed rgba(255,255,255,0.2); padding-top:14px; text-align:left;">
+                        <b style="color:#00ffff;"><i class="fa-solid fa-scroll"></i> Thông điệp:</b><br>
+                        <i style="color:#a3c2db;">"${escapeHtmlAttr(comment)}"</i>
+                    </p>
+                    <div style="background:rgba(0,198,255,0.15); padding:12px; border-radius:12px; margin-top:16px; color:#00ffff; font-weight:900; border:1px solid rgba(0,198,255,0.4);">
+                        <i class="fa-solid fa-khanda"></i> Năng lượng mới của ${escapeHtmlAttr(tenHS)}: ${expMoi} (${expChenhLech >= 0 ? '+' : ''}${expChenhLech} EXP)
+                    </div>
+                    <div class="img-cleared-note">${giuLaiAnh ? '<i class="fa-solid fa-lock"></i> Ảnh bài làm được GIỮ LẠI (đã đánh dấu Giữ ảnh / Bài mẫu).' : '<i class="fa-solid fa-broom"></i> Ảnh bài làm gốc đã được dọn dẹp để tiết kiệm dung lượng.'}</div>
+                `;
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi chấm điểm:', loi);
+                alert('Có luồng cản trở, không thể lưu điểm lúc này!');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-bolt"></i> XÁC NHẬN CHẤM & PHÂN PHÁT EXP';
+            }
+        };
+
+        // ===== GIÁO VIÊN: XÓA TẤT CẢ =====
+        window.xoaTatCaBaiTuLuan = async function () {
+            if (!confirm('LƯU Ý: Master đang kích hoạt lệnh thanh trừng. Xóa TẤT CẢ bài làm của toàn bộ học sinh?')) return;
+            if (!confirm('Cảnh báo LẦN CUỐI: Dữ liệu này sẽ tan biến hoàn toàn vào khoảng không! Bạn vẫn muốn tiếp tục?')) return;
+
+            const box = document.getElementById('teacher-pending-list');
+            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang thiêu hủy dữ liệu...</div>';
+            try {
+                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const xoaCacBai = [];
+                snap.forEach(d => xoaCacBai.push(deleteDoc(doc(db, TEN_COLLECTION, d.id))));
+                await Promise.all(xoaCacBai);
+                alert('Vụ nổ hoàn tất. Mọi dữ liệu đã bị xóa sạch.');
+                taiDanhSachChoCham();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi xóa tất cả:', loi);
+                alert('Hệ thống từ chối thiêu hủy lúc này.');
+                taiDanhSachChoCham();
+            }
+        };
+    </script>
+</body>
+</html>

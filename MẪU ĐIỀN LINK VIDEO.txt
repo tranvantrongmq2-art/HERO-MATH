@@ -1,0 +1,3 @@
+## 4. Tài liệu bổ trợ và Video bài học
+Video bài học:: Học sinh nhấn vào nút màu xanh bên dưới để xem video tóm tắt bài học sinh động từ NotebookLM.
+Link xem video:: <a href="ĐIỀN_LINK_NOTEBOOKLM_CỦA_THẦY_VÀO_ĐÂY" target="_blank" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 5px;">👉 NHẤN VÀO ĐÂY ĐỂ XEM VIDEO BÀI HỌC</a>

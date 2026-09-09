@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cổ Thư Toán Học</title>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@500;600;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] } };</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0c1a;
+    --parchment: #e8e4f0;
+    --arcane-1: #7f77dd;   /* Chương — tím huyền */
+    --arcane-1-dim: #534ab7;
+    --arcane-2: #1d9e75;   /* Mục con — ngọc lục */
+    --arcane-2-dim: #5dcaa5;
+    --arcane-3: #ef9f27;   /* Công thức — hổ phách */
+    --arcane-4: #d85a30;   /* Ghi chú — đỏ cam */
+    --rose: #d4537e;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 18% 12%, rgba(83,74,183,0.20) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 75%, rgba(29,158,117,0.14) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 95%, rgba(186,117,23,0.10) 0%, transparent 42%),
+      radial-gradient(ellipse at 95% 5%, rgba(212,83,126,0.08) 0%, transparent 35%);
+    color: var(--parchment);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    padding: 22px 16px 80px;
+    position: relative;
+  }
+
+  /* Hạt sao lấp lánh nền */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, rgba(255,255,255,0.22) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 8%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 55%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 20%, rgba(255,255,255,0.35) 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 70%, rgba(255,255,255,0.15) 0%, transparent 100%),
+      radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.25) 0%, transparent 100%),
+      radial-gradient(1px 1px at 68% 90%, rgba(255,255,255,0.2) 0%, transparent 100%),
+      radial-gradient(1px 1px at 38% 28%, rgba(255,255,255,0.18) 0%, transparent 100%),
+      radial-gradient(1px 1px at 80% 38%, rgba(255,255,255,0.22) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Thanh tiến trình đọc */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--arcane-1), var(--rose), var(--arcane-3));
+    z-index: 999; transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(212,83,126,0.6);
+  }
+
+  .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* ===== HEADER ===== */
+  .site-header {
+    display: flex; justify-content: space-between; align-items: center; gap: 14px;
+    background: linear-gradient(135deg, rgba(153,53,86,0.14), rgba(83,74,183,0.10));
+    border: 1px solid rgba(212,83,126,0.3);
+    border-radius: 18px;
+    padding: 18px 24px;
+    margin-bottom: 18px;
+    backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::after {
+    content: ''; position: absolute; top: -50%; right: -10%; width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(212,83,126,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .site-title {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 1.5rem; font-weight: 400; letter-spacing: 0.02em;
+    color: #ed93b1;
+    display: flex; align-items: center; gap: 12px;
+    text-shadow: 0 0 22px rgba(212,83,126,0.5), 0 0 6px rgba(212,83,126,0.3);
+  }
+  .site-title i { font-size: 1.25rem; color: #ed93b1; }
+  .site-sub { font-size: 0.72rem; color: #a89ec0; margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+
+  .btn-back {
+    background: rgba(217,58,48,0.15); color: #f09595;
+    border: 1px solid rgba(240,149,149,0.4); border-radius: 9px;
+    padding: 8px 16px; font-size: 0.85rem; font-weight: 700;
+    font-family: 'Nunito', sans-serif; cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
+  }
+  .btn-back:hover { background: rgba(217,58,48,0.3); }
+
+  /* ===== THANH CÔNG CỤ: MỤC LỤC + TÌM KIẾM + MỞ/ĐÓNG ===== */
+  .toolbar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    margin-bottom: 16px;
+  }
+  .search-wrap {
+    flex: 1; min-width: 200px;
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+  .search-wrap i { color: #7f77dd; font-size: 0.9rem; }
+  .search-wrap input {
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--parchment); font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+  }
+  .search-wrap input::placeholder { color: #5a5578; }
+
+  .btn-toggle-all {
+    background: rgba(127,119,221,0.14);
+    border: 1px solid rgba(127,119,221,0.4);
+    color: #cecbf6;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem; font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: background 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .btn-toggle-all:hover { background: rgba(127,119,221,0.28); border-color: rgba(127,119,221,0.65); }
+
+  /* ===== MỤC LỤC CHƯƠNG (chip nav) ===== */
+  .toc-wrap {
+    margin-bottom: 22px;
+    padding: 14px 16px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+  }
+  .toc-label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700;
+    color: #7f77dd; text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+  }
+  .toc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .toc-chip {
+    background: rgba(127,119,221,0.12);
+    border: 1px solid rgba(127,119,221,0.35);
+    color: #cecbf6;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .toc-chip:hover { background: rgba(127,119,221,0.3); transform: translateY(-1px); }
+  .toc-chip .toc-num { color: var(--arcane-3); font-family: 'Cinzel', serif; font-weight: 800; }
+
+  /* ===== LEGEND ===== */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 16px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+  }
+  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: #a89ec0; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ===== CẤP 1: CHƯƠNG — Tím huyền ===== */
+  .lvl1 {
+    background: linear-gradient(160deg, rgba(83,74,183,0.13), rgba(83,74,183,0.05));
+    border: 1px solid rgba(175,169,236,0.35);
+    border-radius: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    scroll-margin-top: 20px;
+  }
+  .lvl1:hover { border-color: rgba(175,169,236,0.6); }
+  .lvl1.open { box-shadow: 0 8px 28px rgba(83,74,183,0.18); }
+
+  .lvl1-head {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer; user-select: none;
+    position: relative;
+  }
+  .lvl1-head::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    background: linear-gradient(180deg, var(--arcane-1), var(--rose));
+    opacity: 0.8;
+  }
+
+  .lvl1-badge {
+    background: rgba(83,74,183,0.5);
+    border: 1px solid #7f77dd;
+    color: #cecbf6;
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem; font-weight: 700;
+    border-radius: 8px;
+    padding: 5px 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+
+  .lvl1-title-wrap { flex: 1; min-width: 0; }
+  .lvl1-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem; font-weight: 700;
+    color: #d8d4f9;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+  }
+  .lvl1-meta {
+    display: flex; gap: 12px; margin-top: 5px;
+    font-size: 0.72rem; color: #7f77dd;
+  }
+  .lvl1-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+  .chevron { color: #7f77dd; font-size: 0.9rem; transition: transform 0.3s; flex-shrink: 0; }
+  .lvl1.open .chevron { transform: rotate(180deg); }
+
+  .lvl1-body { display: none; padding: 0 18px 18px 22px; }
+  .lvl1.open .lvl1-body { display: block; animation: fadein 0.35s ease; }
+
+  @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== CẤP 2: MỤC CON — Xanh ngọc ===== */
+  .lvl2 {
+    background: rgba(29,158,117,0.09);
+    border: 1px solid rgba(93,202,165,0.3);
+    border-left: 3px solid var(--arcane-2);
+    border-radius: 13px;
+    margin-bottom: 11px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .lvl2:hover { border-color: rgba(93,202,165,0.55); }
+
+  .lvl2-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 15px;
+    cursor: pointer; user-select: none;
+  }
+
+  .lvl2-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(29,158,117,0.35);
+    border: 1px solid #1d9e75;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 0.68rem; color: #9fe1cb;
+    font-family: 'Cinzel', serif; font-weight: 700;
+  }
+
+  .lvl2-title { font-size: 0.92rem; font-weight: 700; color: #9fe1cb; flex: 1; }
+  .lvl2-count {
+    font-size: 0.68rem; color: #5dcaa5; background: rgba(29,158,117,0.18);
+    border-radius: 6px; padding: 2px 8px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .chevron2 { color: #1d9e75; font-size: 0.82rem; transition: transform 0.3s; flex-shrink: 0; }
+  .lvl2.open .chevron2 { transform: rotate(180deg); }
+
+  .lvl2-body { display: none; padding: 4px 15px 14px; }
+  .lvl2.open .lvl2-body { display: block; animation: fadein 0.3s ease; }
+
+  /* ===== CẤP 3: NỘI DUNG CÓ NHÃN ===== */
+  .lvl3 {
+    border-left: 3px solid rgba(93,202,165,0.4);
+    padding: 9px 13px;
+    margin-bottom: 9px;
+    background: rgba(93,202,165,0.03);
+    border-radius: 0 8px 8px 0;
+  }
+  .lvl3-label {
+    font-size: 0.72rem; font-weight: 800; color: #5dcaa5;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
+  }
+  .lvl3-text { font-size: 0.92rem; color: #c8e8df; line-height: 1.85; }
+
+  /* ===== CÔNG THỨC — Vàng hổ phách ===== */
+  .formula-block {
+    background: linear-gradient(135deg, rgba(186,117,23,0.15), rgba(186,117,23,0.06));
+    border: 1px solid rgba(239,159,39,0.4);
+    border-radius: 12px;
+    padding: 13px 17px;
+    margin: 10px 0;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 1.02rem; color: #fac775;
+    position: relative;
+  }
+  .formula-block::after {
+    content: 'CÔNG THỨC'; position: absolute; top: -8px; right: 12px;
+    font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.1em; color: #0a0c1a; background: #ef9f27;
+    padding: 2px 8px; border-radius: 5px;
+  }
+
+  /* ===== GHI CHÚ QUAN TRỌNG — Đỏ cam ===== */
+  .note-block {
+    background: linear-gradient(135deg, rgba(216,90,48,0.14), rgba(216,90,48,0.05));
+    border: 1px solid rgba(216,90,48,0.4);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.87rem; color: #f5c4b3; line-height: 1.65;
+    position: relative;
+  }
+  .note-block i { color: #d85a30; font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
+  .note-block strong { color: #ffcdb8; }
+
+  /* ===== HÌNH ẢNH MINH HỌA (dùng cho bài toán hình) ===== */
+  .image-block {
+    margin: 12px 0; padding: 12px; text-align: center;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    position: relative;
+  }
+  .image-block img {
+    max-width: 100%; max-height: 360px; border-radius: 10px;
+    display: block; margin: 0 auto;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  }
+  .image-block .image-caption {
+    margin-top: 8px; font-size: 0.75rem; color: #a89ec0;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .image-block .image-error {
+    padding: 30px 16px; color: #a89ec0; font-size: 0.85rem;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .image-block .image-error i { font-size: 1.8rem; color: #534ab7; }
+
+  /* ===== NỘI DUNG TỰ DO (dữ liệu phẳng cũ) ===== */
+  .free-content {
+    font-size: 0.92rem; color: #c8e8df; line-height: 1.85;
+    padding: 10px 0; border-left: 3px solid rgba(93,202,165,0.4); padding-left: 13px;
+    margin-bottom: 6px;
+  }
+
+  /* ===== TRẠNG THÁI TRỐNG ===== */
+  .empty-state { text-align: center; padding: 70px 20px; color: #4a4570; }
+  .empty-state i { font-size: 3.2rem; display: block; margin-bottom: 16px; color: #534ab7; }
+  .empty-state p { font-size: 0.95rem; }
+  .empty-state .empty-sub { font-size: 0.8rem; color: #3d3960; margin-top: 6px; }
+
+  /* ===== TRẠNG THÁI KHÔNG TÌM THẤY ===== */
+  .no-result { text-align: center; padding: 40px 20px; color: #5a5578; font-size: 0.9rem; }
+  .no-result i { font-size: 2rem; display: block; margin-bottom: 10px; color: #534ab7; opacity: 0.6; }
+
+  /* highlight kết quả tìm kiếm */
+  mark.hl { background: rgba(239,159,39,0.4); color: #fff4d8; border-radius: 3px; padding: 0 2px; }
+
+  /* ===== SEPARATOR ===== */
+  .orb { text-align: center; color: #534ab7; font-size: 1rem; letter-spacing: 8px; margin: 8px 0 14px; opacity: 0.5; }
+
+  /* ===== NÚT LÊN ĐẦU TRANG ===== */
+  .btn-top {
+    position: fixed; bottom: 22px; right: 22px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(127,119,221,0.25);
+    border: 1px solid rgba(127,119,221,0.5);
+    color: #cecbf6; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s, transform 0.2s;
+    backdrop-filter: blur(4px);
+    z-index: 500;
+  }
+  .btn-top.show { opacity: 1; pointer-events: auto; }
+  .btn-top:hover { background: rgba(127,119,221,0.45); transform: translateY(-2px); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .site-title { font-size: 1.1rem; }
+    .lvl1-title { font-size: 0.88rem; }
+    .lvl1-meta { flex-wrap: wrap; gap: 8px; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .btn-toggle-all { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div>
+      <div class="site-title"><i class="fa-solid fa-book-skull"></i> Cổ Thư Toán Học</div>
+      <div class="site-sub">Tri thức được khắc ghi · Lưu giữ vĩnh hằng</div>
+    </div>
+    <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Trở về</a>
+  </header>
+
+  <!-- TOOLBAR: tìm kiếm + mở/đóng tất cả -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input id="search-input" type="text" placeholder="Tìm trong cổ thư... (tên chương, mục, công thức, ghi chú)">
+    </div>
+    <button class="btn-toggle-all" id="btn-expand-all" onclick="toggleAll(true)"><i class="fa-solid fa-book-open"></i> Mở tất cả</button>
+    <button class="btn-toggle-all" id="btn-collapse-all" onclick="toggleAll(false)"><i class="fa-solid fa-book"></i> Đóng tất cả</button>
+  </div>
+
+  <!-- MỤC LỤC CHƯƠNG -->
+  <div class="toc-wrap" id="toc-wrap">
+    <div class="toc-label"><i class="fa-solid fa-compass"></i> Mục lục cổ thư</div>
+    <div class="toc-chips" id="toc-chips"></div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#7f77dd"></div> Chương / Đề mục lớn</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#1d9e75"></div> Mục con</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#5dcaa5"></div> Nội dung chi tiết</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ef9f27"></div> Công thức</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d85a30"></div> Ghi chú quan trọng</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#7f8a99"></div> Hình minh họa</div>
+  </div>
+
+  <!-- DANH SÁCH BÀI HỌC -->
+  <div id="lesson-list"></div>
+
+</div>
+
+<button class="btn-top" id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+
+<script type="module">
+    import { taiCauHinhToanCuc } from "./firebase-sync.js";
+    window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+</script>
+<script>
+/* ============================================================
+   HÀM BUILD HTML
+   ============================================================ */
+function escAttr(s) { return String(s).replace(/'/g, "&#39;"); }
+
+function buildItems(items) {
+  return items.map(it => {
+    if (it.type === 'formula') {
+      // Bọc $...$ để MathJax nhận diện và render đúng ký hiệu toán (tránh bọc đôi nếu dữ liệu đã có sẵn $)
+      let congThuc = (it.text || '').trim();
+      let daCoDauDola = congThuc.startsWith('$') && congThuc.endsWith('$');
+      return `<div class="formula-block"><span>${daCoDauDola ? congThuc : '$' + congThuc + '$'}</span></div>`;
+    }
+    if (it.type === 'image') {
+      let url = (it.text || '').trim();
+      return `<div class="image-block">
+        <img src="${escAttr(url)}" alt="Hình minh họa" loading="lazy"
+             onerror="this.outerHTML='<div class=&quot;image-error&quot;><i class=&quot;fa-solid fa-image-slash&quot;></i><span>Không tải được hình ảnh minh họa</span></div>'">
+        <div class="image-caption"><i class="fa-solid fa-shapes"></i> Hình minh họa</div>
+      </div>`;
+    }
+    if (it.type === 'note') {
+      return `<div class="note-block"><i class="fa-solid fa-triangle-exclamation"></i><span>${it.text}</span></div>`;
+    }
+    return `<div class="lvl3">
+      <div class="lvl3-label"><i class="fa-solid fa-circle-dot" style="font-size:0.6rem"></i>${it.label || ''}</div>
+      <div class="lvl3-text">${(it.text || '').replace(/\n/g, '<br>')}</div>
+    </div>`;
+  }).join('');
+}
+
+function buildChildren(children, pid) {
+  return children.map((ch, ci) => {
+    const id = `lvl2-${pid}-${ci}`;
+    const count = (ch.items || []).length;
+    return `<div class="lvl2 open" id="${id}">
+      <div class="lvl2-head" onclick="tog('${id}', 2)">
+        <div class="lvl2-icon">${ci + 1}</div>
+        <div class="lvl2-title">${ch.title}</div>
+        <div class="lvl2-count">${count} mục</div>
+        <i class="fa-solid fa-chevron-down chevron2"></i>
+      </div>
+      <div class="lvl2-body">${buildItems(ch.items || [])}</div>
+    </div>`;
+  }).join('<div class="orb">· · ·</div>');
+}
+
+/* Render từ dữ liệu CÓ CẤU TRÚC (demo / admin nhập structured) */
+function renderStructured(data) {
+  return data.map((ch, i) => {
+    const id = `lvl1-${i}`;
+    const soMuc = Array.isArray(ch.children) ? ch.children.length : 0;
+    let soNoiDung = 0;
+    (ch.children || []).forEach(c => soNoiDung += (c.items || []).length);
+    return `<div class="lvl1 open" id="${id}">
+      <div class="lvl1-head" onclick="tog('${id}', 1)">
+        <span class="lvl1-badge">Ch.${i + 1}</span>
+        <div class="lvl1-title-wrap">
+          <div class="lvl1-title">${ch.title}</div>
+          <div class="lvl1-meta">
+            <span><i class="fa-solid fa-star"></i> ${soMuc} mục con</span>
+            <span><i class="fa-solid fa-layer-group"></i> ${soNoiDung} nội dung</span>
+            <span><i class="fa-regular fa-calendar"></i> ${ch.date || ''}</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-down chevron"></i>
+      </div>
+      <div class="lvl1-body">
+        ${buildChildren(ch.children || [], i)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Render từ dữ liệu PHẲNG (localStorage cũ: title + content + date, không có children) */
+function renderFlat(data) {
+  return data.map((item, i) => {
+    const id = `lvl1-flat-${i}`;
+    return `<div class="lvl1 open" id="${id}">
+      <div class="lvl1-head" onclick="tog('${id}', 1)">
+        <span class="lvl1-badge">Bài ${i + 1}</span>
+        <div class="lvl1-title-wrap">
+          <div class="lvl1-title">${item.title || 'Bài học'}</div>
+          <div class="lvl1-meta"><span><i class="fa-regular fa-calendar"></i> ${item.date || ''}</span></div>
+        </div>
+        <i class="fa-solid fa-chevron-down chevron"></i>
+      </div>
+      <div class="lvl1-body">
+        <div class="free-content">${(item.content || '').replace(/\n/g, '<br>')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Xây mục lục chip điều hướng nhanh tới từng Chương */
+function buildToc(data, isStructured) {
+  if (!data.length) return '';
+  return data.map((ch, i) => {
+    const id = isStructured ? `lvl1-${i}` : `lvl1-flat-${i}`;
+    return `<a class="toc-chip" onclick="jumpTo('${id}')"><span class="toc-num">${i + 1}.</span> ${ch.title}</a>`;
+  }).join('');
+}
+
+function jumpTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('open');
+  const l2s = el.querySelectorAll('.lvl2');
+  l2s.forEach(l2 => l2.classList.add('open'));
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ============================================================
+   TOGGLE MỞ / ĐÓNG
+   ============================================================ */
+function tog(id, level) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function toggleAll(open) {
+  document.querySelectorAll('.lvl1').forEach(el => el.classList.toggle('open', open));
+  document.querySelectorAll('.lvl2').forEach(el => el.classList.toggle('open', open));
+}
+
+/* ============================================================
+   TÌM KIẾM (lọc theo chương / mục con / nội dung / công thức / ghi chú)
+   ============================================================ */
+let RAW_DATA = [];
+let IS_STRUCTURED = true;
+
+function textMatches(haystack, q) {
+  return (haystack || '').toLowerCase().includes(q);
+}
+
+function lessonMatchesStructured(ch, q) {
+  if (textMatches(ch.title, q)) return true;
+  return (ch.children || []).some(c => {
+    if (textMatches(c.title, q)) return true;
+    return (c.items || []).some(it => textMatches(it.label, q) || textMatches(it.text, q));
+  });
+}
+
+function lessonMatchesFlat(item, q) {
+  return textMatches(item.title, q) || textMatches(item.content, q);
+}
+
+function runSearch(q) {
+  const container = document.getElementById('lesson-list');
+  const tocWrap = document.getElementById('toc-wrap');
+  q = q.trim().toLowerCase();
+
+  if (!q) {
+    container.innerHTML = IS_STRUCTURED ? renderStructured(RAW_DATA) : renderFlat(RAW_DATA);
+    tocWrap.style.display = '';
+    afterRender();
+    return;
+  }
+
+  tocWrap.style.display = 'none';
+  const filtered = RAW_DATA.filter(item => IS_STRUCTURED ? lessonMatchesStructured(item, q) : lessonMatchesFlat(item, q));
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-result"><i class="fa-solid fa-ghost"></i>Không tìm thấy điều gì khớp với "${q}" trong cổ thư.</div>`;
+    return;
+  }
+  container.innerHTML = IS_STRUCTURED ? renderStructured(filtered) : renderFlat(filtered);
+  afterRender();
+  // Mở tất cả cấp khi đang tìm kiếm để dễ thấy kết quả
+  document.querySelectorAll('.lvl1, .lvl2').forEach(el => el.classList.add('open'));
+}
+
+/* ============================================================
+   THANH TIẾN TRÌNH ĐỌC + NÚT LÊN ĐẦU
+   ============================================================ */
+function updateProgress() {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('btn-top').classList.toggle('show', scrollTop > 400);
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+
+/* Sau khi render: typeset MathJax */
+function afterRender() {
+  if (window.MathJax && window.MathJax.typesetPromise) {
+    window.MathJax.typesetPromise().catch(() => {});
+  }
+}
+
+/* ============================================================
+   KHỞI ĐỘNG
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', async () => {
+  const container = document.getElementById('lesson-list');
+
+  // FIREBASE SYNC: tải lại danh sách bài học lý thuyết mới nhất từ Firestore (đề phòng
+  // giáo viên vừa nạp bài học từ 1 máy khác) trước khi đọc localStorage để hiển thị.
+  await window.__fbTaiCauHinhToanCuc();
+
+  let stored = [];
+  try { stored = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || []; } catch (e) {}
+
+  // Xác định khối lớp của học sinh đang đăng nhập để chỉ hiện đúng Chương phù hợp
+  let khoiHocSinh = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
+
+  // Dữ liệu cũ chưa có "grade" (nạp trước khi có phân khối) được coi là dùng chung mọi khối, không bị ẩn mất
+  RAW_DATA = stored.filter(ch => !ch.grade || ch.grade === 'all' || ch.grade === khoiHocSinh);
+  IS_STRUCTURED = !!(stored[0] && Array.isArray(stored[0].children));
+
+  container.innerHTML = IS_STRUCTURED ? renderStructured(RAW_DATA) : renderFlat(RAW_DATA);
+  document.getElementById('toc-chips').innerHTML = buildToc(RAW_DATA, IS_STRUCTURED);
+
+  if (RAW_DATA.length === 0) {
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-feather-pointed"></i><p>Cổ thư còn trống — chưa có tri thức nào dành cho ${khoiHocSinh}.</p><p class="empty-sub">Hãy nạp bài học lý thuyết từ trang quản trị.</p></div>`;
+    document.getElementById('toc-wrap').style.display = 'none';
+  }
+
+  afterRender();
+  updateProgress();
+
+  document.getElementById('search-input').addEventListener('input', (e) => runSearch(e.target.value));
+});
+</script>
+</body>
+</html>

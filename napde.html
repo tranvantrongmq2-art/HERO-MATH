@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trợ Lý Soạn Đề & Lý Thuyết AI - HERO MATH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- MathJax -->
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <!-- Firebase Sync JS -->
+    <script type="module">
+        import * as FirebaseSync from './firebase-sync.js';
+        window.FirebaseSync = FirebaseSync;
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #1a2236;
+            --accent-color: #0f3460;
+            --text-light: #f1f1f1;
+            --primary: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --ai-purple: #8e44ad;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header-box { display: flex; justify-content: space-between; align-items: center; background-color: var(--card-bg); padding: 15px 25px; border-radius: 12px; border: 1px solid #2c3a57; margin-bottom: 20px; }
+        .title-head { font-size: 1.3rem; font-weight: bold; color: #f1c40f; display: flex; align-items: center; gap: 10px; }
+        .btn-link { background-color: #34495e; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-link:hover { background-color: #415b76; }
+
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #2c3a57; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; color: #bdc3c7; }
+        input[type="text"], input[type="password"], select, textarea {
+            width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #2c3a57; background-color: #111625; color: #fff; box-sizing: border-box; font-size: 0.95rem;
+        }
+
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        button { padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s ease; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background-color: var(--primary); color: #000; }
+        .btn-primary:hover { background-color: #27ae60; }
+        .btn-ai { background-color: var(--ai-purple); color: white; }
+        .btn-ai:hover { background-color: #9b59b6; }
+
+        #ai-loading { display: none; text-align: center; padding: 20px; }
+        .spinner { border: 4px solid rgba(255, 255, 255, 0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #8e44ad; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .preview-box { background-color: #111625; border-left: 4px solid #8e44ad; padding: 12px 15px; margin-bottom: 12px; border-radius: 0 8px 8px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-box">
+        <div class="title-head"><i class="fa-solid fa-robot"></i> TRỢ LÝ SOẠN BÀI AI - HERO MATH</div>
+        <a href="admin.html" class="btn-link" onclick="return kiemTraTruocKhiSangAdmin(event)"><i class="fa-solid fa-user-shield"></i> Chuyển Sang Trang Admin</a>
+    </div>
+
+    <!-- Card chính: tạo nội dung thường (trắc nghiệm / lý thuyết) -->
+    <div class="card">
+        <div class="form-group">
+            <label for="gemini-key"><i class="fa-solid fa-key" style="color:#f1c40f"></i> Gemini API Key:</label>
+            <input type="password" id="gemini-key" placeholder="Nhập API Key Gemini...">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="select-loai-ai"><i class="fa-solid fa-layer-group"></i> Loại nội dung:</label>
+                <select id="select-loai-ai" onchange="doiLoaiNoiDung()">
+                    <option value="trac_nghiem" selected>📝 Đề Trắc Nghiệm</option>
+                    <option value="ly_thuyet">📖 Bài Học Lý Thuyết</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="select-khoi-ai"><i class="fa-solid fa-graduation-cap"></i> Khối Lớp:</label>
+                <select id="select-khoi-ai">
+                    <option value="Khối 6">Khối 6</option>
+                    <option value="Khối 7" selected>Khối 7</option>
+                    <option value="Khối 8">Khối 8</option>
+                    <option value="Khối 9">Khối 9</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="txt-ten-muc"><i class="fa-solid fa-pen-nib"></i> Tên Bài Học / Tên Bộ Đề:</label>
+            <input type="text" id="txt-ten-muc" placeholder="Ví dụ: Ôn tập Chương 1 - Số hữu tỉ">
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group" id="group-muc-do">
+                <label for="select-muc-do">Mức Độ Đề:</label>
+                <select id="select-muc-do">
+                    <option value="easy">🟢 Dễ (Cơ bản)</option>
+                    <option value="medium" selected>🟡 Trung bình</option>
+                    <option value="hard">🔴 Khó (Nâng cao)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="image-input">Tải Ảnh SGK / Đề Bài (Tùy chọn):</label>
+                <input type="file" id="image-input" accept="image/*">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="text-input">Mô Tả / Yêu Cầu Chi Tiết Cho AI:</label>
+            <textarea id="text-input" rows="3" placeholder="Ví dụ: Soạn 5 câu trắc nghiệm dạng tìm x, toán thực tế có lời giải chi tiết..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-ai" onclick="goiGeminiTaoNoiDung()"><i class="fa-solid fa-bolt"></i> AI Tạo Nội Dung (Gemini 3.6 Flash)</button>
+        </div>
+
+        <div id="ai-loading">
+            <div class="spinner"></div>
+            <p style="margin-top:10px; color:#f39c12; font-weight:bold;">🤖 Gemini 3.6 Flash đang phân tích và soạn bài... Thầy chờ chút nhé!</p>
+        </div>
+    </div>
+
+    <!-- KHỐI KẾT QUẢ XEM TRƯỚC (cho loại thường) -->
+    <div id="result-container" class="card" style="display: none; border: 2px solid #2ecc71;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#111625; padding:12px 18px; border-radius:8px; border-left:5px solid #2ecc71; margin-bottom:15px;">
+            <div>
+                <h3 style="margin:0; color:#2ecc71; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-circle-check"></i> AI Đã Khởi Tạo Xong!
+                </h3>
+                <span style="font-size:0.88rem; color:#f1c40f;">👉 Thầy vui lòng bấm nút "LƯU VÀO ADMIN" bên phải để hoàn tất nạp bài:</span>
+            </div>
+            <button class="btn-primary btn-save-action" onclick="dayThangVaoAdmin()">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Trực Tiếp Vào Admin &amp; Đồng Bộ Cloud
+            </button>
+        </div>
+        <div id="questions-list"></div>
+        <div class="btn-group" style="margin-top:15px;">
+            <button class="btn-primary btn-save-action" onclick="dayThangVaoAdmin()">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Trực Tiếp Vào Admin &amp; Đồng Bộ Cloud
+            </button>
+        </div>
+    </div>
+
+    <!-- ====== THÊM MỚI: Card nạp đề Thử Thách Tối Thượng ====== -->
+    <div class="card">
+        <h3><i class="fa-solid fa-skull-crossbones"></i> Nạp đề Thử Thách Tối Thượng cuối tuần</h3>
+        <div class="form-group">
+            <label>Tên bộ đề Thử Thách Tối Thượng:</label>
+            <input type="text" id="txt-boss-ten" placeholder="Ví dụ: Kho đề Thử Thách Tối Thượng tuần 1...">
+        </div>
+        <div class="form-group">
+            <label>Khối lớp áp dụng:</label>
+            <select id="sel-boss-grade">
+                <option value="all">🌐 Tất cả các khối (dùng chung)</option>
+                <option value="Khối 6">Khối 6</option>
+                <option value="Khối 7">Khối 7</option>
+                <option value="Khối 8">Khối 8</option>
+                <option value="Khối 9">Khối 9</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Mô tả / Yêu cầu chi tiết cho AI:</label>
+            <textarea id="txt-boss-mota" rows="3" placeholder="Ví dụ: Soạn 5 câu trắc nghiệm về phương trình, có hình ảnh minh họa..."></textarea>
+        </div>
+        <div class="btn-group">
+            <button class="btn-ai" onclick="goiGeminiTaoBoss()"><i class="fa-solid fa-bolt"></i> AI Tạo Đề Thử Thách Tối Thượng (Gemini)</button>
+        </div>
+        <div id="boss-loading" style="display:none; text-align:center; padding:20px;">
+            <div class="spinner"></div>
+            <p style="margin-top:10px; color:#f39c12; font-weight:bold;">🤖 Gemini đang soạn đề Thử Thách Tối Thượng...</p>
+        </div>
+        <div id="boss-result-container" style="display:none; margin-top:15px; border: 2px solid #e74c3c; border-radius: 8px; padding: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#111625; padding:10px 15px; border-radius:6px; margin-bottom:12px; border-left:4px solid #e74c3c;">
+                <span style="color:#e74c3c; font-weight:bold;"><i class="fa-solid fa-circle-check"></i> Đề Thử Thách Tối Thượng đã sẵn sàng! Bấm để lưu vào Admin:</span>
+                <button class="btn-primary btn-save-boss" style="background:#e74c3c; color:#fff;" onclick="dayBossVaoAdmin()"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu Đề Thử Thách Tối Thượng Vào Admin</button>
+            </div>
+            <div id="boss-questions-list"></div>
+            <div style="margin-top:15px;">
+                <button class="btn-primary btn-save-boss" style="background:#e74c3c; color:#fff;" onclick="dayBossVaoAdmin()"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu Đề Thử Thách Tối Thượng Vào Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== THÊM MỚI: Card nạp đề Nâng Cấp Tư Duy ====== -->
+    <div class="card">
+        <h3><i class="fa-solid fa-mountain"></i> Nạp đề Nâng Cấp Tư Duy cuối tuần</h3>
+        <div class="form-group">
+            <label>Tên bộ đề Nâng Cấp Tư Duy:</label>
+            <input type="text" id="txt-vuotai-ten" placeholder="Ví dụ: Kho đề Nâng Cấp Tư Duy tuần 1...">
+        </div>
+        <div class="form-group">
+            <label>Khối lớp áp dụng:</label>
+            <select id="sel-vuotai-grade">
+                <option value="all">🌐 Tất cả các khối (dùng chung)</option>
+                <option value="Khối 6">Khối 6</option>
+                <option value="Khối 7">Khối 7</option>
+                <option value="Khối 8">Khối 8</option>
+                <option value="Khối 9">Khối 9</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Mức độ đề:</label>
+            <select id="sel-vuotai-level">
+                <option value="easy">🟢 Dễ (Nhận biết)</option>
+                <option value="medium" selected>🟡 Trung bình (Thông hiểu)</option>
+                <option value="hard">🔴 Khó (Vận dụng)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Mô tả / Yêu cầu chi tiết cho AI:</label>
+            <textarea id="txt-vuotai-mota" rows="3" placeholder="Ví dụ: Soạn 5 câu trắc nghiệm về tam giác..."></textarea>
+        </div>
+        <div class="btn-group">
+            <button class="btn-ai" onclick="goiGeminiTaoVuotAi()"><i class="fa-solid fa-bolt"></i> AI Tạo Đề Nâng Cấp Tư Duy (Gemini)</button>
+        </div>
+        <div id="vuotai-loading" style="display:none; text-align:center; padding:20px;">
+            <div class="spinner"></div>
+            <p style="margin-top:10px; color:#f39c12; font-weight:bold;">🤖 Gemini đang soạn đề Nâng Cấp Tư Duy...</p>
+        </div>
+        <div id="vuotai-result-container" style="display:none; margin-top:15px; border: 2px solid #9b59b6; border-radius: 8px; padding: 15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; background:#111625; padding:10px 15px; border-radius:6px; margin-bottom:12px; border-left:4px solid #9b59b6;">
+                <span style="color:#9b59b6; font-weight:bold;"><i class="fa-solid fa-circle-check"></i> Đề Nâng Cấp Tư Duy đã sẵn sàng! Bấm để lưu vào Admin:</span>
+                <button class="btn-primary btn-save-vuotai" style="background:#9b59b6; color:#fff;" onclick="dayVuotAiVaoAdmin()"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu Đề Nâng Cấp Tư Duy Vào Admin</button>
+            </div>
+            <div id="vuotai-questions-list"></div>
+            <div style="margin-top:15px;">
+                <button class="btn-primary btn-save-vuotai" style="background:#9b59b6; color:#fff;" onclick="dayVuotAiVaoAdmin()"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu Đề Nâng Cấp Tư Duy Vào Admin</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let generatedData = null;
+let generatedBossData = null;
+let generatedVuotAiData = null;
+
+function choFirebaseSanSang(maxWaitMs = 3000) {
+    return new Promise((resolve) => {
+        if (window.FirebaseSync) return resolve(window.FirebaseSync);
+        const startTime = Date.now();
+        const interval = setInterval(() => {
+            if (window.FirebaseSync) {
+                clearInterval(interval);
+                resolve(window.FirebaseSync);
+            } else if (Date.now() - startTime > maxWaitMs) {
+                clearInterval(interval);
+                resolve(null);
+            }
+        }, 100);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const savedKey = localStorage.getItem('gemini_api_key');
+    if (savedKey) document.getElementById('gemini-key').value = savedKey;
+
+    // Tải cấu hình và ngân hàng đề mới nhất từ Firebase về trước khi nạp thêm
+    const fb = await choFirebaseSanSang();
+    if (fb && typeof fb.taiCauHinhToanCuc === 'function') {
+        try {
+            await fb.taiCauHinhToanCuc();
+            console.log("[NapDe] Đã đồng bộ cấu hình từ Firebase về máy.");
+        } catch(e) {
+            console.warn("[NapDe] Lỗi khi nạp cấu hình Firebase:", e);
+        }
+    }
+});
+
+function doiLoaiNoiDung() {
+    const loai = document.getElementById('select-loai-ai').value;
+    document.getElementById('group-muc-do').style.display = (loai === 'trac_nghiem') ? 'block' : 'none';
+}
+
+function processImageForAI(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width, height = img.height, maxDim = 1280;
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) { height = Math.round((height * maxDim) / width); width = maxDim; }
+                    else { width = Math.round((width * maxDim) / height); height = maxDim; }
+                }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+// ======= HÀM TẠO NỘI DUNG THƯỜNG (giữ nguyên) =======
+async function goiGeminiTaoNoiDung() {
+    const apiKey = document.getElementById('gemini-key').value.trim();
+    const loai = document.getElementById('select-loai-ai').value;
+    const khoi = document.getElementById('select-khoi-ai').value;
+    const tenMuc = document.getElementById('txt-ten-muc').value.trim();
+    const textInput = document.getElementById('text-input').value.trim();
+    const imageFile = document.getElementById('image-input').files[0];
+
+    if (!apiKey) { alert("Thầy vui lòng nhập API Key!"); return; }
+    if (!tenMuc) { alert("Thầy vui lòng nhập Tên Bài Học / Tên Bộ Đề!"); return; }
+    localStorage.setItem('gemini_api_key', apiKey);
+
+    document.getElementById('ai-loading').style.display = 'block';
+    document.getElementById('result-container').style.display = 'none';
+
+    try {
+        let parts = [];
+        let systemPrompt = "";
+
+        if (loai === 'trac_nghiem') {
+            systemPrompt = `Bạn là chuyên gia Toán THCS (${khoi}). Hãy tạo dữ liệu trắc nghiệm. Trả về DUY NHẤT một mảng JSON thuần túy (không dùng markdown \`\`\`json):
+[
+  {
+    "question": "Nội dung câu hỏi (sử dụng công thức $...$ nếu có)...",
+    "answers": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+    "correct": 0,
+    "explanation": "Lời giải chi tiết..."
+  }
+]`;
+        } else {
+            systemPrompt = `Bạn là giáo viên Toán THCS (${khoi}). Hãy tạo nội dung lý thuyết bài học. Trả về DUY NHẤT một mảng JSON thuần túy (không dùng markdown \`\`\`json):
+[
+  {
+    "title": "1. Khái niệm cơ bản",
+    "items": [
+      { "label": "Định nghĩa", "text": "Nội dung định nghĩa..." },
+      { "type": "formula", "text": "a + b = c" },
+      { "type": "note", "text": "Ghi chú quan trọng..." }
+    ]
+  }
+]`;
+        }
+
+        parts.push({ text: systemPrompt });
+        if (textInput) parts.push({ text: "Yêu cầu chi tiết: " + textInput });
+        if (imageFile) {
+            const base64Data = await processImageForAI(imageFile);
+            parts.push({ inline_data: { mime_type: "image/jpeg", data: base64Data } });
+        }
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts }] })
+        });
+
+        const data = await response.json();
+        document.getElementById('ai-loading').style.display = 'none';
+
+        if (data.error) { alert("Lỗi API: " + data.error.message); return; }
+
+        let rawText = data.candidates[0].content.parts[0].text;
+        rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        generatedData = JSON.parse(rawText);
+
+        hienThiKetQuaPreview(generatedData, loai);
+
+    } catch (err) {
+        document.getElementById('ai-loading').style.display = 'none';
+        alert("Lỗi xử lý: " + err.message);
+    }
+}
+
+function hienThiKetQuaPreview(data, loai) {
+    const container = document.getElementById('questions-list');
+    container.innerHTML = '';
+
+    if (loai === 'trac_nghiem') {
+        data.forEach((q, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-box';
+            div.innerHTML = `
+                <div><strong>Câu ${idx + 1}:</strong> ${q.question}</div>
+                <div style="font-size:0.9rem; color:#cbd5e1; margin:6px 0;">
+                    ${q.answers.map((opt, i) => `<div>${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+                </div>
+                <div style="color:#2ecc71; font-size:0.85rem;"><strong>Đáp án đúng:</strong> ${String.fromCharCode(65 + q.correct)}</div>
+                ${q.explanation ? `<div style="color:#f39c12; font-size:0.85rem;"><strong>Giải thích:</strong> ${q.explanation}</div>` : ''}
+            `;
+            container.appendChild(div);
+        });
+    } else {
+        data.forEach((sec) => {
+            const div = document.createElement('div');
+            div.className = 'preview-box';
+            div.innerHTML = `<h4 style="color:#3498db; margin:0 0 8px 0;">${sec.title}</h4>`;
+            sec.items.forEach(it => {
+                if (it.type === 'formula') div.innerHTML += `<div style="color:#f1c40f;">$${it.text}$</div>`;
+                else if (it.type === 'note') div.innerHTML += `<div style="color:#e67e22;">💡 ${it.text}</div>`;
+                else div.innerHTML += `<div><strong>${it.label}:</strong> ${it.text}</div>`;
+            });
+            container.appendChild(div);
+        });
+    }
+
+    document.getElementById('result-container').style.display = 'block';
+    if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+}
+
+async function dayThangVaoAdmin() {
+    if (!generatedData) return;
+
+    const loai = document.getElementById('select-loai-ai').value;
+    const khoi = document.getElementById('select-khoi-ai').value;
+    const tenMuc = document.getElementById('txt-ten-muc').value.trim();
+
+    // Hiển thị trạng thái đang lưu trên tất cả nút lưu
+    const saveBtns = document.querySelectorAll('.btn-save-action');
+    saveBtns.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu &amp; đồng bộ Cloud...`;
+    });
+
+    try {
+        if (loai === 'trac_nghiem') {
+            const mucDo = document.getElementById('select-muc-do').value;
+            let nganHang = JSON.parse(localStorage.getItem('ngan_hang_de_trac_nghiem')) || [];
+            
+            // Đưa lên đầu danh sách (unshift) để luôn xuất hiện dòng đầu tiên trong Admin
+            nganHang.unshift({
+                id: "bode_" + Date.now(),
+                title: tenMuc,
+                level: mucDo,
+                grade: khoi,
+                questions: generatedData,
+                source: "ai",
+                created_at: new Date().toLocaleString('vi-VN')
+            });
+
+            localStorage.setItem('ngan_hang_de_trac_nghiem', JSON.stringify(nganHang));
+            
+            // Chờ đồng bộ Firebase hoàn tất trước khi thông báo
+            const fb = await choFirebaseSanSang();
+            if (fb && typeof fb.dayCauHinhToanCuc === 'function') {
+                await fb.dayCauHinhToanCuc('ngan_hang_de_trac_nghiem');
+            }
+
+            generatedData = null; // Đánh dấu đã lưu xong
+            saveBtns.forEach(b => {
+                b.disabled = false;
+                b.innerHTML = `<i class="fa-solid fa-check"></i> Đã Lưu Thành Công!`;
+                b.style.backgroundColor = '#27ae60';
+            });
+
+            xacNhanChuyenSangAdmin(`🎉 Đã nạp thành công bộ đề "${tenMuc}" (${khoi}) vào Trang Admin và đồng bộ Cloud!`, 'khu-trac-nghiem');
+        } else {
+            let dsLyThuyet = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || [];
+            
+            // Đưa lên đầu danh sách (unshift)
+            dsLyThuyet.unshift({
+                id: "lt_" + Date.now(),
+                title: tenMuc,
+                grade: khoi,
+                children: generatedData,
+                source: "ai",
+                date: new Date().toLocaleDateString('vi-VN')
+            });
+
+            localStorage.setItem('danh_sach_bai_hoc_ly_thuyet', JSON.stringify(dsLyThuyet));
+
+            const fb = await choFirebaseSanSang();
+            if (fb && typeof fb.dayCauHinhToanCuc === 'function') {
+                await fb.dayCauHinhToanCuc('danh_sach_bai_hoc_ly_thuyet');
+            }
+
+            generatedData = null; // Đánh dấu đã lưu xong
+            saveBtns.forEach(b => {
+                b.disabled = false;
+                b.innerHTML = `<i class="fa-solid fa-check"></i> Đã Lưu Thành Công!`;
+                b.style.backgroundColor = '#27ae60';
+            });
+
+            xacNhanChuyenSangAdmin(`🎉 Đã nạp thành công bài học lý thuyết "${tenMuc}" (${khoi}) vào Trang Admin và đồng bộ Cloud!`, 'khu-ly-thuyet');
+        }
+    } catch(err) {
+        console.error("Lỗi khi lưu vào Admin:", err);
+        saveBtns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Thử Lưu Lại`;
+        });
+        alert("Lỗi khi lưu: " + err.message);
+    }
+}
+
+function xacNhanChuyenSangAdmin(thongBao, anchorId) {
+    if (confirm(thongBao + "\n\nThầy có muốn mở Trang Admin để xem lại ngay không?")) {
+        window.location.href = "admin.html#" + anchorId;
+    }
+}
+
+function kiemTraTruocKhiSangAdmin(event) {
+    if (generatedData || generatedBossData || generatedVuotAiData) {
+        if (!confirm("⚠️ Thầy/Cô vừa tạo nội dung bằng AI nhưng CHƯA BẤM LƯU VÀO ADMIN!\n\nNếu rời trang bây giờ, nội dung vừa tạo sẽ chưa được lưu vào hệ thống.\n\nThầy/Cô có chắc chắn muốn rời trang không?")) {
+            if (event) event.preventDefault();
+            return false;
+        }
+    }
+    return true;
+}
+
+// ======= HÀM TẠO ĐỀ THỬ THÁCH TỐI THƯỢNG (THÊM MỚI) =======
+async function goiGeminiTaoBoss() {
+    const apiKey = document.getElementById('gemini-key').value.trim();
+    const tenBoDe = document.getElementById('txt-boss-ten').value.trim();
+    const khoi = document.getElementById('sel-boss-grade').value;
+    const mota = document.getElementById('txt-boss-mota').value.trim();
+
+    if (!apiKey) { alert("Vui lòng nhập API Key!"); return; }
+    if (!tenBoDe) { alert("Vui lòng nhập tên bộ đề Thử Thách Tối Thượng!"); return; }
+
+    document.getElementById('boss-loading').style.display = 'block';
+    document.getElementById('boss-result-container').style.display = 'none';
+
+    try {
+        let systemPrompt = `Bạn là chuyên gia Toán THCS (${khoi}). Hãy tạo dữ liệu trắc nghiệm cho kho đề Thử Thách Tối Thượng (dành cho cuối tuần, độ khó cao hơn). Trả về DUY NHẤT một mảng JSON thuần túy (không dùng markdown \`\`\`json):
+[
+  {
+    "question": "Nội dung câu hỏi (sử dụng công thức $...$ nếu có)...",
+    "answers": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+    "correct": 0,
+    "explanation": "Lời giải chi tiết..."
+  }
+]`;
+        let parts = [{ text: systemPrompt }];
+        if (mota) parts.push({ text: "Yêu cầu chi tiết: " + mota });
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts }] })
+        });
+
+        const data = await response.json();
+        document.getElementById('boss-loading').style.display = 'none';
+
+        if (data.error) { alert("Lỗi API: " + data.error.message); return; }
+
+        let rawText = data.candidates[0].content.parts[0].text;
+        rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        generatedBossData = JSON.parse(rawText);
+
+        const container = document.getElementById('boss-questions-list');
+        container.innerHTML = '';
+        generatedBossData.forEach((q, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-box';
+            div.innerHTML = `
+                <div><strong>Câu ${idx + 1}:</strong> ${q.question}</div>
+                <div style="font-size:0.9rem; color:#cbd5e1; margin:6px 0;">
+                    ${q.answers.map((opt, i) => `<div>${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+                </div>
+                <div style="color:#2ecc71; font-size:0.85rem;"><strong>Đáp án đúng:</strong> ${String.fromCharCode(65 + q.correct)}</div>
+                ${q.explanation ? `<div style="color:#f39c12; font-size:0.85rem;"><strong>Giải thích:</strong> ${q.explanation}</div>` : ''}
+            `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('boss-result-container').style.display = 'block';
+        if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+
+    } catch (err) {
+        document.getElementById('boss-loading').style.display = 'none';
+        alert("Lỗi: " + err.message);
+    }
+}
+
+async function dayBossVaoAdmin() {
+    if (!generatedBossData) return;
+    const tenBoDe = document.getElementById('txt-boss-ten').value.trim();
+    const khoi = document.getElementById('sel-boss-grade').value;
+
+    const btns = document.querySelectorAll('.btn-save-boss');
+    btns.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu &amp; đồng bộ...`;
+    });
+
+    try {
+        let nganHangDeBoss = JSON.parse(localStorage.getItem('ngan_hang_de_boss')) || [];
+        nganHangDeBoss.unshift({
+            id: "bodeboss_" + Date.now(),
+            title: tenBoDe,
+            grade: khoi,
+            questions: generatedBossData,
+            source: "ai"
+        });
+        localStorage.setItem('ngan_hang_de_boss', JSON.stringify(nganHangDeBoss));
+
+        const fb = await choFirebaseSanSang();
+        if (fb && typeof fb.dayCauHinhToanCuc === 'function') {
+            await fb.dayCauHinhToanCuc('ngan_hang_de_boss');
+        }
+
+        generatedBossData = null;
+        btns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = `<i class="fa-solid fa-check"></i> Đã Lưu Thành Công!`;
+        });
+
+        alert(`🎉 Đã nạp thành công bộ đề Thử Thách Tối Thượng "${tenBoDe}" (${khoi}) vào Admin!`);
+        document.getElementById('txt-boss-ten').value = "";
+        document.getElementById('txt-boss-mota').value = "";
+        document.getElementById('boss-result-container').style.display = 'none';
+    } catch(err) {
+        console.error("Lỗi khi lưu đề Thử Thách Tối Thượng:", err);
+        btns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Thử Lưu Lại`;
+        });
+        alert("Lỗi khi lưu đề Thử Thách Tối Thượng: " + err.message);
+    }
+}
+
+// ======= HÀM TẠO ĐỀ VƯỢT ẢI (THÊM MỚI) =======
+async function goiGeminiTaoVuotAi() {
+    const apiKey = document.getElementById('gemini-key').value.trim();
+    const tenBoDe = document.getElementById('txt-vuotai-ten').value.trim();
+    const khoi = document.getElementById('sel-vuotai-grade').value;
+    const mucDo = document.getElementById('sel-vuotai-level').value;
+    const mota = document.getElementById('txt-vuotai-mota').value.trim();
+
+    if (!apiKey) { alert("Vui lòng nhập API Key!"); return; }
+    if (!tenBoDe) { alert("Vui lòng nhập tên bộ đề Nâng Cấp Tư Duy!"); return; }
+
+    document.getElementById('vuotai-loading').style.display = 'block';
+    document.getElementById('vuotai-result-container').style.display = 'none';
+
+    try {
+        let mucDoText = mucDo === 'easy' ? 'dễ (nhận biết)' : mucDo === 'medium' ? 'trung bình (thông hiểu)' : 'khó (vận dụng)';
+        let systemPrompt = `Bạn là chuyên gia Toán THCS (${khoi}). Hãy tạo dữ liệu trắc nghiệm với mức độ ${mucDoText} cho kho đề Nâng Cấp Tư Duy cuối tuần. Trả về DUY NHẤT một mảng JSON thuần túy (không dùng markdown \`\`\`json):
+[
+  {
+    "question": "Nội dung câu hỏi (sử dụng công thức $...$ nếu có)...",
+    "answers": ["Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"],
+    "correct": 0,
+    "explanation": "Lời giải chi tiết..."
+  }
+]`;
+        let parts = [{ text: systemPrompt }];
+        if (mota) parts.push({ text: "Yêu cầu chi tiết: " + mota });
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts }] })
+        });
+
+        const data = await response.json();
+        document.getElementById('vuotai-loading').style.display = 'none';
+
+        if (data.error) { alert("Lỗi API: " + data.error.message); return; }
+
+        let rawText = data.candidates[0].content.parts[0].text;
+        rawText = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        generatedVuotAiData = JSON.parse(rawText);
+
+        const container = document.getElementById('vuotai-questions-list');
+        container.innerHTML = '';
+        generatedVuotAiData.forEach((q, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-box';
+            div.innerHTML = `
+                <div><strong>Câu ${idx + 1}:</strong> ${q.question}</div>
+                <div style="font-size:0.9rem; color:#cbd5e1; margin:6px 0;">
+                    ${q.answers.map((opt, i) => `<div>${String.fromCharCode(65 + i)}. ${opt}</div>`).join('')}
+                </div>
+                <div style="color:#2ecc71; font-size:0.85rem;"><strong>Đáp án đúng:</strong> ${String.fromCharCode(65 + q.correct)}</div>
+                ${q.explanation ? `<div style="color:#f39c12; font-size:0.85rem;"><strong>Giải thích:</strong> ${q.explanation}</div>` : ''}
+            `;
+            container.appendChild(div);
+        });
+
+        document.getElementById('vuotai-result-container').style.display = 'block';
+        if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise();
+
+    } catch (err) {
+        document.getElementById('vuotai-loading').style.display = 'none';
+        alert("Lỗi: " + err.message);
+    }
+}
+
+async function dayVuotAiVaoAdmin() {
+    if (!generatedVuotAiData) return;
+    const tenBoDe = document.getElementById('txt-vuotai-ten').value.trim();
+    const khoi = document.getElementById('sel-vuotai-grade').value;
+    const mucDo = document.getElementById('sel-vuotai-level').value;
+
+    const btns = document.querySelectorAll('.btn-save-vuotai');
+    btns.forEach(b => {
+        b.disabled = true;
+        b.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang lưu &amp; đồng bộ...`;
+    });
+
+    try {
+        let nganHangDeVuotAi = JSON.parse(localStorage.getItem('ngan_hang_de_vuot_ai')) || [];
+        nganHangDeVuotAi.unshift({
+            id: "bodevuotai_" + Date.now(),
+            title: tenBoDe,
+            grade: khoi,
+            level: mucDo,
+            questions: generatedVuotAiData,
+            source: "ai"
+        });
+        localStorage.setItem('ngan_hang_de_vuot_ai', JSON.stringify(nganHangDeVuotAi));
+
+        const fb = await choFirebaseSanSang();
+        if (fb && typeof fb.dayCauHinhToanCuc === 'function') {
+            await fb.dayCauHinhToanCuc('ngan_hang_de_vuot_ai');
+        }
+
+        generatedVuotAiData = null;
+        btns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = `<i class="fa-solid fa-check"></i> Đã Lưu Thành Công!`;
+        });
+
+        alert(`🎉 Đã nạp thành công bộ đề Nâng Cấp Tư Duy "${tenBoDe}" (${khoi}) vào Admin!`);
+        document.getElementById('txt-vuotai-ten').value = "";
+        document.getElementById('txt-vuotai-mota').value = "";
+        document.getElementById('vuotai-result-container').style.display = 'none';
+    } catch(err) {
+        console.error("Lỗi khi lưu đề Nâng Cấp Tư Duy:", err);
+        btns.forEach(b => {
+            b.disabled = false;
+            b.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> Thử Lưu Lại`;
+        });
+        alert("Lỗi khi lưu đề Nâng Cấp Tư Duy: " + err.message);
+    }
+}
+</script>
+
+</body>
+</html>

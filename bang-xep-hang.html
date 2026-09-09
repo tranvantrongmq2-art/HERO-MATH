@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BẢNG XẾP HẠNG CHIẾN BINH - MATH HERO 7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        body {
+            background: radial-gradient(circle at center, #0a1120 0%, #04060b 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* Hiệu ứng chữ phát sáng giống ảnh Cửa Ngõ Vùng Đất Cấm */
+        .gaming-title-glow {
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.6), 0 0 30px rgba(34, 211, 238, 0.3);
+            letter-spacing: 0.05em;
+        }
+        
+        /* Bục Podium với viền Neon siêu thực */
+        .glow-aura-gold {
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.35), inset 0 0 15px rgba(234, 179, 8, 0.1);
+            border-color: #eab308 !important;
+            background: rgba(234, 179, 8, 0.04) !important;
+        }
+        .glow-aura-silver {
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3), inset 0 0 15px rgba(34, 211, 238, 0.1);
+            border-color: #22d3ee !important;
+            background: rgba(34, 211, 238, 0.04) !important;
+        }
+        .glow-aura-bronze {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), inset 0 0 15px rgba(236, 72, 153, 0.1);
+            border-color: #ec4899 !important;
+            background: rgba(236, 72, 153, 0.04) !important;
+        }
+
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @keyframes floatEffect {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .float-anim {
+            animation: floatEffect 3s ease-in-out infinite;
+        }
+
+        /* Danh sách chiến binh phong cách High-contrast Neon Card */
+        .glass-row {
+            background: rgba(13, 22, 41, 0.75);
+            border: 1px solid rgba(34, 211, 238, 0.15);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-row:hover {
+            background: rgba(18, 32, 61, 0.9);
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.25);
+            transform: translateX(6px);
+        }
+
+        /* ===== MODAL GIÁO VIÊN & ĐĂNG NHẬP THEO PHONG CÁCH ẢNH 2 ===== */
+        .modal-overlay {
+            position: fixed;
+            top:0; left:0; right:0; bottom:0;
+            background: rgba(3, 5, 10, 0.9);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(6px);
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-card {
+            background: #0d1527;
+            border: 2px solid #22d3ee;
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.25), inset 0 0 20px rgba(34, 211, 238, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 720px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: #22d3ee;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+            margin-top: 0;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #050811;
+            border: 1px solid #1e293b;
+            color: white;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            font-weight: bold;
+            margin: 16px 0;
+            transition: all 0.3s;
+        }
+        .modal-input:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+            outline: none;
+        }
+
+        /* Nút bấm phong cách Gradient cực nét từ hình ảnh của bạn */
+        .btn-magenta-glow {
+            background: linear-gradient(90deg, #d946ef 0%, #a855f7 100%);
+            box-shadow: 0 0 15px rgba(217, 70, 239, 0.4);
+            color: #fff;
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        .btn-magenta-glow:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(217, 70, 239, 0.7);
+        }
+
+        .btn-cyan-glow {
+            background: linear-gradient(90deg, #38bdf8 0%, #1d4ed8 100%);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+            color: #fff;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+        .btn-cyan-glow:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.7);
+        }
+
+        .btn-dark-translucent {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+        .btn-dark-translucent:hover {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+        }
+
+        .btn-action {
+            color: #fff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+        }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
+        .btn-danger:hover { box-shadow: 0 0 18px rgba(239, 68, 68, 0.6); transform: scale(1.02); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); color: #000; }
+        .btn-warning:hover { box-shadow: 0 0 18px rgba(245, 158, 11, 0.6); transform: scale(1.02); }
+
+        .teacher-table-wrap {
+            overflow-x: auto;
+            margin-top: 14px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            background: #050811;
+        }
+        .teacher-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 750px;
+        }
+        .teacher-table th {
+            background: #0f172a;
+            color: #22d3ee;
+            text-align: left;
+            padding: 12px 14px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            border-bottom: 2px solid #1e293b;
+        }
+        .teacher-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e293b;
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+        .teacher-table tr:hover td { background: rgba(34, 211, 238, 0.04); }
+
+        .editable-cell {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: inline-block;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        .editable-cell:hover {
+            background: rgba(34, 211, 238, 0.15);
+            border-color: #22d3ee;
+        }
+        .btn-small {
+            padding: 4px 10px;
+            font-size: 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .btn-small:hover { transform: scale(1.08); }
+
+        .tab-btn-teacher {
+            background: #0f172a;
+            color: #94a3b8;
+            border: 1px solid #1e293b;
+            padding: 8px 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            margin-right: 6px;
+        }
+        .tab-btn-teacher.active {
+            background: #22d3ee;
+            color: #04060b;
+            border-color: #22d3ee;
+            box-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+        }
+        .tab-content-teacher { display: none; animation: fadeIn 0.3s ease; padding-top: 14px; }
+        .tab-content-teacher.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .nhatky-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #1e293b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            background: rgba(255,255,255,0.01);
+            margin-bottom: 4px;
+            border-radius: 6px;
+        }
+        .nhatky-item .time { color: #38bdf8; font-weight: bold; }
+
+        @media (max-width: 640px) {
+            .modal-card { padding: 16px; max-width: 100%; }
+            .teacher-table { font-size: 0.7rem; min-width: 550px; }
+            .teacher-table th, .teacher-table td { padding: 8px 8px; }
+            .tab-btn-teacher { font-size: 0.65rem; padding: 6px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div class="max-w-4xl mx-auto px-4 py-6">
+        
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-5 flex-wrap gap-4">
+            <a href="index.html" class="flex items-center gap-2 btn-dark-translucent font-bold px-6 py-2.5 rounded-full transition-all text-sm shadow-lg">
+                <i class="fa-solid fa-arrow-left text-cyan-400"></i> Sảnh Chính
+            </a>
+            <div class="flex items-center gap-4">
+                <button onclick="openTeacherLogin()" class="flex items-center gap-2 btn-cyan-glow px-5 py-2.5 rounded-full transition-all text-sm shadow-lg">
+                    <i class="fa-solid fa-user-tie"></i> Giáo viên
+                </button>
+                <div class="text-right">
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Mùa Giải Đấu Toán Học</p>
+                    <p class="text-xs text-emerald-400 font-semibold mt-0.5"><i class="fa-solid fa-circle fa-fade text-[8px] mr-1"></i> Bảng điểm cập nhật liên tục</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-black gaming-title-glow text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-500 tracking-wider mb-3">
+                BẢNG VINH DANH CHIẾN BINH
+            </h1>
+            <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
+                Chạm vào các chiến binh trong <span class="text-cyan-400 font-bold">Top 3</span> để kích hoạt hiệu ứng pháo hoa ăn mừng rực rỡ và khúc nhạc chiến thắng!
+            </p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-14 max-w-2xl mx-auto mt-6">
+            <div id="podium-2" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(2, this)">
+                <div class="relative flex flex-col items-center">
+                    <div class="absolute -top-10 text-2xl font-black float-anim" style="animation-delay: 0.5s;">🥈</div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-2xl md:text-3xl text-white bg-slate-800 glow-aura-silver shadow-lg" id="top2-avatar">?</div>
+                </div>
+                <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[120px] md:min-h-[150px] justify-between shadow-2xl relative border-cyan-400">
+                    <span class="absolute top-2 left-2 text-cyan-400 font-black text-xs md:text-sm">#2</span>
+                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top2-name">Đang chờ...</p>
+                    <p class="text-cyan-400 font-bold text-xs" id="top2-class">---</p>
+                    <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-cyan-300 font-bold mt-1 shadow-inner" id="top2-exp">0 EXP</div>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top2-ff-tier">Tập Sự</span>
+                </div>
+            </div>
+
+            <div id="podium-1" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(1, this)">
+                <div class="relative flex flex-col items-center">
+                    <div class="absolute -top-12 text-yellow-400 text-3xl font-black float-anim"><i class="fa-solid fa-crown"></i></div>
+                    <div class="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-3xl md:text-4xl text-white bg-slate-800 glow-aura-gold shadow-lg" id="top1-avatar">?</div>
+                </div>
+                <div class="w-full bg-slate-900 border-t-4 rounded-t-xl mt-4 p-4 text-center flex flex-col items-center min-h-[150px] md:min-h-[190px] justify-between shadow-2xl relative border-yellow-500">
+                    <span class="absolute top-2 left-2 text-yellow-400 font-black text-xs md:text-sm">#1</span>
+                    <p class="font-black text-base text-yellow-400 mt-2 truncate w-full tracking-wide" id="top1-name">Đang chờ...</p>
+                    <p class="text-emerald-400 font-bold text-xs" id="top1-class">---</p>
+                    <div class="bg-yellow-950/40 border border-yellow-600/50 px-3 py-1 rounded text-xs text-yellow-400 font-black mt-1 shadow-inner" id="top1-exp">0 EXP</div>
+                    <span class="text-[9px] font-black text-yellow-400 border border-yellow-500 px-2 py-0.5 rounded-full mt-1 bg-yellow-950/60 uppercase tracking-widest" id="top1-ff-tier">Tập Sự</span>
+                </div>
+            </div>
+
+            <div id="podium-3" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(3, this)">
+                <div class="relative flex flex-col items-center">
+                    <div class="absolute -top-10 text-2xl font-black float-anim" style="animation-delay: 1s;">🥉</div>
+                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-full border-4 overflow-hidden flex items-center justify-center font-black text-2xl md:text-3xl text-white bg-slate-800 glow-aura-bronze shadow-lg" id="top3-avatar">?</div>
+                </div>
+                <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[105px] md:min-h-[135px] justify-between shadow-2xl relative border-pink-500">
+                    <span class="absolute top-2 left-2 text-pink-400 font-black text-xs md:text-sm">#3</span>
+                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top3-name">Đang chờ...</p>
+                    <p class="text-pink-400 font-bold text-xs" id="top3-class">---</p>
+                    <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-pink-300 font-bold mt-1 shadow-inner" id="top3-exp">0 EXP</div>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top3-ff-tier">Tập Sự</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-5 flex justify-between items-center px-2">
+            <h2 class="text-sm md:text-base font-black tracking-wider text-slate-300 flex items-center gap-2 uppercase">
+                <i class="fa-solid fa-ranking-star text-cyan-400"></i> Danh Sách Chiến Binh Tham Gia Vòng Đấu
+            </h2>
+            <span class="text-xs text-slate-400 font-bold bg-slate-900 px-3 py-1.5 rounded-md border border-slate-800 shadow-inner" id="total-warriors-count">Tổng số: 0</span>
+        </div>
+
+        <div class="flex flex-col gap-3.5 mb-14" id="leaderboard-list-container">
+        </div>
+
+    </div>
+
+    <div id="teacher-login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 420px;">
+            <h3><i class="fa-solid fa-lock mb-2 block text-3xl"></i> XÁC THỰC GIÁO VIÊN</h3>
+            <p style="font-size:0.85rem; color:#94a3b8; font-weight: 500;">Vui lòng nhập mật mã để mở Cổng Điều Hành:</p>
+            <input type="password" id="teacher-password-input" class="modal-input" placeholder="Mật mã Giáo viên" autocomplete="off" onkeydown="if(event.key==='Enter') verifyTeacherPassword()">
+            <div class="flex gap-3 justify-center mt-2">
+                <button class="btn-dark-translucent px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider" onclick="closeTeacherLogin()">Hủy bỏ</button>
+                <button class="btn-magenta-glow px-6 py-2 rounded-lg text-xs tracking-wider" onclick="verifyTeacherPassword()">Xác Nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-panel-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 1100px; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 14px;">
+                <h3 style="margin:0; color:#22d3ee; font-size:1.2rem;"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH QUẢN TRỊ</h3>
+                <button class="btn-dark-translucent" onclick="closeTeacherPanel()" style="padding: 6px 14px; font-size:0.75rem; border-radius: 6px; font-weight: bold;">ĐÓNG</button>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
+                <button class="tab-btn-teacher active" data-tab="tab-student" onclick="switchTeacherTab('tab-student', this)"><i class="fa-solid fa-users"></i> Chiến binh</button>
+                <button class="tab-btn-teacher" data-tab="tab-log" onclick="switchTeacherTab('tab-log', this)"><i class="fa-solid fa-clock-rotate-left"></i> Nhật ký</button>
+                <button class="tab-btn-teacher" data-tab="tab-effort" onclick="switchTeacherTab('tab-effort', this)"><i class="fa-solid fa-fire"></i> Xếp Hạng Nỗ Lực</button>
+                <button class="tab-btn-teacher" data-tab="tab-setting" onclick="switchTeacherTab('tab-setting', this)"><i class="fa-solid fa-sliders"></i> Cài đặt</button>
+            </div>
+
+            <div id="tab-student" class="tab-content-teacher active">
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('lam_bai')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset LB tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vuot_ai')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset Vượt ải tất cả</button>
+                    <button class="btn-action btn-warning" onclick="resetAllLuot('vong_quay')" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-rotate"></i> Reset VQ tất cả</button>
+                    <button class="btn-action btn-danger" onclick="if(confirm('Xóa TOÀN BỘ dữ liệu học sinh?')){localStorage.clear(); location.reload();}" style="font-size:0.65rem; padding:6px 12px;"><i class="fa-solid fa-trash-can"></i> Xóa toàn bộ</button>
+                </div>
+                <div class="teacher-table-wrap">
+                    <table class="teacher-table" id="teacher-student-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Họ tên</th>
+                                <th>Lớp</th>
+                                <th>EXP</th>
+                                <th>Điểm</th>
+                                <th>Danh hiệu</th>
+                                <th>Lượt LB</th>
+                                <th>Lượt Vượt ải</th>
+                                <th>Lượt VQ</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-student-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-log" class="tab-content-teacher">
+                <div style="max-height: 400px; overflow-y: auto; background: #050811; padding: 10px; border-radius: 8px; border: 1px solid #1e293b;" id="nhat-ky-list"></div>
+            </div>
+
+            <div id="tab-effort" class="tab-content-teacher">
+                <p style="font-size:0.75rem; color:#94a3b8; margin: 0 0 12px 0; line-height:1.5;">
+                    Xếp hạng theo <b style="color:#22d3ee;">nỗ lực</b> (không chỉ theo điểm đúng), gồm 4 tiêu chí:
+                    Chuyên cần <b style="color:#f1c40f;">35%</b> · Nỗ lực <b style="color:#f1c40f;">30%</b> ·
+                    Tiến bộ <b style="color:#f1c40f;">20%</b> · Kết quả đúng <b style="color:#f1c40f;">15%</b>.
+                    Dữ liệu lấy từ Làm bài, Vượt ải, Boss cuối tuần và Bài tập tự luận.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px; background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; border:1px solid #1e293b;">
+                    <select id="effort-period-type" class="modal-input" style="width:auto; margin:0; padding:8px 12px;" onchange="capNhatGiaoDienChonKy()">
+                        <option value="tuan_nay">Tuần này</option>
+                        <option value="thang_nay">Tháng này</option>
+                        <option value="tuan_cu_the">Chọn tuần cụ thể</option>
+                        <option value="thang_cu_the">Chọn tháng cụ thể</option>
+                    </select>
+                    <input type="date" id="effort-week-picker" class="modal-input" style="width:auto; margin:0; padding:8px 12px; display:none;">
+                    <input type="month" id="effort-month-picker" class="modal-input" style="width:auto; margin:0; padding:8px 12px; display:none;">
+                    <button class="btn-cyan-glow px-4 py-2 rounded-lg text-xs font-bold" onclick="tinhBangXepHangNoLuc()"><i class="fa-solid fa-magnifying-glass-chart"></i> Tính bảng xếp hạng</button>
+                    <button class="btn-magenta-glow px-4 py-2 rounded-lg text-xs font-bold" onclick="xuatExcelNoLuc()"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
+                    <span id="effort-status" style="font-size:0.7rem; color:#64748b; font-weight:600;"></span>
+                </div>
+                <div class="teacher-table-wrap">
+                    <table class="teacher-table" id="effort-table">
+                        <thead>
+                            <tr>
+                                <th>Hạng</th>
+                                <th>Họ tên</th>
+                                <th>Lớp</th>
+                                <th>Điểm 10</th>
+                                <th>Chuyên cần</th>
+                                <th>Nỗ lực</th>
+                                <th>Tiến bộ</th>
+                                <th>Kết quả đúng</th>
+                                <th>Số ngày TG</th>
+                                <th>Số lượt</th>
+                                <th>Đúng/Sai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="effort-tbody"><tr><td colspan="11" style="text-align:center; color:#64748b; padding:24px; font-weight:500;">Bấm "Tính bảng xếp hạng" để xem dữ liệu.</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-setting" class="tab-content-teacher">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 8px;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt làm bài tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-lam-bai" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="3">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('lam_bai')">Lưu</button>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt vượt ải tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-vuot-ai" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="3">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('vuot_ai')">Lưu</button>
+                        </div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.02); padding: 14px; border-radius: 10px; border: 1px solid #1e293b;">
+                        <label style="color:#94a3b8; font-size:0.75rem; display:block; font-weight:bold; margin-bottom:4px;">Số lượt vòng quay tối đa / ngày</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="max-luot-vong-quay" class="modal-input" style="width:90px; margin:0; padding:6px 10px;" min="1" value="5">
+                            <button class="btn-cyan-glow px-4 py-1.5 rounded-lg text-xs font-bold" onclick="saveMaxLuot('vong_quay')">Lưu</button>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:0.75rem; color:#64748b; margin-top:14px; font-weight: 500;">* Các giá trị này áp dụng cho tất cả học sinh khi hệ thống tiến hành reset lượt.</p>
+                <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
+                    <a href="vuot-ai-tuan.html" class="btn-action" style="background:#8b5cf6; color:#fff; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-mountain"></i> Vào Vượt ải</a>
+                    <a href="lam-bai.html" class="btn-action" style="background:#3498db; color:#fff; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-book"></i> Vào Làm bài</a>
+                    <a href="vong-quay.html" class="btn-action" style="background:#f39c12; color:#000; text-decoration:none; padding:6px 14px; font-size:0.7rem; border-radius:6px; font-weight:bold;"><i class="fa-solid fa-rotate"></i> Vào Vòng quay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { taiToanBoHocSinhTuMay, taiCauHinhToanCuc, dayCauHinhToanCuc, dayDuLieuLenMay, xoaHocSinhTrenMay, taiNhatKyHoatDong, taiBaiTuLuanTrongKhoang } from "./firebase-sync.js";
+        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+        window.__fbTaiNhatKyHoatDong = taiNhatKyHoatDong;
+        window.__fbTaiBaiTuLuanTrongKhoang = taiBaiTuLuanTrongKhoang;
+    </script>
+    <script>
+        // ============================================================
+        // PHẦN HIỆN CÓ (bảng xếp hạng, pháo hoa, ...) - GIỮ NGUYÊN LOGIC
+        // ============================================================
+        function getFreeFireTier(exp) {
+            if (exp < 10) return { name: "Tập Sự", color: "#94a3b8", bg: "rgba(148, 163, 184, 0.15)" };
+            if (exp < 50) return { name: "Quân Hàm Đồng", color: "#cd7f32", bg: "rgba(205, 127, 50, 0.2)" };
+            if (exp < 100) return { name: "Quân Hàm Bạc", color: "#b4b4b4", bg: "rgba(180, 180, 180, 0.2)" };
+            if (exp < 200) return { name: "Quân Hàm Vàng", color: "#f1c40f", bg: "rgba(241, 196, 15, 0.2)" };
+            if (exp < 500) return { name: "Kim Cương", color: "#00f0ff", bg: "rgba(0, 240, 255, 0.25)" };
+            if (exp < 1000) return { name: "Huyền Thoại", color: "#ff0055", bg: "rgba(255, 0, 85, 0.25)" };
+            if (exp < 2000) return { name: "Siêu Huyền Thoại", color: "#ff5100", bg: "rgba(255, 81, 0, 0.25)" };
+            if (exp < 4000) return { name: "Cao Thủ", color: "#9d4edd", bg: "rgba(157, 78, 221, 0.25)" };
+            if (exp < 8000) return { name: "Đại Cao Thủ", color: "#f72585", bg: "rgba(247, 37, 133, 0.3)" };
+            return { name: "Thách Đấu", color: "#ff0000", bg: "rgba(255, 0, 0, 0.35)" };
+        }
+
+        const avatarBackgrounds = [
+            'linear-gradient(135deg, #e67e22, #f1c40f)',
+            'linear-gradient(135deg, #3498db, #8e44ad)',
+            'linear-gradient(135deg, #2ecc71, #1abc9c)',
+            'linear-gradient(135deg, #e74c3c, #9b59b6)'
+        ];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await window.__fbTaiCauHinhToanCuc();
+            let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
+            toanBoHocSinh.forEach(hs => {
+                Object.keys(hs.data).forEach(key => {
+                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
+                    localStorage.setItem(key, hs.data[key]);
+                });
+            });
+
+            loadLeaderboardData();
+            initFireworksEngine();
+            document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
+            document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
+            document.getElementById('max-luot-vong-quay').value = localStorage.getItem('so_luot_vong_quay_toi_da') || 5;
+
+            // Khởi tạo mặc định cho bộ chọn kỳ của tab "Xếp Hạng Nỗ Lực"
+            let homNay = new Date();
+            document.getElementById('effort-week-picker').value = toISODate(homNay);
+            document.getElementById('effort-month-picker').value = homNay.getFullYear() + '-' + String(homNay.getMonth() + 1).padStart(2, '0');
+            capNhatGiaoDienChonKy();
+        });
+
+        function loadLeaderboardData() {
+            let finalWarriors = [];
+
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('exp_')) {
+                    let ten = key.replace('exp_', '');
+                    let diemExp = parseInt(localStorage.getItem(key)) || 0;
+                    
+                    // Lấy đúng LỚP CỤ THỂ (vd "9a4") từ field "classroom", KHÔNG lấy "className"
+                    // (field này chỉ là Khối, vd "Khối 9") — trước đây bị nhầm lẫn 2 field này
+                    // nên bảng xếp hạng hiển thị "Lớp: Khối 9" thay vì "Lớp: 9a4".
+                    let lop = "Khối 7";
+                    let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                    let timThayLop = nhatKy.find(item => item.name === ten);
+                    if (timThayLop) lop = timThayLop.classroom || timThayLop.className || "Khối 7";
+                    
+                    finalWarriors.push({ name: ten, class: lop, exp: diemExp });
+                }
+            }
+
+            finalWarriors.sort((a, b) => b.exp - a.exp);
+            document.getElementById('total-warriors-count').innerText = `Tổng số: ${finalWarriors.length} Chiến binh`;
+
+            setupPodiumCard(1, finalWarriors[0]);
+            setupPodiumCard(2, finalWarriors[1]);
+            setupPodiumCard(3, finalWarriors[2]);
+
+            const listContainer = document.getElementById('leaderboard-list-container');
+            if (finalWarriors.length === 0) {
+                listContainer.innerHTML = `<div class="text-center p-8 text-slate-500 italic text-sm border border-dashed border-slate-800 rounded-xl">Vòng chơi mới đã bắt đầu hoặc sảnh chưa có học sinh tham gia.</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = "";
+            finalWarriors.forEach((current, index) => {
+                let tier = getFreeFireTier(current.exp);
+                let tuMoi = current.name.split(" ");
+                let chuCaiDau = tuMoi[tuMoi.length - 1] ? tuMoi[tuMoi.length - 1].charAt(0).toUpperCase() : "?";
+                let bgAvatar = avatarBackgrounds[current.name.length % avatarBackgrounds.length];
+
+                /* Tối ưu cấu trúc CSS dòng để chống lỗi co font, chồng lấp chữ */
+                listContainer.innerHTML += `
+                    <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
+                            <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
+                                ${chuCaiDau}
+                            </div>
+                            <div class="text-left min-w-0">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="font-extrabold text-base text-white truncate tracking-wide">${current.name}</p> 
+                                    <span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 shadow-sm border" style="background: ${tier.bg}; color: ${tier.color}; border-color: ${tier.color}40; text-shadow: 0 0 5px ${tier.color}50">
+                                        ${tier.name}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-cyan-400 font-bold mt-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${current.class}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right">
+                            <div class="flex flex-col items-end">
+                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Kinh nghiệm</span>
+                                <span class="text-sm md:text-base font-black text-emerald-400"><i class="fa-solid fa-star text-xs mr-0.5"></i> ${current.exp} <span class="text-[10px] text-slate-400 font-medium">EXP</span></span>
+                            </div>
+                            <div class="flex flex-col items-end min-w-[75px]">
+                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Tài sản</span>
+                                <span class="text-sm md:text-base font-black text-amber-400"><i class="fa-solid fa-coins text-xs mr-0.5"></i> ${localStorage.getItem('coin_' + current.name) || 50} <span class="text-[10px] text-slate-400 font-medium">Điểm</span></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function setupPodiumCard(rank, player) {
+            if (!player) {
+                document.getElementById(`top${rank}-name`).innerText = "Đang chờ...";
+                document.getElementById(`top${rank}-class`).innerText = "---";
+                document.getElementById(`top${rank}-exp`).innerHTML = "0 EXP<br><span style='color: #ffeb3b'><i class='fa-solid fa-coins text-[10px]'></i> 0 Điểm</span>";
+                document.getElementById(`top${rank}-ff-tier`).innerText = "Tập Sự";
+                document.getElementById(`top${rank}-ff-tier`).style.color = "#94a3b8";
+                document.getElementById(`top${rank}-avatar`).innerText = "?";
+                document.getElementById(`top${rank}-avatar`).style.background = "#334155";
+                return;
+            }
+
+            document.getElementById(`top${rank}-name`).innerText = player.name;
+            document.getElementById(`top${rank}-class`).innerText = `Lớp: ${player.class}`;
+            let pCoins = localStorage.getItem('coin_' + player.name) || 50;
+            document.getElementById(`top${rank}-exp`).innerHTML = `${player.exp} EXP<br><span style="color: #ffd700"><i class="fa-solid fa-coins text-[10px]"></i> ${pCoins} Điểm</span>`;
+
+            let ffTier = getFreeFireTier(player.exp);
+            let tierEl = document.getElementById(`top${rank}-ff-tier`);
+            tierEl.innerText = ffTier.name;
+            tierEl.style.color = ffTier.color;
+            tierEl.style.borderColor = ffTier.color + "60";
+
+            let arr = player.name.split(" ");
+            let lastWord = arr[arr.length - 1];
+            document.getElementById(`top${rank}-avatar`).innerText = lastWord ? lastWord.charAt(0).toUpperCase() : "?";
+            document.getElementById(`top${rank}-avatar`).style.background = avatarBackgrounds[player.name.length % avatarBackgrounds.length];
+        }
+
+        function playPodiumVictoryFanfare(rank) {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const now = ctx.currentTime;
+                let frequencies = rank === 1 ? [523.25, 659.25, 783.99, 1046.50] : (rank === 2 ? [392.00, 493.88, 587.33, 783.99] : [329.63, 415.30, 493.88, 659.25]);
+
+                frequencies.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = rank === 1 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.12);
+                    gain.gain.setValueAtTime(0.12, now + index * 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.12 + 0.35);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.start(now + index * 0.12); osc.stop(now + index * 0.12 + 0.4);
+                });
+            } catch (e) {}
+        }
+
+        let canvas, ctx, particles = [];
+        function initFireworksEngine() {
+            canvas = document.getElementById('fireworks-canvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            requestAnimationFrame(updateAndDrawFireworks);
+        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+
+        class FireworkParticle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                const angle = Math.random() * Math.PI * 2, speed = Math.random() * 8 + 3;
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
+                this.alpha = 1; this.decay = Math.random() * 0.015 + 0.01; this.gravity = 0.15;
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.vy += this.gravity; this.vx *= 0.98; this.alpha -= this.decay; }
+            draw() {
+                ctx.save(); ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath();
+                ctx.arc(this.x, this.y, Math.random() * 2 + 1.5, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+            }
+        }
+
+        function updateAndDrawFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i]; p.update();
+                if (p.alpha <= 0) particles.splice(i, 1); else p.draw();
+            }
+            requestAnimationFrame(updateAndDrawFireworks);
+        }
+
+        function triggerCelebration(rank, element) {
+            const rect = element.getBoundingClientRect();
+            const posX = rect.left + rect.width / 2, posY = rect.top + rect.height / 3;
+            playPodiumVictoryFanfare(rank);
+            let colorPalette = rank === 1 ? ['#ffd700', '#ff9f43', '#ffffff'] : (rank === 2 ? ['#22d3ee', '#e2e8f0', '#0284c7'] : ['#ec4899', '#f43f5e', '#f472b6']);
+            for (let i = 0; i < 80; i++) {
+                particles.push(new FireworkParticle(posX, posY, colorPalette[Math.floor(Math.random() * colorPalette.length)]));
+            }
+        }
+
+        // ============================================================
+        // CHẾ ĐỘ GIÁO VIÊN
+        // ============================================================
+        function openTeacherLogin() {
+            document.getElementById('teacher-password-input').value = "";
+            document.getElementById('teacher-login-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('teacher-password-input').focus(), 100);
+        }
+        function closeTeacherLogin() {
+            document.getElementById('teacher-login-modal').style.display = 'none';
+        }
+        function verifyTeacherPassword() {
+            let matKhau = document.getElementById('teacher-password-input').value;
+            if (matKhau === "thaytrongmath") {
+                closeTeacherLogin();
+                openTeacherPanel();
+            } else {
+                alert("Mật mã không chính xác!");
+            }
+        }
+        function openTeacherPanel() {
+            document.getElementById('teacher-panel-modal').style.display = 'flex';
+            renderTeacherStudentList();
+            renderNhatKy();
+        }
+        function closeTeacherPanel() {
+            document.getElementById('teacher-panel-modal').style.display = 'none';
+        }
+
+        function switchTeacherTab(tabId, btn) {
+            document.querySelectorAll('.tab-content-teacher').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn-teacher').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+            if (tabId === 'tab-student') renderTeacherStudentList();
+            if (tabId === 'tab-log') renderNhatKy();
+        }
+
+        function getAllStudents() {
+            let students = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.startsWith('exp_')) {
+                    let ten = key.replace('exp_', '');
+                    let exp = parseInt(localStorage.getItem(key)) || 0;
+                    let coin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
+                    // Cùng bản vá như loadLeaderboardData(): ưu tiên "classroom" (lớp cụ thể,
+                    // vd "9a4"), chỉ lùi về "className" (Khối) khi học sinh chưa có dữ liệu lớp cụ thể.
+                    let lop = "Khối 7";
+                    let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                    let timThay = nhatKy.find(item => item.name === ten);
+                    if (timThay) lop = timThay.classroom || timThay.className || "Khối 7";
+                    let luotLB = getLuotConLai(ten, 'lam_bai');
+                    let luotVA = getLuotConLai(ten, 'vuot_ai');
+                    let luotVQ = getLuotConLai(ten, 'vong_quay');
+                    students.push({ ten, exp, coin, lop, luotLB, luotVA, luotVQ });
+                }
+            }
+            students.sort((a,b) => b.exp - a.exp);
+            return students;
+        }
+
+        function getLuotConLai(ten, loai) {
+            let key = `luot_${loai}_${ten}`;
+            let data = JSON.parse(localStorage.getItem(key));
+            if (!data) return 0;
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            if (data.date !== homNay) return 0;
+            return data.soLuotConLai || 0;
+        }
+
+        function renderTeacherStudentList() {
+            let tbody = document.getElementById('teacher-student-tbody');
+            let students = getAllStudents();
+            if (students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:#64748b; padding:24px; font-weight:500;">Chưa có dữ liệu học sinh tham gia sảnh đấu này.</td></tr>`;
+                return;
+            }
+            let html = "";
+            students.forEach((s, idx) => {
+                let tier = getFreeFireTier(s.exp);
+                let tierColor = tier.color;
+                html += `<tr>
+                    <td>${idx+1}</td>
+                    <td><b class="text-white font-bold">${s.ten}</b></td>
+                    <td><span class="text-slate-300 font-medium">${s.lop}</span></td>
+                    <td>
+                        <span class="editable-cell" onclick="editExp('${s.ten}', this)">${s.exp}</span>
+                    </td>
+                    <td>
+                        <span class="editable-cell" style="color:#f59e0b;" onclick="editCoin('${s.ten}', this)">${s.coin}</span>
+                    </td>
+                    <td style="color:${tierColor}; font-weight:900; tracking-wide">${tier.name}</td>
+                    <td class="font-bold text-slate-300">${s.luotLB}</td>
+                    <td class="font-bold text-slate-300">${s.luotVA}</td>
+                    <td class="font-bold text-slate-300">${s.luotVQ}</td>
+                    <td style="white-space:nowrap;">
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','lam_bai')" title="Reset lượt làm bài">LB</button>
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','vuot_ai')" title="Reset lượt vượt ải">VA</button>
+                        <button class="btn-small btn-warning" onclick="resetLuot('${s.ten}','vong_quay')" title="Reset vòng quay">VQ</button>
+                        <button class="btn-small btn-danger" onclick="deleteStudent('${s.ten}')"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function editExp(ten, el) {
+            let current = parseInt(el.innerText) || 0;
+            let newVal = prompt(`Nhập EXP mới cho ${ten}:`, current);
+            if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
+                let val = parseInt(newVal);
+                if (val < 0) val = 0;
+                localStorage.setItem('exp_' + ten, val);
+                el.innerText = val;
+                window.__fbDayDuLieuLenMay(ten);
+                loadLeaderboardData();
+                renderTeacherStudentList();
+            }
+        }
+
+        function editCoin(ten, el) {
+            let current = parseInt(el.innerText) || 0;
+            let newVal = prompt(`Nhập số Điểm mới cho ${ten}:`, current);
+            if (newVal !== null && !isNaN(newVal) && newVal.trim() !== '') {
+                let val = parseInt(newVal);
+                if (val < 0) val = 0;
+                localStorage.setItem('coin_' + ten, val);
+                el.innerText = val;
+                window.__fbDayDuLieuLenMay(ten);
+                loadLeaderboardData();
+                renderTeacherStudentList();
+            }
+        }
+
+        function resetLuot(ten, loai) {
+            if (!confirm(`Reset lượt "${loai}" cho học sinh ${ten}?`)) return;
+            let key = `luot_${loai}_${ten}`;
+            let maxKey = `so_luot_${loai}_toi_da`;
+            let max = parseInt(localStorage.getItem(maxKey)) || (loai === 'lam_bai' ? 3 : (loai === 'vuot_ai' ? 3 : 5));
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            let data = { date: homNay, soLuotConLai: max };
+            localStorage.setItem(key, JSON.stringify(data));
+            window.__fbDayDuLieuLenMay(ten);
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã reset lượt ${loai} cho ${ten} về ${max}.`);
+        }
+
+        function resetAllLuot(loai) {
+            if (!confirm(`Reset TẤT CẢ lượt "${loai}" cho toàn bộ học sinh?`)) return;
+            let students = getAllStudents();
+            let maxKey = `so_luot_${loai}_toi_da`;
+            let max = parseInt(localStorage.getItem(maxKey)) || (loai === 'lam_bai' ? 3 : (loai === 'vuot_ai' ? 3 : 5));
+            let homNay = new Date().toLocaleDateString('vi-VN');
+            students.forEach(s => {
+                let key = `luot_${loai}_${s.ten}`;
+                let data = { date: homNay, soLuotConLai: max };
+                localStorage.setItem(key, JSON.stringify(data));
+                window.__fbDayDuLieuLenMay(s.ten);
+            });
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã reset tất cả lượt ${loai} về ${max}.`);
+        }
+
+        function deleteStudent(ten) {
+            if (!confirm(`Xóa toàn bộ dữ liệu của học sinh "${ten}"?`)) return;
+            let keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && (key.startsWith('exp_') || key.startsWith('coin_') || key.startsWith('luot_') || key.startsWith('ruong_do_')) && key.includes(ten)) {
+                    keysToRemove.push(key);
+                }
+            }
+            let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            nhatKy = nhatKy.filter(item => item.name !== ten);
+            localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(nhatKy));
+            window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap');
+
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            window.__fbXoaHocSinhTrenMay(ten);
+            renderTeacherStudentList();
+            loadLeaderboardData();
+            alert(`Đã xóa học sinh ${ten}.`);
+        }
+
+        function renderNhatKy() {
+            let container = document.getElementById('nhat-ky-list');
+            let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            if (logs.length === 0) {
+                container.innerHTML = `<p style="color:#64748b; font-style:italic; font-size:0.85rem; padding:10px;">Chưa lưu nhận nhật ký đăng nhập nào.</p>`;
+                return;
+            }
+            let reversed = [...logs].reverse();
+            let html = "";
+            reversed.forEach((item, idx) => {
+                let timeStr = item.time || item.dateTime || "Không rõ";
+                html += `<div class="nhatky-item">
+                    <span><b class="text-white">${item.name}</b> - <span class="text-slate-400 font-medium">${item.className || 'Khối 7'} ${item.classroom || ''}</span></span>
+                    <div class="flex items-center gap-3">
+                        <span class="time">${timeStr}</span>
+                        <button class="btn-small btn-danger" onclick="xoaNhatKy(${idx})" style="font-size:0.6rem; padding: 2px 6px;">Xóa</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function xoaNhatKy(index) {
+            let logs = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+            let originalIndex = logs.length - 1 - index;
+            if (originalIndex >= 0 && originalIndex < logs.length) {
+                logs.splice(originalIndex, 1);
+                localStorage.setItem('nhat_ky_dang_nhap', JSON.stringify(logs));
+                window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap');
+                renderNhatKy();
+            }
+        }
+
+        function saveMaxLuot(loai) {
+            let idMap = { 'lam_bai': 'max-luot-lam-bai', 'vuot_ai': 'max-luot-vuot-ai', 'vong_quay': 'max-luot-vong-quay' };
+            let input = document.getElementById(idMap[loai]);
+            let val = parseInt(input.value);
+            if (isNaN(val) || val < 1) {
+                alert('Vui lòng nhập số nguyên dương hợp lệ.');
+                return;
+            }
+            localStorage.setItem(`so_luot_${loai}_toi_da`, val);
+            window.__fbDayCauHinhToanCuc(`so_luot_${loai}_toi_da`);
+            alert(`Đã lưu số lượt ${loai} tối đa: ${val}`);
+        }
+
+        // ============================================================
+        // BẢNG XẾP HẠNG NỖ LỰC (đa tiêu chí, quy về thang điểm 10)
+        // ------------------------------------------------------------
+        // Trọng số: Chuyên cần 35% - Nỗ lực 30% - Tiến bộ 20% - Kết quả đúng 15%
+        // Nguồn dữ liệu: "mathhero_activity_log" (Làm bài / Vượt ải / Boss,
+        // ghi bởi ghiNhatKyHoatDong) + "bai_tap_tu_luan" (mỗi bài nộp là 1 mốc thời gian).
+        // ============================================================
+        let ketQuaXepHangNoLucGanNhat = []; // lưu lại để dùng cho nút Xuất Excel
+
+        function toISODate(d) {
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        // Trả về Thứ Hai của tuần chứa ngày d (giờ địa phương)
+        function layThuHaiCuaTuan(d) {
+            let ngayTrongTuan = d.getDay(); // 0 = CN
+            let lechNgay = (ngayTrongTuan === 0) ? -6 : (1 - ngayTrongTuan);
+            let thuHai = new Date(d);
+            thuHai.setDate(d.getDate() + lechNgay);
+            thuHai.setHours(0, 0, 0, 0);
+            return thuHai;
+        }
+
+        function capNhatGiaoDienChonKy() {
+            let loai = document.getElementById('effort-period-type').value;
+            document.getElementById('effort-week-picker').style.display = (loai === 'tuan_cu_the') ? 'inline-block' : 'none';
+            document.getElementById('effort-month-picker').style.display = (loai === 'thang_cu_the') ? 'inline-block' : 'none';
+        }
+
+        // Tính khoảng ngày của kỳ hiện tại (được chọn) và kỳ liền trước (cùng độ dài, để so sánh "tiến bộ")
+        function tinhKhoangNgayXepHang() {
+            let loai = document.getElementById('effort-period-type').value;
+            let batDau, ketThuc;
+
+            if (loai === 'tuan_nay' || loai === 'tuan_cu_the') {
+                let moc = new Date();
+                if (loai === 'tuan_cu_the') {
+                    let val = document.getElementById('effort-week-picker').value;
+                    if (val) moc = new Date(val + 'T00:00:00');
+                }
+                batDau = layThuHaiCuaTuan(moc);
+                ketThuc = new Date(batDau);
+                ketThuc.setDate(batDau.getDate() + 6);
+            } else {
+                let nam, thang; // thang: 0-11
+                if (loai === 'thang_cu_the') {
+                    let val = document.getElementById('effort-month-picker').value; // "YYYY-MM"
+                    let phan = val ? val.split('-') : [new Date().getFullYear(), new Date().getMonth() + 1];
+                    nam = parseInt(phan[0]); thang = parseInt(phan[1]) - 1;
+                } else {
+                    let now = new Date();
+                    nam = now.getFullYear(); thang = now.getMonth();
+                }
+                batDau = new Date(nam, thang, 1);
+                ketThuc = new Date(nam, thang + 1, 0);
+            }
+
+            let soNgayTrongKy = Math.round((ketThuc - batDau) / 86400000) + 1;
+            let ketThucKyTruoc = new Date(batDau);
+            ketThucKyTruoc.setDate(batDau.getDate() - 1);
+            let batDauKyTruoc = new Date(ketThucKyTruoc);
+            batDauKyTruoc.setDate(ketThucKyTruoc.getDate() - (soNgayTrongKy - 1));
+
+            return {
+                tuNgay: toISODate(batDau), denNgay: toISODate(ketThuc), soNgayTrongKy,
+                tuNgayTruoc: toISODate(batDauKyTruoc), denNgayTruoc: toISODate(ketThucKyTruoc)
+            };
+        }
+
+        // Gom dữ liệu log + bài tự luận thành 1 map theo tên học sinh, trong 1 khoảng ngày
+        async function gomDuLieuHocSinhTrongKy(tuNgay, denNgay) {
+            let [logs, baiTuLuan] = await Promise.all([
+                window.__fbTaiNhatKyHoatDong(tuNgay, denNgay),
+                window.__fbTaiBaiTuLuanTrongKhoang(tuNgay, denNgay)
+            ]);
+
+            let map = {}; // ten -> { ngayThamGia:Set, tongLuot, soCauDung, soCauSai, expTong, diemTuLuan: [] }
+            function layHoacTao(ten) {
+                if (!map[ten]) map[ten] = { ngayThamGia: new Set(), tongLuot: 0, soCauDung: 0, soCauSai: 0, expTong: 0, diemTuLuan: [] };
+                return map[ten];
+            }
+            logs.forEach(l => {
+                if (!l.ten) return;
+                let hs = layHoacTao(l.ten);
+                if (l.ngay) hs.ngayThamGia.add(l.ngay);
+                hs.tongLuot += l.soLuot || 0;
+                hs.soCauDung += l.soCauDung || 0;
+                hs.soCauSai += l.soCauSai || 0;
+                hs.expTong += l.expNhan || 0;
+            });
+            baiTuLuan.forEach(b => {
+                if (!b.hocSinh) return;
+                let hs = layHoacTao(b.hocSinh);
+                if (b.thoiGianNop) hs.ngayThamGia.add(String(b.thoiGianNop).slice(0, 10));
+                hs.tongLuot += 1;
+                if (b.daCham && typeof b.diem === 'number') hs.diemTuLuan.push(b.diem);
+            });
+            return map;
+        }
+
+        // Quy đổi 1 chỉ số về thang điểm 10 (kẹp trong [0,10])
+        function kepTrongKhoang(x, min, max) { return Math.max(min, Math.min(max, x)); }
+
+        async function tinhBangXepHangNoLuc() {
+            let trangThai = document.getElementById('effort-status');
+            let tbody = document.getElementById('effort-tbody');
+            trangThai.innerText = 'Đang tải dữ liệu...';
+            tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#64748b; padding:24px;"><i class="fa-solid fa-spinner fa-spin"></i> Đang tính toán...</td></tr>`;
+
+            try {
+                let ky = tinhKhoangNgayXepHang();
+                let [duLieuKyNay, duLieuKyTruoc] = await Promise.all([
+                    gomDuLieuHocSinhTrongKy(ky.tuNgay, ky.denNgay),
+                    gomDuLieuHocSinhTrongKy(ky.tuNgayTruoc, ky.denNgayTruoc)
+                ]);
+
+                // Lấy toàn bộ danh sách học sinh (kể cả em chưa tham gia trong kỳ này -> vẫn hiện, 0 điểm)
+                let roster = getAllStudents();
+
+                let ketQua = roster.map(hs => {
+                    let d = duLieuKyNay[hs.ten] || { ngayThamGia: new Set(), tongLuot: 0, soCauDung: 0, soCauSai: 0, expTong: 0, diemTuLuan: [] };
+                    let dTruoc = duLieuKyTruoc[hs.ten] || { expTong: 0, diemTuLuan: [] };
+
+                    // 1) CHUYÊN CẦN: số ngày có tham gia / tổng số ngày trong kỳ
+                    let soNgayTG = d.ngayThamGia.size;
+                    let diemChuyenCan = kepTrongKhoang((soNgayTG / ky.soNgayTrongKy) * 10, 0, 10);
+
+                    // 2) NỖ LỰC: tổng số lượt hoạt động so với kỳ vọng ~1.5 lượt/ngày trong kỳ
+                    let kyVongLuot = ky.soNgayTrongKy * 1.5;
+                    let diemNoLuc = kepTrongKhoang((d.tongLuot / Math.max(1, kyVongLuot)) * 10, 0, 10);
+
+                    // 3) TIẾN BỘ: so sánh "thành tích quy đổi" kỳ này với kỳ trước (5 = giữ nguyên)
+                    let thanhTichNay = d.expTong + (d.diemTuLuan.reduce((a, b) => a + b, 0) * 10);
+                    let thanhTichTruoc = dTruoc.expTong + (dTruoc.diemTuLuan.reduce((a, b) => a + b, 0) * 10);
+                    let diemTienBo;
+                    if (thanhTichTruoc <= 0) {
+                        diemTienBo = thanhTichNay > 0 ? 10 : 5; // chưa có dữ liệu kỳ trước -> không phạt, có cố gắng thì cho điểm cao
+                    } else {
+                        let tyLeThayDoi = (thanhTichNay - thanhTichTruoc) / thanhTichTruoc;
+                        diemTienBo = kepTrongKhoang(5 + tyLeThayDoi * 5, 0, 10);
+                    }
+
+                    // 4) KẾT QUẢ ĐÚNG: tỷ lệ câu đúng (trắc nghiệm) hòa cùng điểm tự luận trung bình
+                    let tongCau = d.soCauDung + d.soCauSai;
+                    let diemTracNghiem = tongCau > 0 ? (d.soCauDung / tongCau) * 10 : null;
+                    let diemTuLuanTB = d.diemTuLuan.length > 0 ? (d.diemTuLuan.reduce((a, b) => a + b, 0) / d.diemTuLuan.length) : null;
+                    let diemKetQua;
+                    if (diemTracNghiem !== null && diemTuLuanTB !== null) diemKetQua = (diemTracNghiem + diemTuLuanTB) / 2;
+                    else if (diemTracNghiem !== null) diemKetQua = diemTracNghiem;
+                    else if (diemTuLuanTB !== null) diemKetQua = diemTuLuanTB;
+                    else diemKetQua = 0;
+
+                    let diem10 = diemChuyenCan * 0.35 + diemNoLuc * 0.30 + diemTienBo * 0.20 + diemKetQua * 0.15;
+
+                    return {
+                        ten: hs.ten, lop: hs.lop,
+                        diem10: Math.round(diem10 * 10) / 10,
+                        diemChuyenCan: Math.round(diemChuyenCan * 10) / 10,
+                        diemNoLuc: Math.round(diemNoLuc * 10) / 10,
+                        diemTienBo: Math.round(diemTienBo * 10) / 10,
+                        diemKetQua: Math.round(diemKetQua * 10) / 10,
+                        soNgayTG, tongLuot: d.tongLuot, soCauDung: d.soCauDung, soCauSai: d.soCauSai
+                    };
+                });
+
+                ketQua.sort((a, b) => b.diem10 - a.diem10);
+                ketQuaXepHangNoLucGanNhat = ketQua;
+
+                if (ketQua.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#64748b; padding:24px;">Chưa có học sinh nào trong hệ thống.</td></tr>`;
+                } else {
+                    tbody.innerHTML = ketQua.map((r, idx) => `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td><b class="text-white font-bold">${r.ten}</b></td>
+                            <td><span class="text-slate-300 font-medium">${r.lop}</span></td>
+                            <td style="color:#22d3ee; font-weight:900;">${r.diem10.toFixed(1)}</td>
+                            <td>${r.diemChuyenCan.toFixed(1)}</td>
+                            <td>${r.diemNoLuc.toFixed(1)}</td>
+                            <td>${r.diemTienBo.toFixed(1)}</td>
+                            <td>${r.diemKetQua.toFixed(1)}</td>
+                            <td>${r.soNgayTG}</td>
+                            <td>${r.tongLuot}</td>
+                            <td>${r.soCauDung}/${r.soCauSai}</td>
+                        </tr>`).join('');
+                }
+                trangThai.innerText = `Kỳ: ${ky.tuNgay} → ${ky.denNgay} (${ky.soNgayTrongKy} ngày) · ${ketQua.length} học sinh`;
+            } catch (loi) {
+                console.error(loi);
+                trangThai.innerText = 'Có lỗi khi tải dữ liệu, thử lại nhé.';
+                tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:#f87171; padding:24px;">Lỗi tải dữ liệu. Vui lòng bấm lại "Tính bảng xếp hạng".</td></tr>`;
+            }
+        }
+
+        function xuatExcelNoLuc() {
+            if (!ketQuaXepHangNoLucGanNhat || ketQuaXepHangNoLucGanNhat.length === 0) {
+                alert('Hãy bấm "Tính bảng xếp hạng" trước khi xuất Excel nhé.');
+                return;
+            }
+            if (typeof XLSX === 'undefined') {
+                alert('Chưa tải được thư viện xuất Excel, vui lòng kiểm tra kết nối mạng rồi thử lại.');
+                return;
+            }
+
+            let ky = tinhKhoangNgayXepHang();
+            let cotChuan = (r, hangTrongLop) => ({
+                'Hạng': hangTrongLop,
+                'Họ tên': r.ten,
+                'Lớp': r.lop,
+                'Điểm 10': r.diem10,
+                'Chuyên cần (35%)': r.diemChuyenCan,
+                'Nỗ lực (30%)': r.diemNoLuc,
+                'Tiến bộ (20%)': r.diemTienBo,
+                'Kết quả đúng (15%)': r.diemKetQua,
+                'Số ngày tham gia': r.soNgayTG,
+                'Tổng số lượt làm bài': r.tongLuot,
+                'Số câu đúng': r.soCauDung,
+                'Số câu sai': r.soCauSai
+            });
+
+            let wb = XLSX.utils.book_new();
+
+            // Sheet "Tất cả" - xếp theo điểm 10 toàn trường
+            let wsTatCa = XLSX.utils.json_to_sheet(ketQuaXepHangNoLucGanNhat.map((r, i) => cotChuan(r, i + 1)));
+            XLSX.utils.book_append_sheet(wb, wsTatCa, 'Tất cả');
+
+            // 1 sheet riêng cho từng lớp, xếp hạng lại theo điểm 10 trong nội bộ lớp đó
+            let theoLop = {};
+            ketQuaXepHangNoLucGanNhat.forEach(r => {
+                let ten = r.lop || 'Chưa rõ lớp';
+                if (!theoLop[ten]) theoLop[ten] = [];
+                theoLop[ten].push(r);
+            });
+            Object.keys(theoLop).sort().forEach(lop => {
+                let ds = theoLop[lop].slice().sort((a, b) => b.diem10 - a.diem10);
+                let ws = XLSX.utils.json_to_sheet(ds.map((r, i) => cotChuan(r, i + 1)));
+                let tenSheetAnToan = lop.toString().replace(/[\\\/\?\*\[\]:]/g, '').slice(0, 31) || 'Lop';
+                XLSX.utils.book_append_sheet(wb, ws, tenSheetAnToan);
+            });
+
+            let tenLoaiKy = document.getElementById('effort-period-type').value.includes('tuan') ? 'Tuan' : 'Thang';
+            let tenFile = `BangXepHangNoLuc_${tenLoaiKy}_${ky.tuNgay}_den_${ky.denNgay}.xlsx`;
+            XLSX.writeFile(wb, tenFile);
+        }
+    </script>
+</body>
+</html>

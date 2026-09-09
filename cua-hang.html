@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>HỆ THỐNG THƯƠNG MẠI CHIẾN BINH - MATH HERO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & NỀN (CYBER-MAGIC THEME) ===== */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: linear-gradient(45deg, #090912, #240b36, #0d324d, #1a0b2e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff; 
+            min-height: 100vh; 
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Hạt ma thuật nền */
+        #particle-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+        }
+
+        /* Scrollbar tuỳ chỉnh */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+        ::-webkit-scrollbar-thumb { background: #00ffff; border-radius: 4px; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 12px; display: flex; flex-direction: column; gap: 16px; }
+        
+        /* ===== NAVIGATION TOP BAR (GLASSMORPHISM) ===== */
+        .header-box { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: rgba(15, 10, 30, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            padding: 14px 16px; border-radius: 20px; 
+            border: 1px solid rgba(0, 255, 255, 0.3); 
+            box-shadow: 0 5px 25px rgba(0, 255, 255, 0.15), inset 0 0 15px rgba(0, 0, 0, 0.5);
+            flex-wrap: wrap; gap: 10px; position: relative; overflow: hidden;
+        }
+        .header-box::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.2), transparent);
+            animation: lightSweep 4s infinite; pointer-events: none;
+        }
+        @keyframes lightSweep { 100% { left: 200%; } }
+
+        .shop-title { 
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.05rem; 
+            color: #00ffff; display: flex; align-items: center; gap: 8px; 
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #0055ff; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .nav-buttons { display: flex; gap: 8px; }
+        .btn-home, .btn-teacher { 
+            border: none; padding: 8px 12px; border-radius: 12px; font-weight: 900; font-size: 0.75rem;
+            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; 
+            transition: 0.2s; color: white; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .btn-home { background: linear-gradient(135deg, #ff2a85, #ff0055); box-shadow: 0 4px 10px rgba(255, 42, 133, 0.4); }
+        .btn-home:active { transform: scale(0.95); }
+        .btn-teacher { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-teacher:active { background: rgba(255,255,255,0.2); }
+
+        /* ===== CARD CHIẾN BINH (HUD STYLE) ===== */
+        .user-status-card {
+            background: rgba(10, 5, 25, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 42, 133, 0.4); border-left: 4px solid #ff2a85;
+            border-radius: 16px; padding: 16px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: inset 0 0 20px rgba(255, 42, 133, 0.1), 0 5px 20px rgba(0,0,0,0.5);
+            flex-wrap: wrap; gap: 12px; position: relative;
+        }
+        .warrior-card-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        .warrior-avatar {
+            width: 55px; height: 55px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #4a0022, #0d0208);
+            border: 2px solid #ff2a85; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; box-shadow: 0 0 15px rgba(255, 42, 133, 0.6), inset 0 0 10px rgba(0,0,0,0.6);
+            flex-shrink: 0; animation: avatarPulse 2s infinite alternate;
+        }
+        @keyframes avatarPulse {
+            0% { box-shadow: 0 0 10px rgba(255, 42, 133, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(255, 42, 133, 0.8), 0 0 10px #00ffff; }
+        }
+        .warrior-meta { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+        .warrior-label { font-size: 0.65rem; font-weight: 700; color: #00ffff; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 4px; text-shadow: 0 0 5px rgba(0,255,255,0.5); }
+        .warrior-name { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.1rem; color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .warrior-class-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .warrior-class-tag, .warrior-classroom-tag {
+            background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); color: #00ffff; 
+            font-size: 0.6rem; font-weight: 900; padding: 2px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        
+        .warrior-card-right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+        .user-exp-badge, .user-coin-badge { 
+            padding: 5px 12px; border-radius: 10px; font-weight: 900; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .user-exp-badge { 
+            background: rgba(123, 47, 247, 0.15); border: 1px solid #7b2ff7; color: #d4b3ff; 
+            text-shadow: 0 0 8px #7b2ff7; box-shadow: 0 0 10px rgba(123, 47, 247, 0.3);
+        }
+        .user-coin-badge { 
+            background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #ffeaa7; 
+            text-shadow: 0 0 8px #f1c40f; box-shadow: 0 0 10px rgba(241, 196, 15, 0.3);
+        }
+
+        /* Đăng nhập nhanh */
+        .quick-login-form { display: flex; width: 100%; gap: 8px; margin-top: 10px; }
+        .quick-login-form input { flex: 1; padding: 10px 14px; background: rgba(0,0,0,0.5); border: 1px solid #00ffff; color: white; border-radius: 12px; font-weight: bold; font-size: 0.9rem; outline: none; }
+        .quick-login-form button { background: linear-gradient(135deg, #00c6ff, #0072ff); color: white; border: none; padding: 10px 16px; border-radius: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0, 198, 255, 0.4); }
+
+        /* ===== TABS (NÚT CHỌN PHE) ===== */
+        .tabs-container { 
+            display: flex; background: rgba(0, 0, 0, 0.5); border-radius: 20px; overflow: hidden; 
+            border: 1px solid rgba(0, 255, 255, 0.15); padding: 4px; gap: 2px;
+        }
+        .tab-btn { 
+            flex: 1; padding: 10px 4px; background: transparent; border: none; color: #7b8b9b; 
+            font-weight: 900; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; 
+            transition: all 0.3s ease; border-radius: 16px; letter-spacing: 0.5px; 
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .tab-btn i { font-size: 1rem; }
+        .tab-btn.active { 
+            background: linear-gradient(135deg, #00c6ff, #0072ff); color: #ffffff; 
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4); text-shadow: 0 1px 2px rgba(0,0,0,0.3); 
+        }
+        .tab-content { display: none; animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Lời dẫn (Lore Box Style) */
+        .lore-text {
+            background: rgba(0, 20, 40, 0.4); border-left: 3px solid #ff2a85; padding: 10px 14px;
+            border-radius: 8px; font-size: 0.75rem; color: #b3c6d6; line-height: 1.5; margin-bottom: 16px;
+        }
+        .lore-text b { color: #00ffff; font-weight: 900; text-shadow: 0 0 5px rgba(0,255,255,0.4); }
+
+        /* ===== SHOP GRID (THẺ BÀI MA THUẬT) ===== */
+        .shop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        @media (max-width: 360px) { .shop-grid { grid-template-columns: 1fr; } }
+        
+        .item-card { 
+            background: rgba(15, 10, 30, 0.8); border-radius: 16px; padding: 14px; text-align: center; 
+            display: flex; flex-direction: column; justify-content: space-between; position: relative;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.2s;
+        }
+        .item-card:active { transform: scale(0.96); }
+        
+        /* Hiệu ứng màu viền theo loại thẻ */
+        .item-card-lambai { border: 1px solid rgba(0, 255, 255, 0.4); box-shadow: 0 5px 15px rgba(0, 255, 255, 0.1); }
+        .item-card-vuotai { border: 1px solid rgba(123, 47, 247, 0.5); box-shadow: 0 5px 15px rgba(123, 47, 247, 0.15); }
+        .item-card-boss { border: 1px solid rgba(241, 196, 15, 0.5); box-shadow: 0 5px 15px rgba(241, 196, 15, 0.1); }
+        .item-card-real { border: 1px solid rgba(255, 42, 133, 0.5); box-shadow: 0 5px 15px rgba(255, 42, 133, 0.15); }
+        .item-card-spirit { border: 1px solid rgba(46, 204, 113, 0.55); box-shadow: 0 5px 15px rgba(46, 204, 113, 0.15); }
+        .item-card-spirit .item-name { color: #2ecc71; text-shadow: 0 0 5px rgba(46,204,113,0.5); }
+        .item-card-spirit .target-note { background: rgba(46,204,113,0.15); color: #2ecc71; }
+        .item-price.free-price { color: #2ecc71; border-color: rgba(46,204,113,0.5); }
+        .tag-free { background: linear-gradient(45deg, #2ecc71, #00c6ff); color: #04140c; }
+
+        /* Khung avatar tinh thần (trang bị) — mỗi khung có animation phát sáng riêng để không bị
+           animation mặc định "avatarPulse" của avatar (màu hồng) ghi đè mất hiệu ứng. */
+        .warrior-avatar.khung-la { border-color: #6ee7b7; border-width: 3px; animation: avatarPulseLa 2s infinite alternate; }
+        @keyframes avatarPulseLa {
+            0% { box-shadow: 0 0 10px rgba(110, 231, 183, 0.4); }
+            100% { box-shadow: 0 0 22px rgba(110, 231, 183, 0.85), 0 0 10px #00ffff; }
+        }
+        .warrior-avatar.khung-lua { border-color: #ff8c00; border-width: 3px; animation: avatarPulseLua 2s infinite alternate; }
+        @keyframes avatarPulseLua {
+            0% { box-shadow: 0 0 10px rgba(255, 140, 0, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(255, 140, 0, 0.9), 0 0 12px #ff2a85; }
+        }
+        .warrior-avatar.khung-bang { border-color: #00e5ff; border-width: 3px; animation: avatarPulseBang 2s infinite alternate; }
+        @keyframes avatarPulseBang {
+            0% { box-shadow: 0 0 10px rgba(0, 229, 255, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(0, 229, 255, 0.9), 0 0 12px #ffffff; }
+        }
+        .warrior-avatar.khung-vang { border-color: #f1c40f; border-width: 3px; animation: avatarPulseVang 2s infinite alternate; }
+        @keyframes avatarPulseVang {
+            0% { box-shadow: 0 0 10px rgba(241, 196, 15, 0.4); }
+            100% { box-shadow: 0 0 28px rgba(241, 196, 15, 0.95), 0 0 12px #ffffff; }
+        }
+        .warrior-title-badge {
+            display: inline-flex; align-items: center; gap: 4px; margin-top: 2px;
+            font-size: 0.6rem; font-weight: 900; color: #2ecc71; text-transform: uppercase;
+            letter-spacing: 0.5px; text-shadow: 0 0 5px rgba(46,204,113,0.5);
+        }
+        .status-equipped { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+
+        .item-icon { font-size: 2.5rem; margin-bottom: 6px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .item-name { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 0.85rem; margin-bottom: 4px; text-transform: uppercase; }
+        .item-card-lambai .item-name { color: #00ffff; text-shadow: 0 0 5px rgba(0,255,255,0.5); }
+        .item-card-vuotai .item-name { color: #d4b3ff; text-shadow: 0 0 5px rgba(123,47,247,0.5); }
+        .item-card-boss .item-name { color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); }
+        .item-card-real .item-name { color: #ff2a85; text-shadow: 0 0 5px rgba(255,42,133,0.5); }
+
+        .target-note { font-size: 0.55rem; font-weight: 900; text-transform: uppercase; padding: 2px 6px; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .item-card-lambai .target-note { background: rgba(0,255,255,0.15); color: #00ffff; }
+        .item-card-vuotai .target-note { background: rgba(123,47,247,0.15); color: #d4b3ff; }
+        .item-card-boss .target-note { background: rgba(241,196,15,0.15); color: #f1c40f; }
+
+        .item-desc { font-size: 0.7rem; color: #a3c2db; margin-bottom: 12px; line-height: 1.4; flex-grow: 1; }
+        
+        .item-price { font-family: 'Montserrat', sans-serif; font-weight: 900; color: #f1c40f; font-size: 1rem; margin-bottom: 10px; background: rgba(0,0,0,0.5); padding: 4px; border-radius: 8px; border: 1px dashed rgba(241,196,15,0.4); }
+        
+        .btn-action { 
+            width: 100%; padding: 10px; background: linear-gradient(135deg, #f107a3, #7b2ff7); 
+            border: none; border-radius: 12px; color: #ffffff; font-family: 'Montserrat', sans-serif; 
+            font-weight: 900; font-size: 0.75rem; text-transform: uppercase; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(123, 47, 247, 0.4); text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .btn-action:active { transform: translateY(2px); box-shadow: 0 2px 5px rgba(123,47,247,0.4); }
+
+        .tag { position: absolute; top: -6px; right: -6px; font-size: 0.55rem; font-weight: 900; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 2; }
+        .tag-real { background: linear-gradient(45deg, #ff8c00, #ff0055); color: white; }
+        .tag-game { background: linear-gradient(45deg, #00c6ff, #0072ff); color: white; }
+        .tag-consumable { background: linear-gradient(45deg, #f39c12, #e67e22); color: white; }
+
+        /* ===== TABLES (RƯƠNG ĐỒ & CHỢ) GIAO DIỆN MOBILE ===== */
+        .cyber-list { display: flex; flex-direction: column; gap: 10px; }
+        .list-item { 
+            background: rgba(15, 10, 30, 0.6); border: 1px solid rgba(0, 255, 255, 0.2); 
+            border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .list-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+        .list-title { font-family: 'Montserrat'; font-weight: 900; font-size: 0.9rem; color: #fff; }
+        .list-icon { font-size: 1.2rem; margin-right: 6px; }
+        
+        .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-waiting { background: rgba(0, 255, 255, 0.15); color: #00ffff; border: 1px solid #00ffff; }
+        .status-done { background: rgba(46, 204, 113, 0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+        .status-market { background: rgba(255, 42, 133, 0.15); color: #ff2a85; border: 1px solid #ff2a85; }
+
+        .action-row { display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
+        .btn-small { padding: 6px 12px; font-size: 0.7rem; border-radius: 8px; font-weight: 900; border: none; text-transform: uppercase; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .btn-use { background: linear-gradient(135deg, #00c6ff, #0072ff); }
+        .btn-sell { background: linear-gradient(135deg, #ff8c00, #ff0055); }
+        .btn-cancel { background: #4a5568; }
+        .btn-buy { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; text-shadow: none; }
+
+        .price-tag { color: #f1c40f; font-weight: 900; font-family: 'Montserrat'; font-size: 0.95rem; }
+        .seller-name { color: #00ffff; font-weight: bold; }
+
+        /* ===== MODAL ===== */
+        .modal-overlay { 
+            position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); z-index: 1000; 
+            display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); padding: 16px;
+        }
+        .modal-card { 
+            background: rgba(15, 10, 30, 0.95); border: 2px solid #00ffff; border-radius: 20px; 
+            padding: 24px; width: 100%; max-width: 400px; text-align: center; 
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(0,0,0,0.8);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-title { font-family: 'Montserrat'; font-weight: 900; color: #00ffff; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 10px; text-shadow: 0 0 10px #00ffff; }
+        
+        .form-group { text-align: left; margin-bottom: 15px; }
+        .form-group label { font-size: 0.75rem; color: #a3c2db; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .modal-input { 
+            width: 100%; padding: 12px 16px; background: rgba(0, 10, 20, 0.6); 
+            border: 1px solid rgba(0, 255, 255, 0.3); color: #fff; border-radius: 12px; 
+            font-size: 1rem; font-weight: bold; outline: none; transition: 0.3s;
+        }
+        .modal-input:focus { border-color: #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.2); }
+        .modal-btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancel-modal { flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; font-weight: 900; }
+
+        /* Bảng Giáo Viên */
+        .teacher-modal { max-width: 800px; padding: 16px; }
+        .table-wrap { overflow-x: auto; margin-top: 10px; border-radius: 12px; border: 1px solid rgba(0,255,255,0.2); background: rgba(0,0,0,0.5); }
+        .custom-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; min-width: 600px; }
+        .custom-table th { background: rgba(0, 255, 255, 0.15); color: #00ffff; text-align: left; padding: 10px; font-weight: 900; text-transform: uppercase; white-space: nowrap; }
+        .custom-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0; }
+        .editable-cell { cursor: pointer; color: #f1c40f; font-weight: bold; padding: 2px 6px; background: rgba(241,196,15,0.1); border-radius: 4px; }
+        .btn-danger-small { background: #e74c3c; color: white; padding: 4px 8px; border-radius: 6px; font-weight: bold; border: none; }
+        .setting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; }
+
+        /* ===== TOAST ===== */
+        #toast-box { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 40px); pointer-events: none; }
+        .toast-msg { background: rgba(15, 10, 30, 0.95); backdrop-filter: blur(10px); border-left: 4px solid #00ffff; color: #fff; padding: 14px 18px; border-radius: 12px; font-weight: 600; font-size: 0.85rem; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="sell-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-title"><i class="fa-solid fa-tags"></i> TREO LÊN SÀN GIAO DỊCH</div>
+            <p id="sell-modal-text" style="font-size:0.85rem; color:#cbd5e1; margin-bottom: 16px;"></p>
+            <div class="form-group">
+                <label>Nhập giá mong muốn (Điểm)</label>
+                <input type="number" id="sell-price-input" class="modal-input" min="1" value="50">
+            </div>
+            <div class="modal-btn-row">
+                <button class="btn-cancel-modal" onclick="dongModalBan()">HỦY</button>
+                <button class="btn-action" style="flex:1;" onclick="xacNhanTreoBan()">ĐĂNG BÁN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-login-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-title" style="color: #ff2a85; text-shadow: 0 0 10px #ff2a85;"><i class="fa-solid fa-lock"></i> XÁC THỰC QUẢN TRỊ</div>
+            <div class="form-group" style="margin-top: 16px;">
+                <input type="password" id="teacher-password-input" class="modal-input" placeholder="Nhập mật mã hệ thống..." autocomplete="off" onkeydown="if(event.key==='Enter') xacNhanMatKhauGiaoVien()">
+            </div>
+            <div class="modal-btn-row">
+                <button class="btn-cancel-modal" onclick="dongModalDangNhapGiaoVien()">QUAY LẠI</button>
+                <button class="btn-action" style="flex:1; background: linear-gradient(135deg, #ff2a85, #ff0055);" onclick="xacNhanMatKhauGiaoVien()">MỞ CỔNG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="teacher-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-card teacher-modal">
+            <div class="modal-title"><i class="fa-solid fa-user-shield"></i> CỔNG ĐIỀU HÀNH TỐI CAO</div>
+            
+            <div class="tabs-container" style="margin-bottom: 16px; border-radius: 12px;">
+                <button class="tab-btn active tab-btn-teacher" data-tab="tab-shop-teacher" onclick="switchTeacherTab('tab-shop-teacher', this)"><i class="fa-solid fa-store"></i> Shop</button>
+                <button class="tab-btn tab-btn-teacher" data-tab="tab-students" onclick="switchTeacherTab('tab-students', this)"><i class="fa-solid fa-users"></i> Học Viên</button>
+                <button class="tab-btn tab-btn-teacher" data-tab="tab-settings" onclick="switchTeacherTab('tab-settings', this)"><i class="fa-solid fa-sliders"></i> Hệ Thống</button>
+            </div>
+
+            <div id="tab-shop-teacher" class="tab-content active">
+                <div style="background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; text-align: left; margin-bottom: 12px; border: 1px dashed #f1c40f;">
+                    <div style="color: #f1c40f; font-weight: 900; margin-bottom: 8px; font-size: 0.85rem;"><i class="fa-solid fa-plus"></i> CHẾ TẠO VẬT PHẨM MỚI</div>
+                    <div style="display: grid; grid-template-columns: 60px 1fr; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" id="new-item-icon" class="modal-input" placeholder="🎁" style="text-align: center; padding: 8px;">
+                        <input type="text" id="new-item-name" class="modal-input" placeholder="Tên Vật Phẩm..." style="padding: 8px;">
+                    </div>
+                    <textarea id="new-item-desc" class="modal-input" rows="2" placeholder="Công năng/Mô tả chi tiết..." style="padding: 8px; width: 100%; margin-bottom: 8px;"></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                        <input type="number" id="new-item-price" class="modal-input" placeholder="Giá (Điểm)" min="1" value="100" style="padding: 8px;">
+                        <select id="new-item-type" class="modal-input" style="padding: 8px; -webkit-appearance: none;">
+                            <option value="real">Vật Phẩm Vật Lý</option>
+                            <option value="consumable">Vật Phẩm Tiêu Hao</option>
+                        </select>
+                    </div>
+                    <button class="btn-action" style="background: #f1c40f; color: #000; padding: 8px;" onclick="themVatPhamMoi()">TẠO MỚI</button>
+                </div>
+
+                <div style="text-align: left; color: #00ffff; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px;"><i class="fa-solid fa-tags"></i> ĐIỀU CHỈNH GIÁ THỊ TRƯỜNG:</div>
+                <div id="price-edit-list" style="max-height: 25vh; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px;"></div>
+                <button class="btn-action" style="margin-top: 12px;" onclick="luuBangGiaMoi()">LƯU BẢNG GIÁ</button>
+                <button class="btn-cancel-modal" style="width: 100%; margin-top: 8px;" onclick="dongModalTeacher()">ĐÓNG</button>
+            </div>
+
+            <div id="tab-students" class="tab-content" style="display: none;">
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                    <button class="btn-small btn-use" onclick="resetAllLuot('lam_bai')">Hồi LB</button>
+                    <button class="btn-small btn-use" onclick="resetAllLuot('boss')">Hồi Boss</button>
+                    <button class="btn-small btn-use" onclick="resetAllLuot('vong_quay')">Hồi VQ</button>
+                    <button class="btn-small btn-use" onclick="resetAllLuot('vuot_ai')">Hồi VA</button>
+                    <button class="btn-small btn-sell" onclick="if(confirm('Xóa TOÀN BỘ dữ liệu học sinh?')){localStorage.clear(); location.reload();}">CLEAR ALL</button>
+                </div>
+                <div class="table-wrap">
+                    <table class="custom-table" id="teacher-student-table">
+                        <thead><tr><th>#</th><th>Danh Xưng</th><th>Lớp</th><th>EXP</th><th>Điểm</th><th>Rank</th><th>LB</th><th>Bs</th><th>VQ</th><th>VA</th><th>Act</th></tr></thead>
+                        <tbody id="teacher-student-tbody"></tbody>
+                    </table>
+                </div>
+                <button class="btn-cancel-modal" style="width: 100%; margin-top: 12px;" onclick="dongModalTeacher()">ĐÓNG</button>
+            </div>
+
+            <div id="tab-settings" class="tab-content" style="display: none;">
+                <div class="setting-grid">
+                    <div><label style="font-size: 0.65rem; color:#a3c2db;">Lượt Nhiệm Vụ / Ngày</label><div style="display:flex;gap:4px;"><input type="number" id="max-luot-lam-bai" class="modal-input" style="padding:6px;"><button class="btn-small btn-use" onclick="saveMaxLuot('lam_bai')">Lưu</button></div></div>
+                    <div><label style="font-size: 0.65rem; color:#a3c2db;">Lượt Boss / Ngày</label><div style="display:flex;gap:4px;"><input type="number" id="max-luot-boss" class="modal-input" style="padding:6px;"><button class="btn-small btn-use" onclick="saveMaxLuot('boss')">Lưu</button></div></div>
+                    <div><label style="font-size: 0.65rem; color:#a3c2db;">Lượt Vòng Quay / Ngày</label><div style="display:flex;gap:4px;"><input type="number" id="max-luot-vong-quay" class="modal-input" style="padding:6px;"><button class="btn-small btn-use" onclick="saveMaxLuot('vong_quay')">Lưu</button></div></div>
+                    <div><label style="font-size: 0.65rem; color:#a3c2db;">Lượt Vượt Ải / Ngày</label><div style="display:flex;gap:4px;"><input type="number" id="max-luot-vuot-ai" class="modal-input" style="padding:6px;"><button class="btn-small btn-use" onclick="saveMaxLuot('vuot_ai')">Lưu</button></div></div>
+                </div>
+                <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <a href="vuot-ai-tuan.html" class="btn-small" style="text-align:center; background:#8b5cf6; text-decoration:none;">Vượt Ải</a>
+                    <a href="lam-bai.html" class="btn-small" style="text-align:center; background:#3498db; text-decoration:none;">Nhiệm Vụ</a>
+                    <a href="boss-cuoi-tuan.html" class="btn-small" style="text-align:center; background:#f1c40f; color:#000; text-decoration:none;">Đánh Boss</a>
+                    <a href="vong-quay.html" class="btn-small" style="text-align:center; background:#ff2a85; text-decoration:none;">Vòng Quay</a>
+                </div>
+                <button class="btn-cancel-modal" style="width: 100%; margin-top: 12px;" onclick="dongModalTeacher()">ĐÓNG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-box"></div>
+
+    <div class="container">
+        <div class="header-box">
+            <div class="shop-title"><i class="fa-solid fa-shield-halved"></i> KHO BÁU TRI THỨC</div>
+            <div class="nav-buttons">
+                <button class="btn-teacher" onclick="xacThucGiaoVien()"><i class="fa-solid fa-code"></i></button>
+                <a href="index.html" class="btn-home"><i class="fa-solid fa-door-open"></i> SẢNH</a>
+            </div>
+        </div>
+
+        <div class="user-status-card" id="user-status-area">
+            </div>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="chuyenTab('tab-shop', this)"><i class="fa-solid fa-store"></i> Shop</button>
+            <button class="tab-btn" onclick="chuyenTab('tab-inventory', this)"><i class="fa-solid fa-briefcase"></i> Túi Đồ</button>
+            <button class="tab-btn" onclick="chuyenTab('tab-market', this)"><i class="fa-solid fa-handshake"></i> Sàn Giao Dịch</button>
+        </div>
+
+        <div id="tab-shop" class="tab-content active">
+            <div class="lore-text">Sử dụng <b>Điểm</b> tích lũy được từ các nhiệm vụ để quy đổi lấy Đặc Quyền Trí Tuệ hoặc Vật Phẩm Vật Lý.</div>
+            <div class="shop-grid" id="official-shop-grid"></div>
+        </div>
+
+        <div id="tab-inventory" class="tab-content">
+            <div class="lore-text">Những Vật Phẩm <b>(Chưa Dùng)</b> có thể mang lên Sàn Giao Dịch để lấy lại Điểm. Thẻ Đặc Quyền sẽ tự động kích hoạt khi vào đúng tính năng.</div>
+            <div class="cyber-list" id="inventory-list-body">
+                </div>
+        </div>
+
+        <div id="tab-market" class="tab-content">
+            <div class="lore-text">Nơi các chiến binh buôn bán trao đổi chiến lợi phẩm dư thừa. Thỏa thuận và mua bán bằng <b>Điểm</b>!</div>
+            <div class="cyber-list" id="market-list-body">
+                </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, taiToanBoHocSinhTuMay, xoaHocSinhTrenMay } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+    </script>
+
+    <script>
+        // Hạt bụi bay lơ lửng cho BG
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        let particlesArray = [];
+        const colors = ['#00ffff', '#ff2a85', '#f1c40f', '#ffffff', '#8a2be2']; 
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * -1 - 0.2;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.y < 0) { this.x = Math.random() * canvas.width; this.y = canvas.height; }
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity; ctx.fillStyle = this.color;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.shadowBlur = 10; ctx.shadowColor = this.color;
+            }
+        }
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 8000;
+            for (let i = 0; i < numberOfParticles; i++) particlesArray.push(new Particle());
+        }
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+        initParticles(); animateParticles();
+        window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
+
+        // Logic Hệ thống
+        let studentName = ""; let studentClass = ""; let studentClassroom = ""; let danhSachSanPham = []; let indexItemBan = null;
+
+        // Toàn bộ danh sách ID vật phẩm "đặc quyền/lợi thế" (x2 EXP, 50/50, rút gọn đề, cơ hội thứ hai,
+        // hồi năng lượng, khiên/thời gian/nhân đôi ở Vượt Ải, giáp/sát thương/hồi máu ở Boss) đã bị
+        // GỠ BỎ HOÀN TOÀN khỏi shop vì mang tính "mua lợi thế/may rủi" khi làm bài thi đấu — không còn
+        // công bằng giữa các học sinh. Giữ nguyên danh sách ID cũ ở đây chỉ để tự động dọn sạch những
+        // vật phẩm này khỏi bảng giá đã lưu trước đó trong localStorage/Firebase của giáo viên.
+        const DANH_SACH_ID_DAC_QUYEN_DA_GO_BO = [
+            "sp_x2exp", "sp_5050", "sp_rutgon", "sp_cohoi2", "sp_linhdan",
+            "va_tangthoigian", "va_khienmiensai", "va_khoidau", "va_nhandoi", "va_mientruluot",
+            "boss_giaphomenh", "boss_cuonsachtrithu", "boss_donghocat", "boss_chimangsamset", "boss_binhhoimau"
+        ];
+        const DANH_SACH_ID_BI_GO_BO = ["sp1", "sp2", "sp3", "sp4", "sp5", "sp6", "sp10", "sp11", "sp12", ...DANH_SACH_ID_DAC_QUYEN_DA_GO_BO];
+
+        // ===== VẬT PHẨM TINH THẦN (danh hiệu + khung avatar) — miễn phí hoặc gần miễn phí =====
+        const SPIRIT_ITEMS = [
+            { id: "th_kienTri", icon: "🎖️", name: "Danh Hiệu: Kiên Trì Bất Bại", desc: "Chứng nhận tinh thần cho chiến binh chưa từng bỏ cuộc, dù có sai bao nhiêu lần.", price: 0, type: "spirit", sub: "danhhieu" },
+            { id: "th_khoiDau", icon: "🌱", name: "Danh Hiệu: Tân Binh Nhiệt Huyết", desc: "Dành tặng ngay cho chiến binh mới gia nhập hàng ngũ.", price: 0, type: "spirit", sub: "danhhieu" },
+            { id: "th_hocgianhi", icon: "📚", name: "Danh Hiệu: Học Giả Nhí", desc: "Danh hiệu cho chiến binh ham học hỏi, luôn xem kỹ lời giải sau mỗi câu.", price: 20, type: "spirit", sub: "danhhieu" },
+            { id: "th_dungsi", icon: "⚔️", name: "Danh Hiệu: Dũng Sĩ Số Học", desc: "Dành cho chiến binh dám đương đầu với mọi bài toán khó.", price: 30, type: "spirit", sub: "danhhieu" },
+            { id: "kh_la", icon: "🍃", name: "Khung Avatar: Lá Phong Bình Yên", desc: "Khung viền nhẹ nhàng, món quà chào mừng miễn phí.", price: 0, type: "spirit", sub: "khung", cssClass: "khung-la" },
+            { id: "kh_lua", icon: "🔥", name: "Khung Avatar: Ngọn Lửa Quyết Tâm", desc: "Khung viền rực lửa cho chiến binh không ngại thử thách.", price: 20, type: "spirit", sub: "khung", cssClass: "khung-lua" },
+            { id: "kh_bang", icon: "❄️", name: "Khung Avatar: Băng Giá Bình Tĩnh", desc: "Giữ vững tinh thần dù có sai câu nào đi nữa.", price: 20, type: "spirit", sub: "khung", cssClass: "khung-bang" },
+            { id: "kh_vang", icon: "👑", name: "Khung Avatar: Hào Quang Vàng", desc: "Khung viền vàng danh giá cho nhà vô địch của lớp.", price: 50, type: "spirit", sub: "khung", cssClass: "khung-vang" }
+        ];
+
+        // ===== VẬT PHẨM TIÊU HAO (TĂNG LƯỢT LÀM BÀI & TƯ DUY) =====
+        const CONSUMABLE_ITEMS = [
+            // Dành cho Nhiệm Vụ (lam-bai)
+            { id: "buaphuc", icon: "💀", name: "Bùa Phục Hận", desc: "Cộng thêm 1 lượt làm bài ngay lập tức.", price: 150, type: "consumable" },
+            { id: "linhdan", icon: "🧪", name: "Linh Đan Đầy Năng Lượng", desc: "Làm đầy toàn bộ số lượt làm bài còn lại (tối đa 3 lượt).", price: 400, type: "consumable" },
+            // Dành cho Nâng Cấp Tư Duy (vuot_ai)
+            { id: "buaphuc_tuduy", icon: "💀", name: "Bùa Phục Hận Tư Duy", desc: "Cộng thêm 2 lượt Nâng Cấp Tư Duy ngay lập tức.", price: 250, type: "consumable" },
+            { id: "linhdan_tuduy", icon: "🧪", name: "Linh Đan Tư Duy", desc: "Làm đầy toàn bộ số lượt Nâng Cấp Tư Duy còn lại (tối đa 3 lượt).", price: 500, type: "consumable" }
+        ];
+
+        const DEFAULT_ITEMS = [
+            ...SPIRIT_ITEMS,
+            { id: "sp7", icon: "🍬", name: "Kẹo Mút Trí Tuệ", desc: "Bổ sung đường Glucozo lập tức cho các pha tính nhẩm.", price: 300, type: "real" },
+            { id: "sp8", icon: "✏️", name: "Bút Bi Thần Tốc", desc: "Bút chuyên vẽ sơ đồ tư duy và hình học chuẩn xác.", price: 400, type: "real" },
+            { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học", desc: "Sổ mini ghi chép toàn bộ công thức cốt lõi.", price: 500, type: "real" },
+            ...CONSUMABLE_ITEMS
+        ];
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await window.__fbTaiCauHinhToanCuc();
+            danhSachSanPham = JSON.parse(localStorage.getItem('math_hero_shop_items')) || [];
+            
+            // Nếu danh sách rỗng, khởi tạo với DEFAULT_ITEMS
+            if (danhSachSanPham.length === 0) {
+                danhSachSanPham = DEFAULT_ITEMS;
+            } else {
+                // Lọc bỏ các vật phẩm đã bị gỡ (ID nằm trong DANH_SACH_ID_BI_GO_BO)
+                danhSachSanPham = danhSachSanPham.filter(sp => !DANH_SACH_ID_BI_GO_BO.includes(sp.id));
+                // Đảm bảo không còn vật phẩm nào có tên chứa "Bùa Phục Hận" hoặc "Linh Đan" (phòng trường hợp cũ)
+                danhSachSanPham = danhSachSanPham.filter(sp => !(sp.name || '').includes('Bùa Phục Hận'));
+                danhSachSanPham = danhSachSanPham.filter(sp => !(sp.name || '').includes('Linh Đan'));
+                
+                // Thêm các vật phẩm mới (tinh thần và consumable) nếu chưa có
+                const tatCaVatPhamMoi = [...SPIRIT_ITEMS, ...CONSUMABLE_ITEMS];
+                tatCaVatPhamMoi.forEach(mau => {
+                    if (!danhSachSanPham.some(sp => sp.id === mau.id)) {
+                        danhSachSanPham.push({ ...mau });
+                    }
+                });
+            }
+            
+            // Lưu lại danh sách
+            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            window.__fbDayCauHinhToanCuc('math_hero_shop_items');
+            await kiemTraVaNapDanhTinh();
+        });
+
+        function updateGlobalExp() { 
+            let n = sessionStorage.getItem("hoc_school_student_name"); 
+            if(n) { 
+                let dExp = document.getElementById("student-display-exp");
+                if(dExp) dExp.innerHTML = `<i class="fa-solid fa-star"></i> ${localStorage.getItem("exp_"+n) || 0} EXP`; 
+                let dCoin = document.getElementById("student-display-coin");
+                if(dCoin) dCoin.innerHTML = `<i class="fa-solid fa-gem"></i> ${localStorage.getItem("coin_"+n) || 50} ĐIỂM`; 
+            } 
+        }
+
+        async function kiemTraVaNapDanhTinh() {
+            studentName = sessionStorage.getItem('hoc_school_student_name');
+            studentClass = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
+            studentClassroom = sessionStorage.getItem('hoc_school_student_classroom') || '';
+            if (!studentName) {
+                let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                if (nhatKy.length > 0) {
+                    let lastUser = nhatKy[nhatKy.length - 1]; studentName = lastUser.name;
+                    studentClass = lastUser.className || 'Khối 7'; studentClassroom = lastUser.classroom || '';
+                    sessionStorage.setItem('hoc_school_student_name', studentName);
+                    sessionStorage.setItem('hoc_school_student_class', studentClass);
+                }
+            }
+            if (studentName && !studentClassroom) {
+                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+                if (users[studentName] && typeof users[studentName] === 'object') studentClassroom = users[studentName].classroom || '';
+            }
+            if (!studentName) {
+                document.getElementById('user-status-area').innerHTML = `
+                    <div style="width:100%;">
+                        <p style="color: #00ffff; font-weight:bold; font-size:0.8rem;"><i class="fa-solid fa-fingerprint"></i> KẾT NỐI DANH TÍNH</p>
+                        <div class="quick-login-form">
+                            <input type="text" id="quick-name-input" placeholder="Họ và Tên chiến binh...">
+                            <button onclick="kichHoatDangNhapNhanh()">LINK</button>
+                        </div>
+                    </div>`;
+            } else {
+                await window.__fbTaiDuLieuTuMay(studentName);
+                const avatarMap = { 'Khối 6': '🐉', 'Khối 7': '⚔️', 'Khối 8': '🔥', 'Khối 9': '🦁' };
+                const avatar = avatarMap[studentClass] || '🛡️';
+                let danhHieuActive = localStorage.getItem('danh_hieu_active_' + studentName) || '';
+                let khungRaw = localStorage.getItem('khung_avatar_active_' + studentName);
+                let khungActive = null; try { khungActive = khungRaw ? JSON.parse(khungRaw) : null; } catch(e) { khungActive = null; }
+                document.getElementById('user-status-area').innerHTML = `
+                    <div class="warrior-card-left">
+                        <div class="warrior-avatar ${khungActive && khungActive.cssClass ? khungActive.cssClass : ''}">${avatar}</div>
+                        <div class="warrior-meta">
+                            <div class="warrior-label"><i class="fa-solid fa-fingerprint"></i> ĐÃ XÁC THỰC</div>
+                            <p class="warrior-name">${studentName}</p>
+                            ${danhHieuActive ? `<div class="warrior-title-badge"><i class="fa-solid fa-award"></i> ${danhHieuActive.replace('Danh Hiệu: ','')}</div>` : ''}
+                            <div class="warrior-class-row">
+                                <span class="warrior-class-tag">${studentClass}</span>
+                                ${studentClassroom ? `<span class="warrior-classroom-tag">${studentClassroom}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="warrior-card-right">
+                        <div class="user-exp-badge" id="student-display-exp"></div>
+                        <div class="user-coin-badge" id="student-display-coin"></div>
+                    </div>`;
+                capNhatGiaoDienEXP(); renderOfficialShop(); renderInventory(); renderMarketplace();
+            }
+        }
+
+        async function kichHoatDangNhapNhanh() {
+            let inputName = document.getElementById('quick-name-input').value.trim();
+            if (!inputName) return alert("Vui lòng nhập tên!");
+            sessionStorage.setItem('hoc_school_student_name', inputName);
+            sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
+            await window.__fbTaiDuLieuTuMay(inputName);
+            if (localStorage.getItem('exp_' + inputName) === null) localStorage.setItem('exp_' + inputName, 100);
+            if (localStorage.getItem('coin_' + inputName) === null) localStorage.setItem('coin_' + inputName, 50);
+            window.__fbDayDuLieuLenMay(inputName);
+            hienThiToast(`LINK SUCCESS: ${inputName}`);
+            await kiemTraVaNapDanhTinh();
+        }
+
+        function capNhatGiaoDienEXP() { updateGlobalExp(); }
+
+        function renderOfficialShop() {
+            const grid = document.getElementById('official-shop-grid'); if(!grid) return; grid.innerHTML = "";
+            const T_SPIRIT = SPIRIT_ITEMS.map(it=>it.id);
+            
+            let sorted = [...danhSachSanPham].sort((a,b) => {
+                // Vật phẩm tinh thần luôn lên đầu (dễ sở hữu, tạo cảm giác "luôn có gì đó vừa túi")
+                let spiritA = T_SPIRIT.includes(a.id) ? 0 : 1; let spiritB = T_SPIRIT.includes(b.id) ? 0 : 1;
+                if (spiritA !== spiritB) return spiritA - spiritB;
+                if (spiritA === 0) return (a.price||0) - (b.price||0);
+                return (a.price||0) - (b.price||0);
+            });
+
+            sorted.forEach(item => {
+                let c_class = '';
+                let t_class = 'tag-game';
+                let t_text = 'Game';
+                let note = '';
+                let priceHtml = `<div class="item-price">${item.price} ĐIỂM</div>`;
+                let btnLabel = 'CHẾ TẠO';
+
+                if (item.type === 'real') {
+                    c_class = 'item-card-real';
+                    t_class = 'tag-real';
+                    t_text = 'Vật Lý';
+                } else if (item.type === 'consumable') {
+                    c_class = 'item-card-real';
+                    t_class = 'tag-consumable';
+                    t_text = 'Tiêu Hao';
+                    btnLabel = 'MUA';
+                } else if (T_SPIRIT.includes(item.id)) {
+                    c_class = 'item-card-spirit';
+                    t_class = 'tag-free';
+                    t_text = item.price === 0 ? 'Miễn Phí' : 'Tinh Thần';
+                    priceHtml = item.price === 0
+                        ? `<div class="item-price free-price">MIỄN PHÍ</div>`
+                        : `<div class="item-price">${item.price} ĐIỂM</div>`;
+                    btnLabel = item.price === 0 ? 'NHẬN NGAY' : 'NHẬN';
+                    note = `<div class="target-note">${item.sub === 'khung' ? '🖼️ Khung Avatar' : '🎖️ Danh Hiệu'}</div>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="item-card ${c_class}">
+                        <span class="tag ${t_class}">${t_text}</span>
+                        <div>
+                            <div class="item-icon">${item.icon || '🎁'}</div>
+                            <h3 class="item-name">${item.name}</h3>
+                            ${note}
+                            <p class="item-desc">${item.desc}</p>
+                        </div>
+                        <div>
+                            ${priceHtml}
+                            <button class="btn-action" onclick="muaHangTuShop('${item.name}', ${item.price}, '${item.icon || '🎁'}', '${item.type}')">${btnLabel}</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function muaHangTuShop(tenSp, gia, icon, type) {
+            if(!studentName) return hienThiToast("Lỗi định danh!", "error");
+            // Vật phẩm tinh thần (danh hiệu/khung avatar): nếu đã sở hữu rồi thì không cho nhận trùng.
+            if (type === 'spirit') {
+                let rExist = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+                if (rExist.some(i => i.name === tenSp)) return hienThiToast("Em đã sở hữu vật phẩm này rồi!", "error");
+            }
+            let currentCoin = parseInt(localStorage.getItem('coin_' + studentName)) || 50;
+            if (currentCoin < gia) return hienThiToast(`Thiếu năng lượng! Cần thêm ${gia - currentCoin} Điểm.`, 'error');
+
+            const lamGiaoDich = () => {
+                localStorage.setItem('coin_' + studentName, currentCoin - gia);
+                let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+                r.push({ id_trans: "TR"+Date.now()+Math.floor(Math.random()*100), name: tenSp, icon: icon, type: type, date: new Date().toLocaleDateString('vi-VN'), status: 'cho_nhan' });
+                localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
+                window.__fbDayDuLieuLenMay(studentName);
+                hienThiToast(gia === 0 ? `Đã nhận [${tenSp}] miễn phí!` : `Đã lưu [${tenSp}] vào Túi Đồ!`);
+                capNhatGiaoDienEXP(); renderInventory();
+            };
+
+            // Vật phẩm miễn phí (0 Điểm): nhận ngay, không cần xác nhận, giảm ma sát khi lấy quà tinh thần.
+            if (gia === 0) return lamGiaoDich();
+            if(confirm(`Dùng ${gia} Điểm để chế tạo [${tenSp}]?`)) lamGiaoDich();
+        }
+
+        /* --- UI RƯƠNG ĐỒ --- */
+        function renderInventory() {
+            const list = document.getElementById('inventory-list-body'); if(!list) return; list.innerHTML = "";
+            let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            if(myRuong.length === 0) { list.innerHTML = `<div class="lore-text" style="text-align:center;">Túi đồ rỗng.</div>`; return; }
+            
+            myRuong.forEach((item, index) => {
+                let badge = "", btn = "";
+                if (item.type === 'spirit') {
+                    if (item.status === 'da_trang_bi') {
+                        badge = `<span class="status-badge status-equipped">Đang trang bị</span>`;
+                        btn = `<button class="btn-small btn-cancel" onclick="thaoTrangBiTinhThan(${index})">Tháo</button>`;
+                    } else {
+                        badge = `<span class="status-badge status-waiting">Sẵn sàng</span>`;
+                        btn = `<button class="btn-small btn-use" onclick="suDungHoacNhanQua(${index})">Trang Bị</button>`;
+                    }
+                } else if(item.status === 'cho_nhan') {
+                    badge = `<span class="status-badge status-waiting">Sẵn sàng</span>`;
+                    // Chỉ cho bán nếu là vật phẩm vật lý (real)
+                    let btnTreo = (item.type === 'real') ? `<button class="btn-small btn-sell" onclick="moModalBan(${index})">Bán</button>` : '';
+                    // Với consumable, không hiện nút bán, chỉ có nút Dùng
+                    btn = `${btnTreo} <button class="btn-small btn-use" onclick="suDungHoacNhanQua(${index})">Dùng</button>`;
+                } else if (item.status === 'da_nhan') {
+                    badge = `<span class="status-badge status-done">Đã dùng</span>`;
+                    btn = `<span style="font-size:0.6rem; color:#4a5568;">Đã tiêu hủy</span>`;
+                } else if (item.status === 'dang_ban') {
+                    badge = `<span class="status-badge status-market">Đang treo</span>`;
+                    btn = `<button class="btn-small btn-cancel" onclick="huyTreoBanChao(${index})">Hủy Bán</button>`;
+                }
+                list.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-row">
+                            <span class="list-title"><span class="list-icon">${item.icon}</span> ${item.name}</span>
+                            ${badge}
+                        </div>
+                        <div class="list-row" style="color:#a3c2db;">
+                            <span>Nhận ngày: ${item.date}</span>
+                            <div class="action-row">${btn}</div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function timVatPhamTinhThanTheoTen(name) { return SPIRIT_ITEMS.find(sp => sp.name === name); }
+
+        function trangBiVatPhamTinhThan(index) {
+            let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            let item = myRuong[index]; let meta = timVatPhamTinhThanTheoTen(item.name);
+            if (!meta) return;
+            // Bỏ trang bị vật phẩm cùng loại (danh hiệu / khung avatar) đang dùng trước đó.
+            myRuong.forEach((it, i) => {
+                if (it.status === 'da_trang_bi') {
+                    let m2 = timVatPhamTinhThanTheoTen(it.name);
+                    if (m2 && m2.sub === meta.sub) myRuong[i].status = 'cho_nhan';
+                }
+            });
+            myRuong[index].status = 'da_trang_bi';
+            localStorage.setItem('ruong_do_' + studentName, JSON.stringify(myRuong));
+            if (meta.sub === 'danhhieu') localStorage.setItem('danh_hieu_active_' + studentName, item.name);
+            else localStorage.setItem('khung_avatar_active_' + studentName, JSON.stringify({ name: item.name, cssClass: meta.cssClass || '' }));
+            window.__fbDayDuLieuLenMay(studentName);
+            renderInventory(); kiemTraVaNapDanhTinh();
+            hienThiToast(`Đã trang bị [${item.name}]!`);
+        }
+
+        function thaoTrangBiTinhThan(index) {
+            let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            let item = myRuong[index]; let meta = timVatPhamTinhThanTheoTen(item.name);
+            if (!meta) return;
+            myRuong[index].status = 'cho_nhan';
+            localStorage.setItem('ruong_do_' + studentName, JSON.stringify(myRuong));
+            if (meta.sub === 'danhhieu') localStorage.removeItem('danh_hieu_active_' + studentName);
+            else localStorage.removeItem('khung_avatar_active_' + studentName);
+            window.__fbDayDuLieuLenMay(studentName);
+            renderInventory(); kiemTraVaNapDanhTinh();
+            hienThiToast(`Đã tháo [${item.name}].`);
+        }
+
+        // ===== XỬ LÝ VẬT PHẨM TIÊU HAO (CONSUMABLE) =====
+        function suDungHoacNhanQua(index) {
+            let myRuong = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            let item = myRuong[index];
+            let name = item.name;
+            
+            // Vật phẩm tinh thần (danh hiệu, khung avatar)
+            if (item.type === 'spirit') return trangBiVatPhamTinhThan(index);
+
+            // Xử lý vật phẩm tiêu hao (consumable)
+            if (item.type === 'consumable') {
+                if (!confirm(`Sử dụng [${name}]?`)) return;
+                let ten = studentName;
+                if (!ten) { hienThiToast("Không xác định danh tính!", "error"); return; }
+                
+                // Xác định key lượt dựa trên tên vật phẩm
+                let keyLuot = '';
+                let soLuotCong = 0;
+                let isLamDay = false;
+                let maxLuot = 3;
+
+                if (name === 'Bùa Phục Hận') {
+                    keyLuot = 'luot_lam_bai_';
+                    soLuotCong = 1;
+                    maxLuot = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3;
+                } else if (name === 'Linh Đan Đầy Năng Lượng') {
+                    keyLuot = 'luot_lam_bai_';
+                    isLamDay = true;
+                    maxLuot = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3;
+                } else if (name === 'Bùa Phục Hận Tư Duy') {
+                    keyLuot = 'luot_vuot_ai_';
+                    soLuotCong = 2;
+                    maxLuot = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3;
+                } else if (name === 'Linh Đan Tư Duy') {
+                    keyLuot = 'luot_vuot_ai_';
+                    isLamDay = true;
+                    maxLuot = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3;
+                } else {
+                    hienThiToast("Vật phẩm không xác định.", "error");
+                    return;
+                }
+
+                // Lấy dữ liệu lượt
+                let key = keyLuot + ten;
+                let duLieu = JSON.parse(localStorage.getItem(key)) || null;
+                let homNay = new Date().toLocaleDateString('vi-VN');
+                
+                // Nếu chưa có hoặc khác ngày, tạo mới
+                if (!duLieu || duLieu.date !== homNay) {
+                    duLieu = { date: homNay, soLuotConLai: maxLuot };
+                }
+                
+                // Xử lý tăng lượt
+                if (isLamDay) {
+                    duLieu.soLuotConLai = maxLuot;
+                    hienThiToast(`✅ Đã sử dụng ${name}! Làm đầy lượt.`);
+                } else {
+                    duLieu.soLuotConLai = Math.min(duLieu.soLuotConLai + soLuotCong, maxLuot);
+                    hienThiToast(`✅ Đã sử dụng ${name}! +${soLuotCong} lượt.`);
+                }
+                
+                // Lưu dữ liệu lượt mới
+                localStorage.setItem(key, JSON.stringify(duLieu));
+                
+                // Xóa vật phẩm đã dùng khỏi rương đồ
+                myRuong.splice(index, 1);
+                localStorage.setItem('ruong_do_' + ten, JSON.stringify(myRuong));
+                window.__fbDayDuLieuLenMay(ten);
+                renderInventory();
+                return;
+            }
+
+            // Vật phẩm vật lý thông thường (type === 'real')
+            if (confirm(`Đánh dấu đã nhận [${name}]?`)) {
+                myRuong[index].status = 'da_nhan';
+                localStorage.setItem('ruong_do_' + studentName, JSON.stringify(myRuong));
+                window.__fbDayDuLieuLenMay(studentName);
+                renderInventory();
+                hienThiToast("Đã sử dụng! Vui lòng báo Giáo viên kiểm tra.");
+            }
+        }
+
+        /* --- CHỢ --- */
+        function moModalBan(idx) {
+            let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            if(r[idx].type !== 'real') return hienThiToast("Vật phẩm đặc quyền bị cấm giao dịch!", "error");
+            indexItemBan = idx; document.getElementById('sell-modal-text').innerHTML = `Vật phẩm: <b style="color:#00ffff;">${r[idx].name}</b>`;
+            document.getElementById('sell-modal').style.display = 'flex';
+        }
+        function dongModalBan() { document.getElementById('sell-modal').style.display = 'none'; }
+        function xacNhanTreoBan() {
+            let gia = parseInt(document.getElementById('sell-price-input').value) || 0; if(gia<=0) return alert("Giá trị sai!");
+            let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+            r[indexItemBan].status = 'dang_ban'; localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
+            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
+            m.push({ id_market: "MK"+Date.now(), id_trans_goc: r[indexItemBan].id_trans, seller: studentName, seller_class: studentClass, name: r[indexItemBan].name, icon: r[indexItemBan].icon, type: r[indexItemBan].type, price: gia });
+            localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
+            window.__fbDayDuLieuLenMay(studentName); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+            dongModalBan(); renderInventory(); renderMarketplace(); hienThiToast("Treo lên sàn thành công!");
+        }
+        function huyTreoBanChao(idx) {
+            let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || []; let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
+            m = m.filter(i => i.id_trans_goc !== r[idx].id_trans); localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
+            r[idx].status = 'cho_nhan'; localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
+            window.__fbDayDuLieuLenMay(studentName); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+            renderInventory(); renderMarketplace(); hienThiToast("Đã thu hồi!");
+        }
+        function renderMarketplace() {
+            const list = document.getElementById('market-list-body'); if(!list) return; list.innerHTML = "";
+            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
+            if(m.length === 0) { list.innerHTML = `<div class="lore-text" style="text-align:center;">Sàn giao dịch trống.</div>`; return; }
+            m.forEach(item => {
+                let btn = item.seller === studentName ? `<span style="font-size:0.6rem; color:#a3c2db;">Của bạn</span>` : 
+                    (!item.type==='real' ? `<i class="fa-solid fa-ban"></i>` : `<button class="btn-small btn-buy" onclick="muaDoChoP2P('${item.id_market}')">MUA NGAY</button>`);
+                list.innerHTML += `
+                    <div class="list-item">
+                        <div class="list-row">
+                            <span class="list-title"><span class="list-icon">${item.icon}</span> ${item.name}</span>
+                            <span class="price-tag">${item.price} ĐIỂM</span>
+                        </div>
+                        <div class="list-row">
+                            <span style="font-size:0.7rem; color:#a3c2db;">Bán bởi: <span class="seller-name">${item.seller}</span> (${item.seller_class})</span>
+                            ${btn}
+                        </div>
+                    </div>`;
+            });
+        }
+        async function muaDoChoP2P(id) {
+            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || []; let it = m.find(i=>i.id_market===id);
+            if(it.type!=='real') return;
+            let mC = parseInt(localStorage.getItem('coin_'+studentName))||50;
+            if(mC < it.price) return hienThiToast("Không đủ Điểm!", "error");
+            if(confirm(`Trả ${it.price} Điểm mua [${it.name}]?`)) {
+                await window.__fbTaiDuLieuTuMay(it.seller);
+                localStorage.setItem('coin_'+studentName, mC - it.price);
+                localStorage.setItem('coin_'+it.seller, (parseInt(localStorage.getItem('coin_'+it.seller))||0) + it.price);
+                let rS = JSON.parse(localStorage.getItem('ruong_do_'+it.seller)) || [];
+                rS = rS.filter(i=>i.id_trans!==it.id_trans_goc); localStorage.setItem('ruong_do_'+it.seller, JSON.stringify(rS));
+                let rB = JSON.parse(localStorage.getItem('ruong_do_'+studentName)) || [];
+                rB.push({ id_trans: it.id_trans_goc, name: it.name, icon: it.icon, type: it.type, date: new Date().toLocaleDateString('vi-VN'), status: 'cho_nhan' });
+                localStorage.setItem('ruong_do_'+studentName, JSON.stringify(rB));
+                m = m.filter(i=>i.id_market!==id); localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
+                window.__fbDayDuLieuLenMay(studentName); window.__fbDayDuLieuLenMay(it.seller); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+                capNhatGiaoDienEXP(); renderInventory(); renderMarketplace(); hienThiToast("Giao dịch hoàn tất!");
+            }
+        }
+
+        /* --- QUẢN TRỊ GV --- */
+        function xacThucGiaoVien() { document.getElementById('teacher-password-input').value = ""; document.getElementById('teacher-login-modal').style.display = 'flex'; }
+        function dongModalDangNhapGiaoVien() { document.getElementById('teacher-login-modal').style.display = 'none'; }
+        function xacNhanMatKhauGiaoVien() { if(document.getElementById('teacher-password-input').value === "thaytrongmath") { dongModalDangNhapGiaoVien(); moModalQuanTri(); } else hienThiToast("Sai mật mã!", "error"); }
+        async function moModalQuanTri() {
+            document.getElementById('teacher-modal').style.display = 'flex'; hienThiToast("Đang đồng bộ...");
+            let all = await window.__fbTaiToanBoHocSinhTuMay();
+            all.forEach(hs => { Object.keys(hs.data).forEach(k => { if(k!=='_capNhatLanCuoi' && k!=='_lop' && k!=='_lopCuThe') localStorage.setItem(k, hs.data[k]); }); });
+            let h = ""; danhSachSanPham.forEach((i,x) => { h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;"><span>${i.icon} ${i.name}</span> <input type="number" id="ep-${x}" value="${i.price}" class="modal-input" style="width:70px; padding:4px;"></div>`; });
+            document.getElementById('price-edit-list').innerHTML = h;
+            renderTeacherStudentList();
+        }
+        function dongModalTeacher() { document.getElementById('teacher-modal').style.display = 'none'; }
+        function switchTeacherTab(id, btn) {
+            document.querySelectorAll('.teacher-modal .tab-content').forEach(e=>e.style.display='none');
+            document.querySelectorAll('.tab-btn-teacher').forEach(e=>e.classList.remove('active'));
+            document.getElementById(id).style.display = 'block'; btn.classList.add('active');
+        }
+        function renderTeacherStudentList() {
+            let s = [];
+            for(let i=0; i<localStorage.length; i++) { let k = localStorage.key(i); if(k.startsWith('exp_')) { let t=k.replace('exp_',''); s.push({ten:t, exp:parseInt(localStorage.getItem(k))||0, coin:parseInt(localStorage.getItem('coin_'+t))||0, luotLB:getLuot(t,'lam_bai'), luotBs:getLuot(t,'boss'), luotVQ:getLuot(t,'vong_quay'), luotVA:getLuot(t,'vuot_ai')}); } }
+            s.sort((a,b)=>b.exp-a.exp);
+            let bd = document.getElementById('teacher-student-tbody'); bd.innerHTML="";
+            s.forEach((x,i) => {
+                bd.innerHTML += `<tr><td>${i+1}</td><td>${x.ten}</td><td>-</td><td><span class="editable-cell" onclick="editF('${x.ten}','exp',this)">${x.exp}</span></td><td><span class="editable-cell" onclick="editF('${x.ten}','coin',this)">${x.coin}</span></td><td>-</td><td>${x.luotLB}</td><td>${x.luotBs}</td><td>${x.luotVQ}</td><td>${x.luotVA}</td><td><button class="btn-danger-small" onclick="delS('${x.ten}')">Xóa</button></td></tr>`;
+            });
+        }
+        function getLuot(t,l) { let d=JSON.parse(localStorage.getItem('luot_'+l+'_'+t)); return (d && d.date===new Date().toLocaleDateString('vi-VN')) ? d.soLuotConLai : 0; }
+        function editF(t,f,el) { let v=prompt(`Điểm/EXP mới:`, el.innerText); if(v && !isNaN(v)) { localStorage.setItem(f==='exp'?'exp_'+t:'coin_'+t, parseInt(v)); el.innerText=v; window.__fbDayDuLieuLenMay(t); capNhatGiaoDienEXP(); } }
+        function delS(t) { if(confirm("XÓA?")) { window.__fbXoaHocSinhTrenMay(t); renderTeacherStudentList(); } }
+        function resetAllLuot(l) { 
+            let max = parseInt(localStorage.getItem('so_luot_'+l+'_toi_da'))||3; let s=getAllStudents(); let d=new Date().toLocaleDateString('vi-VN');
+            s.forEach(x=>{ localStorage.setItem('luot_'+l+'_'+x.ten, JSON.stringify({date:d, soLuotConLai:max})); window.__fbDayDuLieuLenMay(x.ten); });
+            renderTeacherStudentList(); hienThiToast("Reset lượt OK!");
+        }
+        function getAllStudents() { let s=[]; for(let i=0;i<localStorage.length;i++){ let k=localStorage.key(i); if(k.startsWith('exp_')) s.push({ten:k.replace('exp_','')}); } return s; }
+        function saveMaxLuot(l) { let v = parseInt(document.getElementById('max-luot-'+l).value); if(v>0) { localStorage.setItem('so_luot_'+l+'_toi_da',v); window.__fbDayCauHinhToanCuc('so_luot_'+l+'_toi_da'); hienThiToast("Lưu max lượt!"); } }
+        function luuBangGiaMoi() { danhSachSanPham.forEach((i,x)=>{ let v=parseInt(document.getElementById('ep-'+x).value); if(v>0) i.price=v; }); localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); window.__fbDayCauHinhToanCuc('math_hero_shop_items'); renderOfficialShop(); hienThiToast("Đã lưu giá!"); }
+        function themVatPhamMoi() { 
+            let n=document.getElementById('new-item-name').value; let p=parseInt(document.getElementById('new-item-price').value);
+            if(n&&p>0) { danhSachSanPham.push({ id:"sp_custom_"+Date.now(), icon:document.getElementById('new-item-icon').value||"🎁", name:n, desc:document.getElementById('new-item-desc').value, price:p, type:document.getElementById('new-item-type').value }); localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); window.__fbDayCauHinhToanCuc('math_hero_shop_items'); renderOfficialShop(); hienThiToast("Tạo OK!"); }
+        }
+
+        /* --- TABS --- */
+        function chuyenTab(id, el) {
+            document.querySelectorAll('.container > .tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.container .tab-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); el.classList.add('active');
+        }
+
+        /* --- TOAST --- */
+        function hienThiToast(msg, type='success') {
+            const box = document.getElementById('toast-box'); const t = document.createElement('div');
+            t.className = 'toast-msg'; t.style.borderLeftColor = type==='success' ? '#00ffff' : '#ff2a85';
+            t.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-triangle-exclamation'}" style="color:${type==='success'?'#00ffff':'#ff2a85'}; font-size:1.2rem;"></i> <span>${msg}</span>`;
+            box.appendChild(t); setTimeout(() => { t.style.animation = 'slideIn 0.3s reverse forwards'; setTimeout(()=>t.remove(), 300); }, 3000);
+        }
+    </script>
+</body>
+</html>

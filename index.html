@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>HERO MATH - SẢNH CHÍNH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ----- RESET & NỀN ----- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            font-family: 'Roboto', sans-serif;
+            color: #ffffff;
+            background: linear-gradient(45deg, #090912, #240b36, #0d324d, #1a0b2e);
+            background-size: 400% 400%;
+            animation: gradientBG 12s ease infinite;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ----- CANVAS HẠT MA THUẬT ----- */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* ----- CONTAINER CHÍNH (Tỉ lệ 9:19, flex cột) ----- */
+        .container {
+            width: 100%;
+            max-width: 440px;
+            aspect-ratio: 9 / 19;
+            height: auto;
+            max-height: 100dvh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+            background: rgba(15, 10, 30, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 28px;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.6);
+            transition: border-color 0.3s;
+            padding-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 255, 255, 0.3) transparent;
+            display: flex;
+            flex-direction: column;
+        }
+        .container::-webkit-scrollbar {
+            width: 4px;
+        }
+        .container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .container::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+        .container:hover {
+            border-color: rgba(0, 255, 255, 0.7);
+            box-shadow: 0 0 60px rgba(0, 255, 255, 0.25);
+        }
+
+        /* ----- HEADER NAV (sticky, co giãn) ----- */
+        .header-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(15, 10, 30, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 10px 12px 6px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+            border-radius: 28px 28px 0 0;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .header-signpost {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.65rem;
+            color: #00ffff;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+            text-decoration: none;
+            background: rgba(0, 20, 40, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 4px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            touch-action: manipulation;
+        }
+        .header-signpost:hover,
+        .header-signpost:active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* ----- CARD THÔNG TIN CHIẾN BINH (co giãn) ----- */
+        .student-status-card {
+            position: relative;
+            z-index: 20;
+            margin: 4px 12px 8px 12px;
+            background: rgba(10, 5, 25, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            border-top: 2px solid #00ffff;
+            border-radius: 16px;
+            padding: 10px 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(138, 43, 226, 0.15);
+            flex-shrink: 0;
+        }
+        .student-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+        .student-left-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .dynamic-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #fff;
+            border: 2px solid #00ffff;
+            flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(45deg, #ff2a85, #7b2ff7);
+        }
+        .student-meta {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #e0eaff;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 2px 6px;
+            min-width: 0;
+        }
+        .mystic-label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-size: 0.5rem;
+            white-space: nowrap;
+        }
+        .btn-logout {
+            background: linear-gradient(135deg, #ff0055, #990033);
+            color: #fff;
+            border: 1px solid #ff4d4d;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.55rem;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(255, 0, 85, 0.3);
+            flex-shrink: 0;
+            line-height: 1.6;
+        }
+        .btn-logout:hover,
+        .btn-logout:active {
+            background: #ff2a85;
+            box-shadow: 0 0 20px #ff2a85;
+            transform: scale(1.05);
+        }
+
+        /* Hàng chỉ số (stats) */
+        .stats-badge-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 4px;
+            margin-top: 6px;
+        }
+        .stat-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            border-radius: 8px;
+            padding: 4px 2px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6);
+        }
+        .stat-badge .label-text {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.4rem;
+            color: #8a9bb0;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 0.3px;
+        }
+        .stat-badge .stat-val {
+            font-weight: 900;
+            font-size: 0.7rem;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            line-height: 1.2;
+        }
+        .stat-badge .stat-icon {
+            font-size: 0.6rem;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));
+        }
+        .stat-badge.exp .stat-val {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .stat-badge.coin .stat-val {
+            color: #f1c40f;
+            text-shadow: 0 0 10px #f1c40f;
+        }
+        .stat-badge.luot-lam .stat-val {
+            color: #00ff7f;
+        }
+        .stat-badge.luot-boss .stat-val {
+            color: #ff2a85;
+        }
+        .stat-badge.luot-vq .stat-val {
+            color: #f39c12;
+        }
+        .stat-badge.luot-td .stat-val {
+            color: #f0a830;
+        }
+        .stat-badge.the-card .stat-val {
+            color: #b983ff;
+        }
+        .stat-badge.zero .stat-val {
+            color: #ff4d4d;
+            opacity: 0.5;
+        }
+
+        /* ----- KHU VỰC BẢN ĐỒ (chiếm hết phần còn lại) ----- */
+        #main-lobby-area {
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            margin: 0 8px 8px 8px;
+            border-radius: 16px;
+            background: radial-gradient(circle at 50% 60%, rgba(138, 43, 226, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 50% 100%, rgba(0, 255, 255, 0.08) 0%, transparent 60%);
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .fairy-garden-map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hiệu ứng vòng xoáy nền */
+        .fairy-garden-map::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: 50%;
+            transform: translateX(-50%) rotateX(70deg);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 2px dashed rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.15), inset 0 0 40px rgba(138, 43, 226, 0.2);
+            animation: spinPortal 20s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes spinPortal {
+            100% {
+                transform: translateX(-50%) rotateX(70deg) rotate(360deg);
+            }
+        }
+
+        /* Tiêu đề khu vực */
+        .lobby-section-title {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 2%;
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #8a2be2;
+            text-align: center;
+            z-index: 15;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+
+        /* ----- CÁC NÚT NHIỆM VỤ (SIGNPOST) ----- */
+        .signpost-item {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-decoration: none;
+            background: rgba(10, 5, 20, 0.65);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            cursor: pointer;
+            touch-action: manipulation;
+            padding: 6px 4px;
+            z-index: 10;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: float 4s ease-in-out infinite;
+            min-width: 0;
+            min-height: 0;
+        }
+        .signpost-item:active,
+        .signpost-item:hover {
+            transform: scale(1.06) translateY(-4px);
+            background: rgba(30, 20, 50, 0.8);
+            border-color: #fff;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        .signpost-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.6rem;
+            line-height: 1.2;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .signpost-sub {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+            font-size: 0.45rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
+        }
+
+        /* Vị trí các nút – dùng % để tự co giãn theo khung */
+        .sign-today-task {
+            width: 28%;
+            height: 16%;
+            left: 6%;
+            top: 14%;
+            animation-delay: 0s;
+            border-color: rgba(0, 198, 255, 0.4);
+        }
+        .sign-today-task .signpost-sub {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+        }
+        .sign-today-task .signpost-title {
+            text-shadow: 0 0 12px #00c6ff;
+        }
+
+        .sign-theory-vault {
+            width: 28%;
+            height: 16%;
+            left: 38%;
+            top: 14%;
+            animation-delay: 0.4s;
+            border-color: rgba(56, 239, 125, 0.4);
+        }
+        .sign-theory-vault .signpost-sub {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+        }
+        .sign-theory-vault .signpost-title {
+            text-shadow: 0 0 12px #38ef7d;
+        }
+
+        .sign-essay-challenge {
+            width: 28%;
+            height: 16%;
+            left: 70%;
+            top: 14%;
+            animation-delay: 0.8s;
+            border-color: rgba(142, 45, 226, 0.4);
+        }
+        .sign-essay-challenge .signpost-sub {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+        }
+        .sign-essay-challenge .signpost-title {
+            text-shadow: 0 0 12px #8e2de2;
+        }
+
+        .sign-boss-fight {
+            width: 38%;
+            height: 16%;
+            left: 6%;
+            top: 38%;
+            animation-delay: 1.2s;
+            border-color: rgba(255, 65, 108, 0.4);
+        }
+        .sign-boss-fight .signpost-sub {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+        .sign-boss-fight .signpost-title {
+            text-shadow: 0 0 12px #ff416c;
+        }
+
+        .sign-lucky-wheel {
+            width: 38%;
+            height: 16%;
+            left: 56%;
+            top: 38%;
+            animation-delay: 1.6s;
+            border-color: rgba(241, 39, 17, 0.4);
+        }
+        .sign-lucky-wheel .signpost-sub {
+            background: linear-gradient(135deg, #f12711, #f5af19);
+        }
+        .sign-lucky-wheel .signpost-title {
+            text-shadow: 0 0 12px #f5af19;
+        }
+
+        /* ----- NÚT ÂM THANH (editable zone) ----- */
+        .audio-zone {
+            position: absolute;
+            bottom: 4%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            cursor: default;
+            min-width: 80px;
+            min-height: 32px;
+        }
+        .btn-toggle-music {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            color: #00ffff;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            touch-action: manipulation;
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-toggle-music.playing {
+            background: linear-gradient(135deg, #ff2a85, #7b2ff7);
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255, 42, 133, 0.5);
+        }
+        .btn-toggle-music:hover {
+            transform: translateY(-2px);
+            border-color: #00ffff;
+            color: #fff;
+        }
+        .btn-toggle-music i {
+            font-size: 0.65rem;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* ----- MODAL GÓP Ý ----- */
+        .feedback-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 10, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 20000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .feedback-modal.show {
+            display: flex;
+        }
+        .feedback-card {
+            background: linear-gradient(180deg, rgba(20, 10, 40, 0.95), rgba(5, 0, 15, 0.98));
+            border: 2px solid #f1c40f;
+            border-radius: 24px;
+            padding: 28px 24px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(241, 196, 15, 0.2), inset 0 0 20px rgba(241, 196, 15, 0.1);
+            animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .feedback-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #f1c40f;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(241, 196, 15, 0.5);
+        }
+        .feedback-card p {
+            color: #a3c2db;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+        .feedback-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(241, 196, 15, 0.3);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            transition: border 0.3s;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.5;
+        }
+        .feedback-textarea:focus {
+            border-color: #f1c40f;
+            box-shadow: 0 0 15px rgba(241, 196, 15, 0.2);
+        }
+        .feedback-btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .feedback-btn {
+            flex: 1;
+            border: none;
+            padding: 12px 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .feedback-btn-send {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4);
+        }
+        .feedback-btn-send:active {
+            transform: scale(0.95);
+        }
+        .feedback-btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a3c2db;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .feedback-btn-cancel:active {
+            background: rgba(255, 42, 133, 0.2);
+            border-color: #ff2a85;
+            color: #ff2a85;
+        }
+
+        /* ----- BADGE PHẢN HỒI MỚI (chuông thông báo) ----- */
+        .badge-phan-hoi-so {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff2a85;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 900;
+            min-width: 16px;
+            height: 16px;
+            line-height: 16px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 0 10px rgba(255, 42, 133, 0.9);
+            border: 1px solid #fff;
+            animation: pulseBadge 1.4s ease-in-out infinite;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+        }
+
+        /* ----- MODAL DANH SÁCH PHẢN HỒI GIÁO VIÊN ----- */
+        .phan-hoi-list-body {
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin: 4px 0 2px 0;
+            text-align: left;
+        }
+        .phan-hoi-list-body::-webkit-scrollbar { width: 4px; }
+        .phan-hoi-list-body::-webkit-scrollbar-thumb {
+            background: rgba(52, 152, 219, 0.4);
+            border-radius: 10px;
+        }
+        .phan-hoi-item {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .phan-hoi-goc {
+            color: #a3c2db;
+            margin-bottom: 8px;
+        }
+        .phan-hoi-goc .noi-dung {
+            color: #e6e6e6;
+            font-style: italic;
+            display: block;
+            margin-top: 2px;
+        }
+        .phan-hoi-tra-loi {
+            color: #3498db;
+            border-top: 1px dashed rgba(52, 152, 219, 0.35);
+            padding-top: 8px;
+            font-weight: 700;
+        }
+        .phan-hoi-tra-loi .noi-dung {
+            color: #fff;
+            font-weight: 400;
+            display: block;
+            margin-top: 3px;
+        }
+        .phan-hoi-empty {
+            color: #a3c2db;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.85rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ----- OVERLAY, TOAST, EDIT MODE (giữ nguyên) ----- */
+        .pwd-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 10, 0.95);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+        }
+        .pwd-card {
+            background: linear-gradient(180deg, rgba(20, 10, 40, 0.9), rgba(5, 0, 15, 0.95));
+            border: 2px solid #00ffff;
+            border-radius: 24px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(138, 43, 226, 0.3);
+            animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .pwd-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: #00ffff;
+            margin: 0 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+        }
+        .pwd-input-glowing {
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 8px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            color: white;
+            margin: 16px 0;
+            outline: none;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .pwd-input-glowing:focus {
+            border-color: #ff2a85;
+            box-shadow: 0 0 20px rgba(255, 42, 133, 0.4);
+        }
+        .pwd-error {
+            color: #ff2a85;
+            font-size: 0.9rem;
+            margin-top: -8px;
+            margin-bottom: 16px;
+            display: none;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 42, 133, 0.5);
+        }
+        .pwd-btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .pwd-btn-action {
+            flex: 1;
+            border: none;
+            padding: 14px 0;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .pwd-btn-confirm {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 198, 255, 0.4);
+        }
+        .pwd-btn-confirm:active { transform: scale(0.95); }
+        .pwd-btn-cancel {
+            background: rgba(255, 255, 255, 0.05);
+            color: #a3c2db;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .pwd-btn-cancel:active {
+            background: rgba(255, 42, 133, 0.2);
+            color: #ff2a85;
+            border-color: #ff2a85;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10005;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            pointer-events: none;
+        }
+        #toast-container>div { pointer-events: auto; }
+
+        /* ----- EDIT MODE (giữ nguyên) ----- */
+        .edit-toolbar {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99999;
+            display: none;
+            flex-direction: row;
+            gap: 6px;
+            align-items: center;
+            background: rgba(0, 0, 10, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 8px 14px;
+            border-radius: 40px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+            flex-wrap: wrap;
+            justify-content: center;
+            cursor: move;
+            touch-action: none;
+        }
+        .edit-toolbar.show { display: flex; }
+        .edit-toolbar-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            touch-action: manipulation;
+            transition: all 0.2s;
+            white-space: nowrap;
+            background: transparent;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .edit-toolbar-btn.start {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            border-color: #00c6ff;
+        }
+        .edit-toolbar-btn.lock {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            border-color: #38ef7d;
+        }
+        .edit-toolbar-btn.reset {
+            background: linear-gradient(135deg, #f12711, #f5af19);
+            font-size: 0.6rem;
+            border-color: #f5af19;
+        }
+        .edit-hint {
+            color: #00ffff;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            display: none;
+            text-align: center;
+            width: 100%;
+            font-weight: bold;
+        }
+        body.edit-mode-on .edit-hint { display: block; }
+
+        .font-edit-panel {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 99998;
+            background: rgba(10, 5, 20, 0.98);
+            backdrop-filter: blur(12px);
+            border: 2px solid #ff2a85;
+            border-radius: 16px;
+            padding: 12px;
+            display: none;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            width: 90%;
+            max-width: 340px;
+            box-shadow: 0 10px 40px rgba(255, 42, 133, 0.3);
+            pointer-events: auto;
+            cursor: move;
+            touch-action: none;
+        }
+        .font-edit-panel.show { display: flex; }
+        .font-edit-panel label {
+            font-size: 0.7rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        .font-edit-panel input[type="color"] {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: transparent;
+            cursor: pointer;
+            padding: 2px;
+        }
+        .font-edit-panel select,
+        .font-edit-panel input[type="number"] {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ffff;
+            color: #fff;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            max-width: 100px;
+            outline: none;
+            font-weight: bold;
+        }
+        .font-edit-panel input[type="number"] { width: 60px; }
+        .font-edit-panel .close-panel-btn {
+            background: transparent;
+            border: none;
+            color: #ff2a85;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 6px;
+            transition: 0.2s;
+        }
+
+        body.edit-mode-on .editable-zone {
+            outline: 2px dashed #00ffff;
+            outline-offset: 3px;
+            cursor: move;
+            user-select: none;
+            -webkit-user-select: none;
+            animation: none !important;
+        }
+        body.edit-mode-on .editable-zone.active-zone {
+            outline: 3px solid #f1c40f;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5) inset;
+        }
+        body.edit-mode-on .editable-zone * { pointer-events: none; }
+        .resize-handle {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            width: 20px;
+            height: 20px;
+            background: #f1c40f;
+            border: 2px solid #000;
+            border-radius: 50%;
+            cursor: nwse-resize;
+            display: none;
+            z-index: 10;
+            pointer-events: auto !important;
+            box-shadow: 0 0 10px #f1c40f;
+        }
+        body.edit-mode-on .editable-zone .resize-handle { display: block; }
+        .zone-label {
+            position: absolute;
+            top: -4px;
+            left: 0;
+            transform: translateY(-100%);
+            background: #ff2a85;
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            display: none;
+            box-shadow: 0 -2px 10px rgba(255, 42, 133, 0.6);
+            letter-spacing: 0.5px;
+        }
+        body.edit-mode-on .editable-zone .zone-label { display: block; }
+        .lock-status-badge {
+            font-size: 0.65rem;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-right: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .lock-status-badge.locked {
+            border-color: #ff2a85;
+            color: #ff2a85;
+            text-shadow: 0 0 5px #ff2a85;
+        }
+        .lock-status-badge.unlocked {
+            border-color: #00ff7f;
+            color: #00ff7f;
+            text-shadow: 0 0 5px #00ff7f;
+        }
+
+        /* ----- RESPONSIVE TINH CHỈNH ----- */
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 20px;
+                padding-bottom: 8px;
+            }
+            .student-status-card {
+                padding: 8px 10px;
+                margin: 4px 8px 6px 8px;
+            }
+            .student-meta { font-size: 0.5rem; }
+            .dynamic-avatar {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+            .stat-badge .stat-val { font-size: 0.6rem; }
+            .stat-badge .label-text { font-size: 0.35rem; }
+            .stat-badge .stat-icon { font-size: 0.5rem; }
+            .lobby-section-title { font-size: 0.7rem; top: 1%; }
+            .signpost-title { font-size: 0.5rem; }
+            .signpost-sub { font-size: 0.4rem; padding: 1px 6px; }
+            .signpost-item { border-radius: 10px; padding: 4px 2px; }
+            .header-signpost { font-size: 0.55rem; padding: 3px 10px; }
+            .btn-logout { font-size: 0.5rem; padding: 3px 10px; }
+            .btn-toggle-music { font-size: 0.5rem; padding: 3px 12px; }
+            .btn-toggle-music i { font-size: 0.6rem; }
+            .audio-zone { padding: 2px 6px; min-width: 60px; min-height: 26px; }
+        }
+
+        @media (max-height: 700px) {
+            .student-status-card {
+                padding: 6px 8px;
+                margin: 2px 6px 4px 6px;
+            }
+            .stats-badge-row {
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+                gap: 2px;
+            }
+            .stat-badge { padding: 2px 1px; }
+            .stat-badge .stat-val { font-size: 0.5rem; }
+            .stat-badge .label-text { font-size: 0.3rem; }
+            .signpost-title { font-size: 0.45rem; }
+            .signpost-sub { font-size: 0.35rem; padding: 1px 5px; }
+            .signpost-item { padding: 3px 2px; }
+            .lobby-section-title { font-size: 0.6rem; top: 1%; }
+            .btn-toggle-music { font-size: 0.45rem; padding: 2px 10px; }
+            .header-signpost { font-size: 0.5rem; padding: 2px 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <audio id="bg-fairy-music" src="thugian.mp3" loop autoplay></audio>
+
+    <!-- Edit Toolbar -->
+    <div class="edit-toolbar" id="edit-toolbar">
+        <span class="lock-status-badge unlocked" id="lock-badge">
+            <i class="fa-solid fa-lock-open"></i> <span id="lock-status-text">Mở</span>
+        </span>
+        <button id="btn-edit-toggle" class="edit-toolbar-btn start" onclick="toggleEditMode()">
+            <i class="fa-solid fa-arrows-up-down-left-right"></i> <span id="edit-toggle-text">Chỉnh vị trí</span>
+        </button>
+        <button id="btn-edit-reset" class="edit-toolbar-btn reset" onclick="resetOverlayPositions()" style="display:none;">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <div class="edit-hint" id="edit-hint-box">Chạm giữ → kéo. Kéo nút vàng để đổi cỡ.</div>
+    </div>
+
+    <div class="font-edit-panel" id="font-edit-panel">
+        <label><i class="fa-solid fa-palette"></i> Màu <input type="color" id="font-color-picker" value="#ffffff" onchange="capNhatFontKhung()"></label>
+        <label><i class="fa-solid fa-font"></i> Font
+            <select id="font-family-select" onchange="capNhatFontKhung()">
+                <option value="Roboto">Roboto</option>
+                <option value="'Averia Serif Libre', Georgia, serif">Averia Serif</option>
+                <option value="'Cinzel Decorative', serif">Cinzel Decorative</option>
+                <option value="'Montserrat', sans-serif">Montserrat</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace">Courier New</option>
+            </select>
+        </label>
+        <label><i class="fa-solid fa-text-height"></i> Cỡ <input type="number" id="font-size-input" value="0.8" step="0.05" min="0.4" max="3" onchange="capNhatFontKhung()"> rem</label>
+        <button class="close-panel-btn" onclick="anFontPanel()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <div class="header-navbar editable-zone" data-zone-id="header-navbar">
+            <span class="zone-label">Menu trên</span>
+            <div class="nav-buttons">
+                <a href="ly-thuyet.html" class="header-signpost" onclick="phatAmThanhClick()">Lý Thuyết</a>
+                <a href="cua-hang.html" class="header-signpost" onclick="phatAmThanhClick()">Cửa Hàng</a>
+                <a href="bang-xep-hang.html" class="header-signpost" onclick="phatAmThanhClick()">BXH</a>
+                <button class="header-signpost" onclick="openTeacherPasswordModal()">Giáo viên</button>
+                <!-- NÚT GÓP Ý (thêm vào header) -->
+                <button class="header-signpost" onclick="moFormGopY()" style="border-color: rgba(241,196,15,0.5); color: #f1c40f;">
+                    <i class="fa-regular fa-comment-dots"></i> Góp ý
+                </button>
+                <!-- NÚT XEM PHẢN HỒI TỪ GIÁO VIÊN -->
+                <button class="header-signpost" id="btn-xem-phan-hoi" onclick="moModalPhanHoiHocSinh()" style="display:none; position:relative; border-color: rgba(52,152,219,0.5); color: #3498db;">
+                    <i class="fa-solid fa-bell"></i> Phản hồi
+                    <span id="badge-phan-hoi-moi" class="badge-phan-hoi-so" style="display:none;">0</span>
+                </button>
+            </div>
+            <div class="resize-handle" data-handle-for="header-navbar"></div>
+        </div>
+
+        <!-- CARD HỌC SINH -->
+        <div class="student-status-card editable-zone" id="student-status-bar" data-zone-id="student-status-card">
+            <span class="zone-label">Card học sinh</span>
+            <div class="student-top-row">
+                <div class="student-left-profile">
+                    <div class="dynamic-avatar" id="player-avatar">?</div>
+                    <div class="student-meta">
+                        <span class="mystic-label" style="color:#f1c40f;text-shadow:0 0 5px rgba(241,196,15,0.8);">Học Sinh:</span>
+                        <span id="txt-student-name" style="color:#fff;text-shadow:0 0 5px rgba(255,255,255,0.8);"> ..</span>
+                        <span style="color:#00ffff;font-weight:bold;flex-shrink:0;">|</span>
+                        <span class="mystic-label" style="color:#b983ff;">📚</span>
+                        <span id="txt-student-class" style="color:#fff;text-shadow:0 0 5px rgba(255,255,255,0.8);"> ..</span>
+                        <span style="color:#00ffff;font-weight:bold;flex-shrink:0;">|</span>
+                        <span class="mystic-label" style="color:#00ff7f;">Lớp:</span>
+                        <span id="txt-student-classroom" style="color:#00ff7f;text-shadow:0 0 8px rgba(0,255,127,0.8);font-weight:bold;"> —</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="xuLyDoiTaiKhoan()">Thoát</button>
+            </div>
+
+            <div class="stats-badge-row">
+                <div class="stat-badge exp">
+                    <span class="stat-icon">⭐</span>
+                    <span class="label-text">EXP</span>
+                    <span class="stat-val" id="lbl-student-exp">0</span>
+                </div>
+                <div class="stat-badge coin">
+                    <span class="stat-icon">💰</span>
+                    <span class="label-text">Điểm</span>
+                    <span class="stat-val" id="lbl-student-coin">0</span>
+                </div>
+                <div class="stat-badge luot-lam" id="badge-luot-lam">
+                    <span class="stat-icon">📋</span>
+                    <span class="label-text">NV</span>
+                    <span class="stat-val" id="lbl-luot-lam">–</span>
+                </div>
+                <div class="stat-badge luot-boss" id="badge-luot-boss">
+                    <span class="stat-icon">🐉</span>
+                    <span class="label-text">TTTT</span>
+                    <span class="stat-val" id="lbl-luot-boss">–</span>
+                </div>
+                <div class="stat-badge luot-vq" id="badge-luot-vq">
+                    <span class="stat-icon">🎡</span>
+                    <span class="label-text">Quay</span>
+                    <span class="stat-val" id="lbl-luot-vq">–</span>
+                </div>
+                <div class="stat-badge luot-td" id="badge-luot-td">
+                    <span class="stat-icon">⚔️</span>
+                    <span class="label-text">NCTD</span>
+                    <span class="stat-val" id="lbl-luot-td">–</span>
+                </div>
+                <div class="stat-badge the-card" id="badge-the" style="display:none;">
+                    <span class="stat-icon">🪪</span>
+                    <span class="label-text">Thẻ</span>
+                    <span class="stat-val" id="lbl-so-the">0</span>
+                </div>
+            </div>
+            <div class="resize-handle" data-handle-for="student-status-card"></div>
+        </div>
+
+        <!-- KHU VỰC BẢN ĐỒ NHIỆM VỤ (chiếm hết phần còn lại) -->
+        <div id="main-lobby-area">
+            <div class="fairy-garden-map" id="fairy-garden-map">
+
+                <h2 class="lobby-section-title editable-zone" data-zone-id="lobby-section-title"><span class="zone-label">Tiêu đề khu vực</span>🧭 BẢN ĐỒ NHIỆM VỤ
+                    <div class="resize-handle" data-handle-for="lobby-section-title"></div>
+                </h2>
+
+                <a href="lam-bai.html" class="signpost-item sign-today-task editable-zone" data-zone-id="sign-today-task" onclick="phatAmThanhClick()">
+                    <span class="zone-label">Nhiệm vụ</span>
+                    <span class="signpost-title">Nhiệm Vụ<br>Hôm Nay</span>
+                    <span class="signpost-sub">LÀM BÀI</span>
+                    <div class="resize-handle" data-handle-for="sign-today-task"></div>
+                </a>
+
+                <a href="nang-cap-tu-duy.html" class="signpost-item sign-theory-vault editable-zone" data-zone-id="sign-theory-vault" onclick="phatAmThanhClick()">
+                    <span class="zone-label">Nâng Cấp Tư Duy</span>
+                    <span class="signpost-title">Nâng Cấp<br>Tư Duy</span>
+                    <span class="signpost-sub">KHÁM PHÁ</span>
+                    <div class="resize-handle" data-handle-for="sign-theory-vault"></div>
+                </a>
+
+                <a href="bai-tap-tu-luan.html" class="signpost-item sign-essay-challenge editable-zone" data-zone-id="sign-essay-challenge" onclick="phatAmThanhClick()">
+                    <span class="zone-label">Tự luận</span>
+                    <span class="signpost-title">Thử Thách<br>Tự Luận</span>
+                    <span class="signpost-sub">TRÌNH BÀY</span>
+                    <div class="resize-handle" data-handle-for="sign-essay-challenge"></div>
+                </a>
+
+                <a href="thu-thach-toi-thuong.html" class="signpost-item sign-boss-fight editable-zone" data-zone-id="sign-boss-fight" onclick="phatAmThanhClick()">
+                    <span class="zone-label">TTTT</span>
+                    <span class="signpost-title">Thử Thách<br>Tối Thượng</span>
+                    <span class="signpost-sub">TOÀN THẮNG</span>
+                    <div class="resize-handle" data-handle-for="sign-boss-fight"></div>
+                </a>
+
+                <a href="vong-quay.html" class="signpost-item sign-lucky-wheel editable-zone" data-zone-id="sign-lucky-wheel" onclick="phatAmThanhClick()">
+                    <span class="zone-label">Vòng quay</span>
+                    <span class="signpost-title">Vòng Quay<br>May Mắn</span>
+                    <span class="signpost-sub">NHẬN QUÀ</span>
+                    <div class="resize-handle" data-handle-for="sign-lucky-wheel"></div>
+                </a>
+
+                <!-- NÚT ÂM THANH (editable zone) -->
+                <div class="audio-zone editable-zone" data-zone-id="audio-zone">
+                    <span class="zone-label">Âm thanh</span>
+                    <button id="btn-music-toggle" class="btn-toggle-music muted" onclick="xuLyBatTatAmThanhNen()">
+                        <i id="icon-music-toggle" class="fa-solid fa-volume-xmark"></i>
+                        <span id="text-music-toggle">Bật Nhạc</span>
+                    </button>
+                    <div class="resize-handle" data-handle-for="audio-zone"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div> <!-- end container -->
+
+    <!-- MODAL GÓP Ý -->
+    <div class="feedback-modal" id="feedback-modal">
+        <div class="feedback-card">
+            <h4><i class="fa-regular fa-pen-to-square"></i> Góp ý cho ứng dụng</h4>
+            <p>Hãy chia sẻ ý kiến của bạn để chúng tôi ngày càng hoàn thiện hơn!</p>
+            <textarea class="feedback-textarea" id="feedback-content" placeholder="Viết góp ý của bạn ở đây..."></textarea>
+            <div class="feedback-btn-row">
+                <button class="feedback-btn feedback-btn-cancel" onclick="dongFormGopY()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                <button class="feedback-btn feedback-btn-send" onclick="guiGopY()"><i class="fa-regular fa-paper-plane"></i> Gửi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PHẢN HỒI TỪ GIÁO VIÊN -->
+    <div class="feedback-modal" id="modal-phan-hoi-hs">
+        <div class="feedback-card" style="border-color:#3498db; box-shadow: 0 0 40px rgba(52,152,219,0.2), inset 0 0 20px rgba(52,152,219,0.1);">
+            <h4 style="color:#3498db; text-shadow: 0 0 15px rgba(52,152,219,0.5);"><i class="fa-solid fa-chalkboard-user"></i> Phản hồi từ giáo viên</h4>
+            <p>Những phản hồi Thầy/Cô đã gửi cho các góp ý của bạn.</p>
+            <div class="phan-hoi-list-body" id="phan-hoi-list-body"></div>
+            <div class="feedback-btn-row">
+                <button class="feedback-btn feedback-btn-cancel" style="flex:none; padding:12px 28px; margin:0 auto;" onclick="dongModalPhanHoiHocSinh()"><i class="fa-solid fa-xmark"></i> Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY GIÁO VIÊN -->
+    <div id="teacher-pwd-modal" class="pwd-overlay" style="display: none;">
+        <div class="pwd-card">
+            <i class="fa-solid fa-user-shield fa-3x" style="color: #00c6ff; margin-bottom: 16px; text-shadow: 0 0 15px rgba(0,198,255,0.6);"></i>
+            <h4>Xác thực giáo viên</h4>
+            <p style="font-size: 0.9rem; color: #a3c2db; margin: 0 0 20px 0;">Nhập mã bí mật để truy cập.</p>
+            <input type="password" id="teacher-password-field" class="pwd-input-glowing" placeholder="••••" inputmode="numeric" onkeydown="chkTeacherPasswordEnter(event)">
+            <div id="teacher-password-error" class="pwd-error">Mã không hợp lệ!</div>
+            <div class="pwd-btn-group">
+                <button class="pwd-btn-action pwd-btn-confirm" onclick="verifyTeacherAccess()"><i class="fa-solid fa-unlock-keyhole"></i> Xác nhận</button>
+                <button class="pwd-btn-action pwd-btn-cancel" onclick="closeTeacherPasswordModal()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY XÁC NHẬN CHỈNH SỬA -->
+    <div id="edit-pwd-modal" class="pwd-overlay" style="display: none;">
+        <div class="pwd-card">
+            <i class="fa-solid fa-lock fa-3x" style="color: #f1c40f; margin-bottom: 16px; text-shadow: 0 0 15px rgba(241,196,15,0.6);"></i>
+            <h4 id="edit-pwd-title">Khóa bố cục</h4>
+            <p style="font-size: 0.9rem; color: #a3c2db; margin: 0 0 20px 0;" id="edit-pwd-desc">Xác nhận mật khẩu để tiếp tục.</p>
+            <input type="password" id="edit-password-field" class="pwd-input-glowing" placeholder="••••" inputmode="numeric" onkeydown="chkEditPasswordEnter(event)">
+            <div id="edit-password-error" class="pwd-error">Sai mật khẩu!</div>
+            <div class="pwd-btn-group">
+                <button class="pwd-btn-action pwd-btn-confirm" id="edit-pwd-confirm-btn" onclick="xacNhanMatKhauChinhSua()"><i class="fa-solid fa-key"></i> Xác nhận</button>
+                <button class="pwd-btn-action pwd-btn-cancel" onclick="dongEditPasswordModal()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <!-- ============== SCRIPT ============== -->
+    <script>
+        // Particle canvas
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particlesArray = [];
+        const colors = ['#00ffff', '#ff2a85', '#f1c40f', '#8a2be2', '#38ef7d'];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * -1.5 - 0.5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.opacity = Math.random() * 0.5 + 0.3;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.y < 0) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height + 10;
+                    this.size = Math.random() * 2 + 0.5;
+                }
+            }
+            draw() {
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 6000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', function() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+    </script>
+
+    <script>
+        // ===== GÓP Ý =====
+        function moFormGopY() {
+            document.getElementById('feedback-modal').classList.add('show');
+            document.getElementById('feedback-content').value = '';
+            document.getElementById('feedback-content').focus();
+            phatAmThanhClick();
+        }
+
+        function dongFormGopY() {
+            document.getElementById('feedback-modal').classList.remove('show');
+        }
+
+        function guiGopY() {
+            const noiDung = document.getElementById('feedback-content').value.trim();
+            if (!noiDung) {
+                showToast('Vui lòng viết góp ý trước khi gửi.', 'error');
+                return;
+            }
+            const ten = sessionStorage.getItem('hoc_school_student_name') || 'Khách';
+            const lop = sessionStorage.getItem('hoc_school_student_class') || 'Chưa có';
+            const thoiGian = new Date().toLocaleString('vi-VN');
+
+            let danhSach = JSON.parse(localStorage.getItem('danh_sach_gop_y')) || [];
+            danhSach.push({
+                ten: ten,
+                lop: lop,
+                noiDung: noiDung,
+                thoiGian: thoiGian
+            });
+            localStorage.setItem('danh_sach_gop_y', JSON.stringify(danhSach));
+
+            dongFormGopY();
+            showToast('💬 Cảm ơn góp ý của bạn! Chúng tôi sẽ xem xét để hoàn thiện hơn.', 'success');
+            phatAmThanhClick();
+        }
+
+        // ===== PHẢN HỒI CỦA GIÁO VIÊN CHO HỌC SINH =====
+        function thoatHtmlAnToan(chuoi) {
+            const tam = document.createElement('div');
+            tam.innerText = chuoi == null ? '' : String(chuoi);
+            return tam.innerHTML;
+        }
+
+        function laySignaturePhanHoi(item) {
+            return (item.thoiGian || '') + '__' + (item.thoiGianPhanHoi || '') + '__' + (item.phanHoi || '');
+        }
+
+        function layDanhSachPhanHoiCuaToi(tenLuu) {
+            if (!tenLuu) return [];
+            let danhSach = JSON.parse(localStorage.getItem('danh_sach_gop_y')) || [];
+            let cuaToi = danhSach.filter(item => item && item.ten === tenLuu && item.phanHoi && item.phanHoi.trim() !== '');
+            return cuaToi.reverse(); // mới nhất lên đầu
+        }
+
+        function capNhatBadgePhanHoi() {
+            const tenLuu = sessionStorage.getItem('hoc_school_student_name');
+            const btnXem = document.getElementById('btn-xem-phan-hoi');
+            const badge = document.getElementById('badge-phan-hoi-moi');
+            if (!tenLuu || !btnXem || !badge) return [];
+
+            const dsPhanHoi = layDanhSachPhanHoiCuaToi(tenLuu);
+            btnXem.style.display = dsPhanHoi.length > 0 ? 'inline-flex' : 'none';
+
+            const daDoc = JSON.parse(localStorage.getItem('da_doc_phan_hoi_' + tenLuu)) || [];
+            const chuaDoc = dsPhanHoi.filter(item => !daDoc.includes(laySignaturePhanHoi(item)));
+
+            if (chuaDoc.length > 0) {
+                badge.innerText = chuaDoc.length > 9 ? '9+' : chuaDoc.length;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+            return chuaDoc;
+        }
+
+        function moModalPhanHoiHocSinh() {
+            phatAmThanhClick();
+            const tenLuu = sessionStorage.getItem('hoc_school_student_name');
+            const dsPhanHoi = layDanhSachPhanHoiCuaToi(tenLuu);
+            const body = document.getElementById('phan-hoi-list-body');
+
+            if (dsPhanHoi.length === 0) {
+                body.innerHTML = '<div class="phan-hoi-empty"><i class="fa-regular fa-comment"></i><br>Chưa có phản hồi nào từ giáo viên.</div>';
+            } else {
+                body.innerHTML = dsPhanHoi.map(item => `
+                    <div class="phan-hoi-item">
+                        <div class="phan-hoi-goc">
+                            <i class="fa-regular fa-comment-dots"></i> Góp ý của bạn ${item.thoiGian ? '(' + thoatHtmlAnToan(item.thoiGian) + ')' : ''}:
+                            <span class="noi-dung">"${thoatHtmlAnToan(item.noiDung)}"</span>
+                        </div>
+                        <div class="phan-hoi-tra-loi">
+                            <i class="fa-solid fa-chalkboard-user"></i> Thầy/Cô phản hồi ${item.thoiGianPhanHoi ? '(' + thoatHtmlAnToan(item.thoiGianPhanHoi) + ')' : ''}:
+                            <span class="noi-dung">${thoatHtmlAnToan(item.phanHoi)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('modal-phan-hoi-hs').classList.add('show');
+
+            // Đánh dấu tất cả đã đọc
+            if (tenLuu && dsPhanHoi.length > 0) {
+                let daDoc = JSON.parse(localStorage.getItem('da_doc_phan_hoi_' + tenLuu)) || [];
+                dsPhanHoi.forEach(item => {
+                    const sig = laySignaturePhanHoi(item);
+                    if (!daDoc.includes(sig)) daDoc.push(sig);
+                });
+                localStorage.setItem('da_doc_phan_hoi_' + tenLuu, JSON.stringify(daDoc));
+            }
+            capNhatBadgePhanHoi();
+        }
+
+        function dongModalPhanHoiHocSinh() {
+            document.getElementById('modal-phan-hoi-hs').classList.remove('show');
+        }
+
+        // ============================================================
+        //  Các hàm edit mode, âm thanh, đăng nhập (giữ nguyên từ bản gốc)
+        // ============================================================
+
+        const OVERLAY_POS_KEY = 'hero_overlay_positions_v1';
+        const EDIT_LOCK_KEY = 'hero_edit_locked_v1';
+        const TOOLBAR_POS_KEY = 'hero_toolbar_position_v1';
+        const FONTPANEL_POS_KEY = 'hero_fontpanel_position_v1';
+        const PASSWORD_EDIT = "123456";
+        const PASSWORD_ADMIN = "thaytrongmath";
+
+        let dangOEditMode = false;
+        let isLocked = false;
+        let daXacThuc = false;
+        let zoneDangKeo = null;
+        let zoneDangResize = null;
+        let diemBatDauKeo = { x: 0, y: 0 };
+        let viTriGocZone = { left: 0, top: 0, width: 0, height: 0 };
+        let pendingEditAction = null;
+        let zoneDangChon = null;
+
+        let toolbarDangKeo = false;
+        let toolbarOffsetX = 0,
+            toolbarOffsetY = 0;
+        let fontPanelDangKeo = false;
+        let fontPanelOffsetX = 0,
+            fontPanelOffsetY = 0;
+
+        function anToolbar() {
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.classList.remove('show');
+            toolbar.style.display = 'none';
+        }
+
+        function hienToolbar() {
+            if (isLocked) return;
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.style.display = '';
+            toolbar.classList.add('show');
+        }
+
+        function capNhatTrangThaiToolbar() {
+            if (isLocked) {
+                anToolbar();
+            } else if (daXacThuc) {
+                hienToolbar();
+            } else {
+                anToolbar();
+            }
+        }
+
+        function loadState() {
+            daXacThuc = sessionStorage.getItem('teacher_authenticated') === 'true';
+            let lockVal = localStorage.getItem(EDIT_LOCK_KEY);
+            isLocked = (lockVal === 'true');
+            capNhatTrangThaiToolbar();
+            updateLockUI();
+            khoiPhucViTriToolbar();
+            khoiPhucViTriFontPanel();
+        }
+
+        function khoiPhucViTriToolbar() {
+            const toolbar = document.getElementById('edit-toolbar');
+            const saved = localStorage.getItem(TOOLBAR_POS_KEY);
+            if (saved) {
+                try {
+                    const pos = JSON.parse(saved);
+                    toolbar.style.position = 'fixed';
+                    toolbar.style.bottom = 'auto';
+                    toolbar.style.left = pos.left + 'px';
+                    toolbar.style.top = pos.top + 'px';
+                    toolbar.style.transform = 'none';
+                } catch (e) {}
+            }
+        }
+
+        function luuViTriToolbar(left, top) {
+            localStorage.setItem(TOOLBAR_POS_KEY, JSON.stringify({ left, top }));
+        }
+
+        function khoiPhucViTriFontPanel() {
+            const panel = document.getElementById('font-edit-panel');
+            const saved = localStorage.getItem(FONTPANEL_POS_KEY);
+            if (saved) {
+                try {
+                    const pos = JSON.parse(saved);
+                    panel.style.position = 'fixed';
+                    panel.style.bottom = 'auto';
+                    panel.style.left = pos.left + 'px';
+                    panel.style.top = pos.top + 'px';
+                    panel.style.transform = 'none';
+                } catch (e) {}
+            }
+        }
+
+        function luuViTriFontPanel(left, top) {
+            localStorage.setItem(FONTPANEL_POS_KEY, JSON.stringify({ left, top }));
+        }
+
+        function updateLockUI() {
+            const badge = document.getElementById('lock-badge');
+            const txt = document.getElementById('lock-status-text');
+            if (isLocked) {
+                badge.className = 'lock-status-badge locked';
+                badge.innerHTML = '<i class="fa-solid fa-lock"></i> <span id="lock-status-text">Khóa</span>';
+                if (dangOEditMode) tatEditMode();
+                anToolbar();
+            } else {
+                badge.className = 'lock-status-badge unlocked';
+                badge.innerHTML = '<i class="fa-solid fa-lock-open"></i> <span id="lock-status-text">Mở</span>';
+                if (daXacThuc) hienToolbar();
+            }
+            const btn = document.getElementById('btn-edit-toggle');
+            if (isLocked) {
+                btn.classList.add('locked');
+                btn.querySelector('i').className = 'fa-solid fa-lock';
+                document.getElementById('edit-toggle-text').innerText = 'Bị khóa';
+                btn.disabled = true;
+            } else {
+                btn.classList.remove('locked');
+                btn.disabled = false;
+                if (dangOEditMode) {
+                    btn.className = 'edit-toolbar-btn lock';
+                    btn.querySelector('i').className = 'fa-solid fa-lock-open';
+                    document.getElementById('edit-toggle-text').innerText = 'Khóa vị trí';
+                } else {
+                    btn.className = 'edit-toolbar-btn start';
+                    btn.querySelector('i').className = 'fa-solid fa-arrows-up-down-left-right';
+                    document.getElementById('edit-toggle-text').innerText = 'Chỉnh vị trí';
+                }
+            }
+        }
+
+        function tatEditMode() {
+            dangOEditMode = false;
+            document.body.classList.remove('edit-mode-on');
+            const btn = document.getElementById('btn-edit-toggle');
+            btn.className = 'edit-toolbar-btn start';
+            btn.querySelector('i').className = 'fa-solid fa-arrows-up-down-left-right';
+            document.getElementById('edit-toggle-text').innerText = 'Chỉnh vị trí';
+            document.getElementById('btn-edit-reset').style.display = 'none';
+            document.getElementById('edit-hint-box').style.display = 'none';
+            document.querySelectorAll('.editable-zone').forEach(z => z.classList.remove('active-zone'));
+            anFontPanel();
+        }
+
+        function batEditMode() {
+            if (isLocked || !daXacThuc) {
+                showToast('Bạn cần xác thực giáo viên để chỉnh sửa.', 'error');
+                return;
+            }
+            dangOEditMode = true;
+            document.body.classList.add('edit-mode-on');
+            const btn = document.getElementById('btn-edit-toggle');
+            btn.className = 'edit-toolbar-btn lock';
+            btn.querySelector('i').className = 'fa-solid fa-lock-open';
+            document.getElementById('edit-toggle-text').innerText = 'Khóa vị trí';
+            document.getElementById('btn-edit-reset').style.display = 'inline-flex';
+            document.getElementById('edit-hint-box').style.display = 'block';
+            showToast('Chế độ chỉnh vị trí bật. Bấm vào khung để tùy chỉnh font.', 'success');
+        }
+
+        function toggleEditMode() {
+            if (isLocked) {
+                showToast('Bố cục đang bị khóa. Hãy mở khóa trước.', 'error');
+                return;
+            }
+            if (!daXacThuc) {
+                showToast('Bạn cần xác thực giáo viên trước.', 'error');
+                return;
+            }
+            if (dangOEditMode) {
+                tatEditMode();
+                isLocked = true;
+                localStorage.setItem(EDIT_LOCK_KEY, 'true');
+                daXacThuc = false;
+                sessionStorage.removeItem('teacher_authenticated');
+                anToolbar();
+                updateLockUI();
+                showToast('Đã khóa bố cục. Nhập mật khẩu lần nữa để chỉnh sửa.', 'success');
+            } else {
+                batEditMode();
+            }
+        }
+
+        function verifyTeacherAccess() {
+            const pwd = document.getElementById('teacher-password-field').value;
+            if (pwd === PASSWORD_EDIT) {
+                closeTeacherPasswordModal();
+                isLocked = false;
+                localStorage.setItem(EDIT_LOCK_KEY, 'false');
+                daXacThuc = true;
+                sessionStorage.setItem('teacher_authenticated', 'true');
+                capNhatTrangThaiToolbar();
+                updateLockUI();
+                showToast('Mở khóa thành công! Bạn có thể chỉnh sửa.', 'success');
+                batEditMode();
+            } else if (pwd === PASSWORD_ADMIN) {
+                closeTeacherPasswordModal();
+                showToast('Đang chuyển đến trang quản trị...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 800);
+            } else {
+                document.getElementById('teacher-password-error').style.display = 'block';
+                showToast('Mật khẩu không hợp lệ!', 'error');
+            }
+        }
+
+        function moEditPasswordModal(title, desc) {
+            document.getElementById('edit-pwd-title').innerText = title;
+            document.getElementById('edit-pwd-desc').innerText = desc;
+            document.getElementById('edit-pwd-modal').style.display = 'flex';
+            const field = document.getElementById('edit-password-field');
+            field.value = '';
+            field.focus();
+            document.getElementById('edit-password-error').style.display = 'none';
+            document.getElementById('edit-pwd-confirm-btn').onclick = xacNhanMatKhauChinhSua;
+        }
+
+        function dongEditPasswordModal() {
+            document.getElementById('edit-pwd-modal').style.display = 'none';
+            pendingEditAction = null;
+        }
+
+        function chkEditPasswordEnter(event) {
+            if (event.key === 'Enter') xacNhanMatKhauChinhSua();
+        }
+
+        function xacNhanMatKhauChinhSua() {
+            const pwd = document.getElementById('edit-password-field').value;
+            if (pwd === PASSWORD_EDIT) {
+                dongEditPasswordModal();
+                if (pendingEditAction === 'lock') {
+                    tatEditMode();
+                    isLocked = true;
+                    localStorage.setItem(EDIT_LOCK_KEY, 'true');
+                    daXacThuc = false;
+                    sessionStorage.removeItem('teacher_authenticated');
+                    anToolbar();
+                    updateLockUI();
+                    showToast('Đã khóa bố cục.', 'success');
+                }
+                pendingEditAction = null;
+            } else {
+                document.getElementById('edit-password-error').style.display = 'block';
+                showToast('Sai mật khẩu!', 'error');
+            }
+        }
+
+        function resetOverlayPositions() {
+            if (!confirm('Xóa hết vị trí đã tự chỉnh và quay về vị trí gốc?')) return;
+            localStorage.removeItem(OVERLAY_POS_KEY);
+            localStorage.removeItem(TOOLBAR_POS_KEY);
+            localStorage.removeItem(FONTPANEL_POS_KEY);
+            showToast('Đã reset vị trí gốc. Đang tải lại...', 'success');
+            setTimeout(() => window.location.reload(), 800);
+        }
+
+        function hienFontPanel(zone) {
+            const panel = document.getElementById('font-edit-panel');
+            if (!zone) {
+                panel.classList.remove('show');
+                return;
+            }
+            if (!localStorage.getItem(FONTPANEL_POS_KEY)) {
+                panel.style.position = 'fixed';
+                panel.style.bottom = '80px';
+                panel.style.left = '50%';
+                panel.style.transform = 'translateX(-50%)';
+                panel.style.top = 'auto';
+            }
+            let data = docViTriDaLuu();
+            let zoneId = zone.getAttribute('data-zone-id');
+            let saved = data[zoneId] || {};
+            let color = saved.color || '#ffffff';
+            let fontFamily = saved.fontFamily || '';
+            let fontSize = saved.fontSize || 0.8;
+            document.getElementById('font-color-picker').value = color;
+            let select = document.getElementById('font-family-select');
+            let found = false;
+            for (let opt of select.options) {
+                if (opt.value === fontFamily) { select.value = fontFamily;
+                    found = true; break; }
+            }
+            if (!found) {
+                for (let opt of select.options) {
+                    if (opt.text.toLowerCase().includes(fontFamily.toLowerCase()) || fontFamily.includes(opt.value)) {
+                        select.value = opt.value;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) select.value = 'Roboto';
+            }
+            document.getElementById('font-size-input').value = fontSize;
+            panel.classList.add('show');
+            zoneDangChon = zone;
+        }
+
+        function anFontPanel() {
+            document.getElementById('font-edit-panel').classList.remove('show');
+            zoneDangChon = null;
+        }
+
+        function apDungFontChoZone(zone, color, fontFamily, fontSize) {
+            if (!zone) return;
+            let allChildren = zone.querySelectorAll('*:not(.resize-handle):not(.zone-label)');
+            let targets = [zone, ...allChildren];
+            targets.forEach(el => {
+                el.style.color = color;
+                el.style.fontFamily = fontFamily;
+                el.style.fontSize = fontSize + 'rem';
+            });
+        }
+
+        function capNhatFontKhung() {
+            if (!zoneDangChon) return;
+            let color = document.getElementById('font-color-picker').value;
+            let fontFamily = document.getElementById('font-family-select').value;
+            let fontSize = parseFloat(document.getElementById('font-size-input').value) || 0.8;
+            apDungFontChoZone(zoneDangChon, color, fontFamily, fontSize);
+            let zoneId = zoneDangChon.getAttribute('data-zone-id');
+            let data = docViTriDaLuu();
+            if (!data[zoneId]) data[zoneId] = {};
+            data[zoneId].color = color;
+            data[zoneId].fontFamily = fontFamily;
+            data[zoneId].fontSize = fontSize;
+            localStorage.setItem(OVERLAY_POS_KEY, JSON.stringify(data));
+        }
+
+        function layVungChuaAnh() {
+            return document.getElementById('fairy-garden-map');
+        }
+
+        function docViTriDaLuu() {
+            try {
+                return JSON.parse(localStorage.getItem(OVERLAY_POS_KEY)) || {};
+            } catch (e) { return {}; }
+        }
+
+        function luuViTri(zoneId, rect) {
+            let data = docViTriDaLuu();
+            if (!data[zoneId]) data[zoneId] = {};
+            let existing = data[zoneId] || {};
+            data[zoneId] = {
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+                color: existing.color || '#ffffff',
+                fontFamily: existing.fontFamily || '',
+                fontSize: existing.fontSize || 0.8
+            };
+            localStorage.setItem(OVERLAY_POS_KEY, JSON.stringify(data));
+        }
+
+        function apDungViTriDaLuu() {
+            let data = docViTriDaLuu();
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                let zoneId = zone.getAttribute('data-zone-id');
+                let saved = data[zoneId];
+                if (saved) {
+                    zone.style.left = saved.left + '%';
+                    zone.style.top = saved.top + '%';
+                    zone.style.right = 'auto';
+                    if (saved.width != null) zone.style.width = saved.width + '%';
+                    if (saved.height != null) zone.style.height = saved.height + '%';
+                    let color = saved.color || '#ffffff';
+                    let fontFamily = saved.fontFamily || '';
+                    let fontSize = saved.fontSize || 0.8;
+                    apDungFontChoZone(zone, color, fontFamily, fontSize);
+                }
+                zone.style.transform = 'none';
+            });
+        }
+
+        function layToaDoSuKien(e) {
+            if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            return { x: e.clientX, y: e.clientY };
+        }
+
+        function batDauKeoZone(e) {
+            if (!dangOEditMode) return;
+            if (e.target.classList.contains('resize-handle')) return;
+            e.preventDefault();
+            zoneDangKeo = e.currentTarget;
+            zoneDangKeo.style.transform = 'none';
+            document.querySelectorAll('.editable-zone').forEach(z => z.classList.remove('active-zone'));
+            zoneDangKeo.classList.add('active-zone');
+            hienFontPanel(zoneDangKeo);
+            let toaDo = layToaDoSuKien(e);
+            diemBatDauKeo = toaDo;
+            let rectZone = zoneDangKeo.getBoundingClientRect();
+            let rectMap = layVungChuaAnh().getBoundingClientRect();
+            viTriGocZone = {
+                leftPx: rectZone.left - rectMap.left,
+                topPx: rectZone.top - rectMap.top,
+                mapW: rectMap.width,
+                mapH: rectMap.height
+            };
+            document.addEventListener('mousemove', diChuyenZone);
+            document.addEventListener('touchmove', diChuyenZone, { passive: false });
+            document.addEventListener('mouseup', ketThucKeoZone);
+            document.addEventListener('touchend', ketThucKeoZone);
+        }
+
+        function diChuyenZone(e) {
+            if (!zoneDangKeo) return;
+            e.preventDefault();
+            let toaDo = layToaDoSuKien(e);
+            let dx = toaDo.x - diemBatDauKeo.x;
+            let dy = toaDo.y - diemBatDauKeo.y;
+            let mapW = viTriGocZone.mapW,
+                mapH = viTriGocZone.mapH;
+            let newLeftPx = viTriGocZone.leftPx + dx;
+            let newTopPx = viTriGocZone.topPx + dy;
+            let leftPercent = (newLeftPx / mapW) * 100;
+            let topPercent = (newTopPx / mapH) * 100;
+            leftPercent = Math.max(-10, Math.min(100, leftPercent));
+            topPercent = Math.max(-10, Math.min(100, topPercent));
+            zoneDangKeo.style.left = leftPercent + '%';
+            zoneDangKeo.style.top = topPercent + '%';
+            zoneDangKeo.style.right = 'auto';
+        }
+
+        function ketThucKeoZone(e) {
+            if (!zoneDangKeo) return;
+            let zoneId = zoneDangKeo.getAttribute('data-zone-id');
+            let rectZone = zoneDangKeo.getBoundingClientRect();
+            let rectMap = layVungChuaAnh().getBoundingClientRect();
+            let leftPercent = ((rectZone.left - rectMap.left) / rectMap.width) * 100;
+            let topPercent = ((rectZone.top - rectMap.top) / rectMap.height) * 100;
+            let widthPercent = (rectZone.width / rectMap.width) * 100;
+            let heightPercent = (rectZone.height / rectMap.height) * 100;
+            let data = docViTriDaLuu();
+            let existing = data[zoneId] || {};
+            luuViTri(zoneId, {
+                left: parseFloat(leftPercent.toFixed(2)),
+                top: parseFloat(topPercent.toFixed(2)),
+                width: existing.width != null ? existing.width : parseFloat(widthPercent.toFixed(2)),
+                height: existing.height != null ? existing.height : parseFloat(heightPercent.toFixed(2))
+            });
+            zoneDangKeo = null;
+            document.removeEventListener('mousemove', diChuyenZone);
+            document.removeEventListener('touchmove', diChuyenZone);
+            document.removeEventListener('mouseup', ketThucKeoZone);
+            document.removeEventListener('touchend', ketThucKeoZone);
+        }
+
+        function batDauResizeZone(e) {
+            if (!dangOEditMode) return;
+            e.preventDefault();
+            e.stopPropagation();
+            let zoneId = e.currentTarget.getAttribute('data-handle-for');
+            zoneDangResize = document.querySelector(`.editable-zone[data-zone-id="${zoneId}"]`);
+            if (!zoneDangResize) return;
+            document.querySelectorAll('.editable-zone').forEach(z => z.classList.remove('active-zone'));
+            zoneDangResize.classList.add('active-zone');
+            hienFontPanel(zoneDangResize);
+            let toaDo = layToaDoSuKien(e);
+            diemBatDauKeo = toaDo;
+            let rectZone = zoneDangResize.getBoundingClientRect();
+            let rectMap = layVungChuaAnh().getBoundingClientRect();
+            viTriGocZone = {
+                widthPx: rectZone.width,
+                heightPx: rectZone.height,
+                mapW: rectMap.width,
+                mapH: rectMap.height
+            };
+            document.addEventListener('mousemove', resizeZone);
+            document.addEventListener('touchmove', resizeZone, { passive: false });
+            document.addEventListener('mouseup', ketThucResizeZone);
+            document.addEventListener('touchend', ketThucResizeZone);
+        }
+
+        function resizeZone(e) {
+            if (!zoneDangResize) return;
+            e.preventDefault();
+            let toaDo = layToaDoSuKien(e);
+            let dx = toaDo.x - diemBatDauKeo.x;
+            let dy = toaDo.y - diemBatDauKeo.y;
+            let newWidthPx = Math.max(20, viTriGocZone.widthPx + dx);
+            let newHeightPx = Math.max(16, viTriGocZone.heightPx + dy);
+            let widthPercent = (newWidthPx / viTriGocZone.mapW) * 100;
+            let heightPercent = (newHeightPx / viTriGocZone.mapH) * 100;
+            zoneDangResize.style.width = widthPercent + '%';
+            zoneDangResize.style.height = heightPercent + '%';
+        }
+
+        function ketThucResizeZone(e) {
+            if (!zoneDangResize) return;
+            let zoneId = zoneDangResize.getAttribute('data-zone-id');
+            let rectZone = zoneDangResize.getBoundingClientRect();
+            let rectMap = layVungChuaAnh().getBoundingClientRect();
+            let leftPercent = ((rectZone.left - rectMap.left) / rectMap.width) * 100;
+            let topPercent = ((rectZone.top - rectMap.top) / rectMap.height) * 100;
+            let widthPercent = (rectZone.width / rectMap.width) * 100;
+            let heightPercent = (rectZone.height / rectMap.height) * 100;
+            luuViTri(zoneId, {
+                left: parseFloat(leftPercent.toFixed(2)),
+                top: parseFloat(topPercent.toFixed(2)),
+                width: parseFloat(widthPercent.toFixed(2)),
+                height: parseFloat(heightPercent.toFixed(2))
+            });
+            zoneDangResize = null;
+            document.removeEventListener('mousemove', resizeZone);
+            document.removeEventListener('touchmove', resizeZone);
+            document.removeEventListener('mouseup', ketThucResizeZone);
+            document.removeEventListener('touchend', ketThucResizeZone);
+        }
+
+        function batDauKeoToolbar(e) {
+            if (!dangOEditMode && !daXacThuc) return;
+            if (e.target.closest('.edit-toolbar-btn')) return;
+            e.preventDefault();
+            const toolbar = document.getElementById('edit-toolbar');
+            const rect = toolbar.getBoundingClientRect();
+            const toaDo = layToaDoSuKien(e);
+            toolbarOffsetX = toaDo.x - rect.left;
+            toolbarOffsetY = toaDo.y - rect.top;
+            toolbarDangKeo = true;
+            document.addEventListener('mousemove', diChuyenToolbar);
+            document.addEventListener('touchmove', diChuyenToolbar, { passive: false });
+            document.addEventListener('mouseup', ketThucKeoToolbar);
+            document.addEventListener('touchend', ketThucKeoToolbar);
+        }
+
+        function diChuyenToolbar(e) {
+            if (!toolbarDangKeo) return;
+            e.preventDefault();
+            const toaDo = layToaDoSuKien(e);
+            const toolbar = document.getElementById('edit-toolbar');
+            let left = toaDo.x - toolbarOffsetX;
+            let top = toaDo.y - toolbarOffsetY;
+            const maxX = window.innerWidth - toolbar.offsetWidth;
+            const maxY = window.innerHeight - toolbar.offsetHeight;
+            left = Math.max(0, Math.min(left, maxX));
+            top = Math.max(0, Math.min(top, maxY));
+            toolbar.style.position = 'fixed';
+            toolbar.style.left = left + 'px';
+            toolbar.style.top = top + 'px';
+            toolbar.style.bottom = 'auto';
+            toolbar.style.transform = 'none';
+        }
+
+        function ketThucKeoToolbar(e) {
+            if (!toolbarDangKeo) return;
+            toolbarDangKeo = false;
+            const toolbar = document.getElementById('edit-toolbar');
+            const rect = toolbar.getBoundingClientRect();
+            luuViTriToolbar(rect.left, rect.top);
+            document.removeEventListener('mousemove', diChuyenToolbar);
+            document.removeEventListener('touchmove', diChuyenToolbar);
+            document.removeEventListener('mouseup', ketThucKeoToolbar);
+            document.removeEventListener('touchend', ketThucKeoToolbar);
+        }
+
+        function batDauKeoFontPanel(e) {
+            if (!dangOEditMode) return;
+            if (e.target.closest('.close-panel-btn') || e.target.closest('input') || e.target.closest('select')) return;
+            e.preventDefault();
+            const panel = document.getElementById('font-edit-panel');
+            const rect = panel.getBoundingClientRect();
+            const toaDo = layToaDoSuKien(e);
+            fontPanelOffsetX = toaDo.x - rect.left;
+            fontPanelOffsetY = toaDo.y - rect.top;
+            fontPanelDangKeo = true;
+            document.addEventListener('mousemove', diChuyenFontPanel);
+            document.addEventListener('touchmove', diChuyenFontPanel, { passive: false });
+            document.addEventListener('mouseup', ketThucKeoFontPanel);
+            document.addEventListener('touchend', ketThucKeoFontPanel);
+        }
+
+        function diChuyenFontPanel(e) {
+            if (!fontPanelDangKeo) return;
+            e.preventDefault();
+            const toaDo = layToaDoSuKien(e);
+            const panel = document.getElementById('font-edit-panel');
+            let left = toaDo.x - fontPanelOffsetX;
+            let top = toaDo.y - fontPanelOffsetY;
+            const maxX = window.innerWidth - panel.offsetWidth;
+            const maxY = window.innerHeight - panel.offsetHeight;
+            left = Math.max(0, Math.min(left, maxX));
+            top = Math.max(0, Math.min(top, maxY));
+            panel.style.position = 'fixed';
+            panel.style.left = left + 'px';
+            panel.style.top = top + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.transform = 'none';
+        }
+
+        function ketThucKeoFontPanel(e) {
+            if (!fontPanelDangKeo) return;
+            fontPanelDangKeo = false;
+            const panel = document.getElementById('font-edit-panel');
+            const rect = panel.getBoundingClientRect();
+            luuViTriFontPanel(rect.left, rect.top);
+            document.removeEventListener('mousemove', diChuyenFontPanel);
+            document.removeEventListener('touchmove', diChuyenFontPanel);
+            document.removeEventListener('mouseup', ketThucKeoFontPanel);
+            document.removeEventListener('touchend', ketThucKeoFontPanel);
+        }
+
+        function khoiTao() {
+            loadState();
+            apDungViTriDaLuu();
+            if (isLocked || !daXacThuc) tatEditMode();
+            const toolbar = document.getElementById('edit-toolbar');
+            toolbar.addEventListener('mousedown', batDauKeoToolbar);
+            toolbar.addEventListener('touchstart', batDauKeoToolbar, { passive: false });
+            const fontPanel = document.getElementById('font-edit-panel');
+            fontPanel.addEventListener('mousedown', batDauKeoFontPanel);
+            fontPanel.addEventListener('touchstart', batDauKeoFontPanel, { passive: false });
+
+            document.querySelectorAll('.editable-zone').forEach(zone => {
+                zone.addEventListener('mousedown', batDauKeoZone);
+                zone.addEventListener('touchstart', batDauKeoZone, { passive: false });
+                zone.addEventListener('click', function(e) {
+                    if (dangOEditMode) { e.preventDefault();
+                        e.stopPropagation(); }
+                }, true);
+            });
+            document.querySelectorAll('.resize-handle').forEach(handle => {
+                handle.addEventListener('mousedown', batDauResizeZone);
+                handle.addEventListener('touchstart', batDauResizeZone, { passive: false });
+            });
+            document.addEventListener('click', function(e) {
+                if (dangOEditMode) {
+                    let panel = document.getElementById('font-edit-panel');
+                    let target = e.target;
+                    if (!panel.contains(target) && !target.closest('.editable-zone')) {
+                        anFontPanel();
+                        document.querySelectorAll('.editable-zone').forEach(z => z.classList.remove('active-zone'));
+                    }
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', khoiTao);
+    </script>
+
+    <script type="module">
+        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc } from "./firebase-sync.js";
+        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+    </script>
+
+    <script>
+        // Âm thanh & logic chính
+        const amThanhNenMedia = document.getElementById('bg-fairy-music');
+        const nutBatTatAmThanh = document.getElementById('btn-music-toggle');
+        const iconBatTatAmThanh = document.getElementById('icon-music-toggle');
+        const dongChuBatTatAmThanh = document.getElementById('text-music-toggle');
+
+        function hienThiTrangThaiNhacNen(dangPhat) {
+            if (dangPhat) {
+                nutBatTatAmThanh.className = "btn-toggle-music playing";
+                iconBatTatAmThanh.className = "fa-solid fa-volume-high fa-spin-pulse";
+                dongChuBatTatAmThanh.innerText = "Tắt Nhạc";
+            } else {
+                nutBatTatAmThanh.className = "btn-toggle-music muted";
+                iconBatTatAmThanh.className = "fa-solid fa-volume-xmark";
+                dongChuBatTatAmThanh.innerText = "Bật Nhạc";
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            let tenLuu = sessionStorage.getItem('hoc_school_student_name');
+            let lopLuu = sessionStorage.getItem('hoc_school_student_class');
+
+            if (!tenLuu) {
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            try {
+                if (window.__fbTaiDuLieuTuMay && window.__fbTaiCauHinhToanCuc) {
+                    await Promise.all([
+                        window.__fbTaiDuLieuTuMay(tenLuu),
+                        window.__fbTaiCauHinhToanCuc()
+                    ]);
+                }
+            } catch (e) {}
+
+            document.getElementById('txt-student-name').innerText = tenLuu;
+            document.getElementById('txt-student-class').innerText = lopLuu || '—';
+
+            let lopCuThe = sessionStorage.getItem('hoc_school_student_classroom') || '';
+            if (!lopCuThe) {
+                let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                let myLog = [...nhatKy].reverse().find(it => it.name === tenLuu);
+                if (myLog && myLog.classroom) lopCuThe = myLog.classroom;
+            }
+            if (!lopCuThe) {
+                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+                let ud = users[tenLuu];
+                if (ud && typeof ud === 'object' && ud.classroom) lopCuThe = ud.classroom;
+            }
+            if (lopCuThe) {
+                sessionStorage.setItem('hoc_school_student_classroom', lopCuThe);
+            }
+            document.getElementById('txt-student-classroom').innerText = lopCuThe ? lopCuThe.toUpperCase() : '—';
+            let mangCacTu = tenLuu.split(" ");
+            let tuCuoiCung = mangCacTu[mangCacTu.length - 1];
+            let khungAvatar = document.getElementById('player-avatar');
+            khungAvatar.innerText = tuCuoiCung ? tuCuoiCung.charAt(0).toUpperCase() : "?";
+
+            document.getElementById('lbl-student-exp').innerText = localStorage.getItem('exp_' + tenLuu) || "0";
+            document.getElementById('lbl-student-coin').innerText = localStorage.getItem('coin_' + tenLuu) || "50";
+
+            let homNay = new Date().toLocaleDateString('vi-VN');
+
+            let soLuotLamBaiMax = parseInt(localStorage.getItem('so_luot_lam_bai_toi_da')) || 3;
+            let rawLB = JSON.parse(localStorage.getItem('luot_lam_bai_' + tenLuu)) || null;
+            let luotLamBai = (rawLB && rawLB.date === homNay) ? rawLB.soLuotConLai : soLuotLamBaiMax;
+            let elLB = document.getElementById('lbl-luot-lam');
+            elLB.innerText = luotLamBai + '/' + soLuotLamBaiMax;
+            if (luotLamBai <= 0) document.getElementById('badge-luot-lam').classList.add('zero');
+
+            let soLuotBossMax = parseInt(localStorage.getItem('so_luot_boss_toi_da')) || 3;
+            let rawBoss = JSON.parse(localStorage.getItem('luot_boss_' + tenLuu)) || null;
+            let luotBoss = rawBoss ? rawBoss.soLuotConLai : soLuotBossMax;
+            let elBoss = document.getElementById('lbl-luot-boss');
+            elBoss.innerText = luotBoss + '/' + soLuotBossMax;
+            if (luotBoss <= 0) document.getElementById('badge-luot-boss').classList.add('zero');
+
+            let soLuotVQMax = parseInt(localStorage.getItem('so_luot_vong_quay_toi_da')) || 1;
+            let rawVQ = JSON.parse(localStorage.getItem('luot_vong_quay_' + tenLuu)) || null;
+            let luotVQ = (rawVQ && rawVQ.date === homNay) ? rawVQ.soLuotConLai : soLuotVQMax;
+            let elVQ = document.getElementById('lbl-luot-vq');
+            elVQ.innerText = luotVQ + '/' + soLuotVQMax;
+            if (luotVQ <= 0) document.getElementById('badge-luot-vq').classList.add('zero');
+
+            let soLuotTDMax = parseInt(localStorage.getItem('so_luot_vuot_ai_toi_da')) || 3;
+            let rawTD = JSON.parse(localStorage.getItem('luot_vuot_ai_' + tenLuu)) || null;
+            let luotTD = (rawTD && rawTD.date === homNay) ? rawTD.soLuotConLai : soLuotTDMax;
+            let elTD = document.getElementById('lbl-luot-td');
+            elTD.innerText = luotTD + '/' + soLuotTDMax;
+            if (luotTD <= 0) document.getElementById('badge-luot-td').classList.add('zero');
+
+            const CARD_KEYS = ['hero_x2exp_stack_', 'hero_5050_stack_', 'hero_rutgon_stack_', 'hero_cohoi2_stack_'];
+            const CARD_KEYS_OLD = ['hero_x2exp_', 'hero_5050_', 'hero_rutgon_', 'hero_cohoi2_'];
+            let tongThe = 0;
+            CARD_KEYS.forEach((k, i) => {
+                let stack = parseInt(localStorage.getItem(k + tenLuu)) || 0;
+                if (stack === 0 && localStorage.getItem(CARD_KEYS_OLD[i] + tenLuu) === '1') stack = 1;
+                tongThe += stack;
+            });
+            if (tongThe > 0) {
+                document.getElementById('lbl-so-the').innerText = tongThe;
+                document.getElementById('badge-the').style.display = 'inline-flex';
+            }
+
+            // Kiểm tra phản hồi mới từ giáo viên khi học sinh đăng nhập
+            let dsPhanHoiChuaDoc = capNhatBadgePhanHoi();
+            if (dsPhanHoiChuaDoc && dsPhanHoiChuaDoc.length > 0) {
+                setTimeout(() => {
+                    showToast('💌 Bạn có ' + dsPhanHoiChuaDoc.length + ' phản hồi mới từ giáo viên! Chạm nút "Phản hồi" trên menu để xem.', 'success');
+                }, 800);
+            }
+
+            let playPromise = amThanhNenMedia.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    hienThiTrangThaiNhacNen(true);
+                }).catch(error => {
+                    hienThiTrangThaiNhacNen(false);
+                    document.body.addEventListener('click', () => {
+                        if (amThanhNenMedia.paused && !nutBatTatAmThanh.classList.contains(
+                            'playing')) {
+                            amThanhNenMedia.play().then(() => hienThiTrangThaiNhacNen(true)).catch(
+                            () => {});
+                        }
+                    }, { once: true });
+                });
+            }
+        });
+
+        function xuLyBatTatAmThanhNen() {
+            if (amThanhNenMedia.paused) {
+                amThanhNenMedia.play().then(() => hienThiTrangThaiNhacNen(true)).catch(err => {
+                    showToast("Hãy chạm vào màn hình một lần trước khi bật nhạc!", "error");
+                });
+            } else {
+                amThanhNenMedia.pause();
+                hienThiTrangThaiNhacNen(false);
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const borderColor = type === 'success' ? '#00ffff' : '#ff2a85';
+            const iconColor = type === 'success' ? '#00ffff' : '#ff2a85';
+            toast.style.cssText =
+                `background: rgba(10, 5, 20, 0.95); backdrop-filter: blur(10px); border-left: 4px solid ${borderColor}; color: #fff; padding: 14px 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(${type === 'success' ? '0,255,255' : '255,42,133'}, 0.4); display: flex; align-items: center; gap: 12px; font-size: 0.9rem; font-weight: bold; animation: fadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: auto;`;
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+            toast.innerHTML =
+                `<i class="fa-solid ${icon}" style="color: ${iconColor}; font-size: 1.3rem; text-shadow: 0 0 10px ${iconColor};"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
+
+        function phatAmThanhClick() {
+            try {
+                let ctx = new(window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                let gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } catch (e) {}
+        }
+
+        function xuLyDoiTaiKhoan() {
+            phatAmThanhClick();
+            sessionStorage.clear();
+            window.location.href = 'auth.html';
+        }
+
+        function openTeacherPasswordModal() {
+            phatAmThanhClick();
+            document.querySelector('#teacher-pwd-modal h4').innerText = 'Xác thực giáo viên';
+            document.querySelector('#teacher-pwd-modal p').innerText = 'Nhập mã bí mật để truy cập.';
+            document.getElementById('teacher-pwd-modal').style.display = 'flex';
+            const field = document.getElementById('teacher-password-field');
+            field.value = '';
+            field.focus();
+            document.getElementById('teacher-password-error').style.display = 'none';
+            document.querySelector('#teacher-pwd-modal .pwd-btn-confirm').onclick = verifyTeacherAccess;
+            document.querySelector('#teacher-pwd-modal .pwd-btn-cancel').onclick = closeTeacherPasswordModal;
+            document.getElementById('teacher-password-field').onkeydown = chkTeacherPasswordEnter;
+        }
+
+        function closeTeacherPasswordModal() {
+            phatAmThanhClick();
+            document.getElementById('teacher-pwd-modal').style.display = 'none';
+        }
+
+        function chkTeacherPasswordEnter(event) {
+            if (event.key === 'Enter') {
+                verifyTeacherAccess();
+            }
+        }
+    </script>
+
+</body>
+</html>
