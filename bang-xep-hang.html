@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Hỗ trợ 100% cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -513,17 +518,56 @@
         </div>
     </div>
 
+    <script>
+        // Thiết lập dự phòng an toàn cho Firebase Sync (chạy 100% trên cả file:/// và máy chủ web)
+        window.__fbTaiDuLieuTuMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiDuLieuTuMay === 'function') {
+                try { return await window.HeroFirebaseCompat.taiDuLieuTuMay(ten); } catch(e) {}
+            }
+            return null;
+        };
+        window.__fbDayDuLieuLenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayDuLieuLenMay === 'function') {
+                try { return await window.HeroFirebaseCompat.dayDuLieuLenMay(ten); } catch(e) {}
+            }
+        };
+        window.__fbTaiCauHinhToanCuc = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiCauHinhToanCuc === 'function') {
+                try { return await window.HeroFirebaseCompat.taiCauHinhToanCuc(); } catch(e) {}
+            }
+        };
+        window.__fbDayCauHinhToanCuc = async (key) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayCauHinhToanCuc === 'function') {
+                try { return await window.HeroFirebaseCompat.dayCauHinhToanCuc(key); } catch(e) {}
+            }
+        };
+        window.__fbTaiToanBoHocSinhTuMay = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiToanBoHocSinhTuMay === 'function') {
+                try { return await window.HeroFirebaseCompat.taiToanBoHocSinhTuMay(); } catch(e) {}
+            }
+            return [];
+        };
+        window.__fbXoaHocSinhTrenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.xoaHocSinhTrenMay === 'function') {
+                try { return await window.HeroFirebaseCompat.xoaHocSinhTrenMay(ten); } catch(e) {}
+            }
+        };
+    </script>
     <script type="module">
-        import { taiToanBoHocSinhTuMay, taiCauHinhToanCuc, dayCauHinhToanCuc, dayDuLieuLenMay, xoaHocSinhTrenMay, taiNhatKyHoatDong, taiBaiTuLuanTrongKhoang } from "./firebase-sync.js";
-        import { kiemTraSessionToken } from './hero-auth.js';
-        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
-        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
-        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
-        window.__fbTaiNhatKyHoatDong = taiNhatKyHoatDong;
-        window.__fbTaiBaiTuLuanTrongKhoang = taiBaiTuLuanTrongKhoang;
-        kiemTraSessionToken(true).catch(() => {});
+        try {
+            const { taiToanBoHocSinhTuMay, taiCauHinhToanCuc, dayCauHinhToanCuc, dayDuLieuLenMay, xoaHocSinhTrenMay, taiNhatKyHoatDong, taiBaiTuLuanTrongKhoang } = await import("./firebase-sync.js");
+            const { kiemTraSessionToken } = await import('./hero-auth.js');
+            window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+            window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+            window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+            window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+            window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+            window.__fbTaiNhatKyHoatDong = taiNhatKyHoatDong;
+            window.__fbTaiBaiTuLuanTrongKhoang = taiBaiTuLuanTrongKhoang;
+            if (typeof kiemTraSessionToken === 'function') kiemTraSessionToken(true).catch(() => {});
+        } catch(e) {
+            console.log("[Bảng Xếp Hạng] Đang dùng hero-firebase-compat.js");
+        }
     </script>
     <script>
         // ============================================================
@@ -550,20 +594,35 @@
         ];
 
         window.addEventListener('DOMContentLoaded', async () => {
-            await window.__fbTaiCauHinhToanCuc();
-            let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
-            toanBoHocSinh.forEach(hs => {
-                Object.keys(hs.data).forEach(key => {
-                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
-                    localStorage.setItem(key, hs.data[key]);
-                });
-            });
-
+            // Hiển thị dữ liệu từ local storage trước ngay lập tức
             loadLeaderboardData();
             initFireworksEngine();
-            document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
-            document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
-            document.getElementById('max-luot-vong-quay').value = localStorage.getItem('so_luot_vong_quay_toi_da') || 5;
+            if (document.getElementById('max-luot-lam-bai')) document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
+            if (document.getElementById('max-luot-vuot-ai')) document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
+            if (document.getElementById('max-luot-vong-quay')) document.getElementById('max-luot-vong-quay').value = localStorage.getItem('so_luot_vong_quay_toi_da') || 5;
+
+            // Đồng bộ dữ liệu mới nhất từ Cloud nếu có mạng
+            try {
+                if (typeof window.__fbTaiCauHinhToanCuc === 'function') {
+                    await window.__fbTaiCauHinhToanCuc();
+                }
+                if (typeof window.__fbTaiToanBoHocSinhTuMay === 'function') {
+                    let toanBoHocSinh = await window.__fbTaiToanBoHocSinhTuMay();
+                    if (Array.isArray(toanBoHocSinh)) {
+                        toanBoHocSinh.forEach(hs => {
+                            if (hs && hs.data) {
+                                Object.keys(hs.data).forEach(key => {
+                                    if (key === '_capNhatLanCuoi' || key === '_lop' || key === '_lopCuThe') return;
+                                    localStorage.setItem(key, hs.data[key]);
+                                });
+                            }
+                        });
+                        loadLeaderboardData();
+                    }
+                }
+            } catch(err) {
+                console.warn("[Bảng Xếp Hạng] Lỗi đồng bộ đám mây:", err);
+            }
 
             // Khởi tạo mặc định cho bộ chọn kỳ của tab "Xếp Hạng Nỗ Lực"
             let homNay = new Date();
