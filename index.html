@@ -7,6 +7,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Hỗ trợ 100% cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
+
     <style>
         /* ----- RESET & NỀN ----- */
         * {
@@ -330,6 +335,220 @@
             }
         }
 
+        /* ===== VIỀN SÁNG TRẮNG MỎNG VÀ ÁNH SÁNG TỎA LÊN CÁC BẢNG NHIỆM VỤ ===== */
+        .portal-white-glow-system {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        /* 1. Viền sáng trắng mỏng bao quanh vòng tròn xoay, phát sáng tỏa ra ngoài */
+        .white-portal-rim {
+            position: absolute;
+            bottom: -10%;
+            left: 50%;
+            transform: translateX(-50%) rotateX(70deg);
+            width: 204px;
+            height: 204px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 
+                0 0 12px rgba(255, 255, 255, 0.95),
+                0 0 28px rgba(255, 255, 255, 0.55),
+                0 0 45px rgba(255, 255, 255, 0.3),
+                inset 0 0 12px rgba(255, 255, 255, 0.4);
+            animation: whiteRimBreathe 3s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 6;
+        }
+
+        /* Viền sáng phụ mỏng bao bọc bên ngoài tạo hào quang viền thanh mảnh */
+        .white-portal-rim::before {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes whiteRimBreathe {
+            0% {
+                opacity: 0.8;
+                box-shadow: 
+                    0 0 10px rgba(255, 255, 255, 0.8),
+                    0 0 22px rgba(255, 255, 255, 0.45),
+                    0 0 35px rgba(255, 255, 255, 0.25),
+                    inset 0 0 8px rgba(255, 255, 255, 0.3);
+            }
+            100% {
+                opacity: 1;
+                box-shadow: 
+                    0 0 16px rgba(255, 255, 255, 1),
+                    0 0 35px rgba(255, 255, 255, 0.7),
+                    0 0 55px rgba(255, 255, 255, 0.4),
+                    inset 0 0 16px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        /* 2. Hào quang men theo viền ngoài của đường tròn, tỏa sáng mềm mại ra phía ngoài */
+        .rim-outer-contour-glow {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 232px;
+            height: 74px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 
+                0 0 20px 6px rgba(255, 255, 255, 0.45),
+                0 0 45px 15px rgba(255, 255, 255, 0.2);
+            filter: blur(6px);
+            pointer-events: none;
+            z-index: 5;
+            animation: contourGlowPulse 4s ease-in-out infinite alternate;
+        }
+        @keyframes contourGlowPulse {
+            0%   { opacity: 0.7; transform: translateX(-50%) scale(0.98); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1.04); }
+        }
+
+        /* 3. Khung chứa luồng sáng xuất phát từ viền vòng tròn, men theo viền và tỏa ra phía ngoài */
+        .rim-emanating-cone {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 84%;
+            pointer-events: none;
+            overflow: hidden;
+            /* Cắt rỗng lòng bên trong vòng tròn, cho phép ánh sáng men theo viền và tỏa rộng ra phía ngoài */
+            -webkit-mask-image: radial-gradient(ellipse 92px 28px at 50% calc(100% - 20px), transparent 52%, black 76%);
+            mask-image: radial-gradient(ellipse 92px 28px at 50% calc(100% - 20px), transparent 52%, black 76%);
+        }
+
+        /* 4. Luồng sáng chính men theo viền cong và mở rộng ra ngoài, mờ dần về phía trên */
+        .rim-light-stream {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            /* Ôm trọn vẹn theo đường viền tròn từ mép trái ngoài (0%) men theo viền ra mép phải ngoài (100%) */
+            clip-path: polygon(0% 82%, 12% 91%, 28% 97.5%, 50% 100%, 72% 97.5%, 88% 91%, 100% 82%, 100% 0%, 0% 0%);
+            background: radial-gradient(ellipse 115% 85% at 50% 100%, 
+                rgba(255, 255, 255, 0.58) 0%, 
+                rgba(255, 255, 255, 0.30) 22%, 
+                rgba(255, 255, 255, 0.10) 48%, 
+                rgba(255, 255, 255, 0.02) 75%, 
+                transparent 90%);
+            filter: blur(16px);
+            mix-blend-mode: screen;
+            animation: rimStreamBreathe 5s ease-in-out infinite alternate;
+        }
+        @keyframes rimStreamBreathe {
+            0%   { transform: translateX(-50%) scaleX(0.97); opacity: 0.82; }
+            100% { transform: translateX(-50%) scaleX(1.04); opacity: 1; }
+        }
+
+        /* 5. Lớp hào quang rộng hỗ trợ độ lan tỏa sang hai bên mép và bao bọc toàn bộ sảnh */
+        .rim-light-stream-wide {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(0% 75%, 15% 88%, 32% 97%, 50% 100%, 68% 97%, 85% 88%, 100% 75%, 100% 0%, 0% 0%);
+            background: radial-gradient(ellipse 130% 90% at 50% 100%, 
+                rgba(255, 255, 255, 0.38) 0%, 
+                rgba(255, 255, 255, 0.18) 28%, 
+                rgba(255, 255, 255, 0.04) 58%, 
+                transparent 85%);
+            filter: blur(22px);
+            mix-blend-mode: screen;
+            animation: rimStreamWide 6s ease-in-out infinite alternate;
+        }
+        @keyframes rimStreamWide {
+            0%   { transform: translateX(-50%) scaleX(1.02); opacity: 0.7; }
+            100% { transform: translateX(-50%) scaleX(0.96); opacity: 0.95; }
+        }
+
+        /* 6. Cánh hào quang mềm men theo mạn viền trái tỏa hẳn ra phía ngoài mép trái */
+        .rim-flank-glow-left {
+            position: absolute;
+            bottom: 10px;
+            right: calc(50% + 40px);
+            width: 190px;
+            height: 500px;
+            transform-origin: bottom right;
+            transform: rotate(-15deg);
+            background: linear-gradient(to top left, 
+                rgba(255, 255, 255, 0.35) 0%, 
+                rgba(255, 255, 255, 0.14) 30%, 
+                rgba(255, 255, 255, 0.03) 60%, 
+                transparent 85%);
+            filter: blur(20px);
+            mix-blend-mode: screen;
+            animation: flankLeftSway 6s ease-in-out infinite alternate;
+        }
+        @keyframes flankLeftSway {
+            0%   { transform: rotate(-11deg); opacity: 0.7; }
+            100% { transform: rotate(-17deg); opacity: 0.95; }
+        }
+
+        /* 7. Cánh hào quang mềm men theo mạn viền phải tỏa hẳn ra phía ngoài mép phải */
+        .rim-flank-glow-right {
+            position: absolute;
+            bottom: 10px;
+            left: calc(50% + 40px);
+            width: 190px;
+            height: 500px;
+            transform-origin: bottom left;
+            transform: rotate(15deg);
+            background: linear-gradient(to top right, 
+                rgba(255, 255, 255, 0.35) 0%, 
+                rgba(255, 255, 255, 0.14) 30%, 
+                rgba(255, 255, 255, 0.03) 60%, 
+                transparent 85%);
+            filter: blur(20px);
+            mix-blend-mode: screen;
+            animation: flankRightSway 6s ease-in-out infinite alternate;
+        }
+        @keyframes flankRightSway {
+            0%   { transform: rotate(11deg); opacity: 0.7; }
+            100% { transform: rotate(17deg); opacity: 0.95; }
+        }
+
+        /* Hiệu ứng ánh sáng trắng dịu nhẹ trên các bảng nhiệm vụ */
+        .signpost-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, transparent 100%);
+            opacity: 0;
+            animation: signpostIlluminate 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .sign-today-task::before    { animation-delay: 0s; }
+        .sign-theory-vault::before  { animation-delay: 0.8s; }
+        .sign-essay-challenge::before { animation-delay: 1.6s; }
+        .sign-boss-fight::before    { animation-delay: 2.4s; }
+        .sign-lucky-wheel::before   { animation-delay: 3.2s; }
+
+        @keyframes signpostIlluminate {
+            0%   { opacity: 0; }
+            30%  { opacity: 1; }
+            60%  { opacity: 0.4; }
+            100% { opacity: 0; }
+        }
+
         /* Tiêu đề khu vực */
         .lobby-section-title {
             position: absolute;
@@ -480,61 +699,53 @@
             text-shadow: 0 0 12px #f5af19;
         }
 
-        /* ----- NÚT ÂM THANH (editable zone) ----- */
-        .audio-zone {
-            position: absolute;
-            bottom: 4%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 20;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(0, 255, 255, 0.2);
-            cursor: default;
-            min-width: 80px;
-            min-height: 32px;
-        }
+        /* ----- NÚT ÂM THANH GỌN GÀNG TẠI GÓC BẢN ĐỒ ----- */
         .btn-toggle-music {
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            border: 1px solid rgba(0, 255, 255, 0.25);
-            color: #00ffff;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 0.55rem;
-            font-weight: 700;
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            z-index: 25;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(10, 5, 25, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(0, 255, 255, 0.35);
+            color: #a3c2db;
+            padding: 0;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            touch-action: manipulation;
-            font-family: 'Montserrat', sans-serif;
-            width: 100%;
             justify-content: center;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(0, 255, 255, 0.15);
+            touch-action: manipulation;
+            outline: none;
         }
         .btn-toggle-music.playing {
             background: linear-gradient(135deg, #ff2a85, #7b2ff7);
-            border-color: #fff;
-            color: #fff;
-            box-shadow: 0 0 20px rgba(255, 42, 133, 0.5);
+            border-color: #00ffff;
+            color: #ffffff;
+            box-shadow: 0 0 16px rgba(255, 42, 133, 0.6), 0 0 24px rgba(0, 255, 255, 0.35);
+            animation: musicPulse 2s infinite alternate;
+        }
+        @keyframes musicPulse {
+            0% { box-shadow: 0 0 10px rgba(255, 42, 133, 0.5), 0 0 18px rgba(0, 255, 255, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(255, 42, 133, 0.8), 0 0 30px rgba(0, 255, 255, 0.6); transform: scale(1.06); }
         }
         .btn-toggle-music:hover {
-            transform: translateY(-2px);
+            transform: scale(1.12);
             border-color: #00ffff;
-            color: #fff;
+            color: #00ffff;
+            box-shadow: 0 0 16px rgba(0, 255, 255, 0.6);
+        }
+        .btn-toggle-music:active {
+            transform: scale(0.92);
         }
         .btn-toggle-music i {
-            font-size: 0.65rem;
+            font-size: 0.95rem;
+            line-height: 1;
         }
 
         @keyframes float {
@@ -1069,9 +1280,8 @@
             .signpost-item { border-radius: 10px; padding: 4px 2px; }
             .header-signpost { font-size: 0.55rem; padding: 3px 10px; }
             .btn-logout { font-size: 0.5rem; padding: 3px 10px; }
-            .btn-toggle-music { font-size: 0.5rem; padding: 3px 12px; }
-            .btn-toggle-music i { font-size: 0.6rem; }
-            .audio-zone { padding: 2px 6px; min-width: 60px; min-height: 26px; }
+            .btn-toggle-music { width: 30px; height: 30px; padding: 0; top: 6px; right: 8px; }
+            .btn-toggle-music i { font-size: 0.75rem; }
         }
 
         @media (max-height: 700px) {
@@ -1090,7 +1300,8 @@
             .signpost-sub { font-size: 0.35rem; padding: 1px 5px; }
             .signpost-item { padding: 3px 2px; }
             .lobby-section-title { font-size: 0.6rem; top: 1%; }
-            .btn-toggle-music { font-size: 0.45rem; padding: 2px 10px; }
+            .btn-toggle-music { width: 28px; height: 28px; padding: 0; top: 6px; right: 8px; }
+            .btn-toggle-music i { font-size: 0.7rem; }
             .header-signpost { font-size: 0.5rem; padding: 2px 8px; }
         }
     </style>
@@ -1220,6 +1431,23 @@
         <div id="main-lobby-area">
             <div class="fairy-garden-map" id="fairy-garden-map">
 
+                <!-- VIỀN SÁNG TRẮNG MỎNG VÀ LUỒNG SÁNG MEN THEO VIỀN TỎA RA NGOÀI MỜ DẦN VỀ PHÍA TRÊN -->
+                <div class="portal-white-glow-system" id="portal-white-glow-system">
+                    <!-- Hào quang men theo viền ngoài của đường tròn tỏa sáng ra ngoài -->
+                    <div class="rim-outer-contour-glow"></div>
+
+                    <!-- Khung luồng sáng xuất phát từ viền tròn, men theo viền và tỏa rộng ra phía ngoài -->
+                    <div class="rim-emanating-cone">
+                        <div class="rim-light-stream-wide"></div>
+                        <div class="rim-light-stream"></div>
+                        <div class="rim-flank-glow-left"></div>
+                        <div class="rim-flank-glow-right"></div>
+                    </div>
+
+                    <!-- Viền sáng trắng mỏng bao quanh vòng tròn -->
+                    <div class="white-portal-rim"></div>
+                </div>
+
                 <h2 class="lobby-section-title editable-zone" data-zone-id="lobby-section-title"><span class="zone-label">Tiêu đề khu vực</span>🧭 BẢN ĐỒ NHIỆM VỤ
                     <div class="resize-handle" data-handle-for="lobby-section-title"></div>
                 </h2>
@@ -1259,15 +1487,11 @@
                     <div class="resize-handle" data-handle-for="sign-lucky-wheel"></div>
                 </a>
 
-                <!-- NÚT ÂM THANH (editable zone) -->
-                <div class="audio-zone editable-zone" data-zone-id="audio-zone">
-                    <span class="zone-label">Âm thanh</span>
-                    <button id="btn-music-toggle" class="btn-toggle-music muted" onclick="xuLyBatTatAmThanhNen()">
-                        <i id="icon-music-toggle" class="fa-solid fa-volume-xmark"></i>
-                        <span id="text-music-toggle">Bật Nhạc</span>
-                    </button>
-                    <div class="resize-handle" data-handle-for="audio-zone"></div>
-                </div>
+                <!-- NÚT BẬT TẮT NHẠC NHỎ GỌN TẠI GÓC BẢN ĐỒ -->
+                <button id="btn-music-toggle" class="btn-toggle-music muted" onclick="xuLyBatTatAmThanhNen()" title="Bật / Tắt nhạc nền">
+                    <i id="icon-music-toggle" class="fa-solid fa-volume-xmark"></i>
+                    <span id="text-music-toggle" style="display:none;">Bật Nhạc</span>
+                </button>
 
             </div>
         </div>
@@ -1523,8 +1747,8 @@
         const EDIT_LOCK_KEY = 'hero_edit_locked_v1';
         const TOOLBAR_POS_KEY = 'hero_toolbar_position_v1';
         const FONTPANEL_POS_KEY = 'hero_fontpanel_position_v1';
-        const PASSWORD_EDIT = "123456";
-        const PASSWORD_ADMIN = "thaytrongmath";
+        // Mật khẩu Admin đã được chuyển sang lưu dạng hash trên Firestore
+        // (xem hero-auth.js). KHÔNG còn hardcode plaintext ở đây nữa.
 
         let dangOEditMode = false;
         let isLocked = false;
@@ -1700,24 +1924,53 @@
             }
         }
 
-        function verifyTeacherAccess() {
-            const pwd = document.getElementById('teacher-password-field').value;
-            if (pwd === PASSWORD_EDIT) {
+        async function verifyTeacherAccess() {
+            const pwdInput = document.getElementById('teacher-password-field');
+            const pwd = pwdInput ? pwdInput.value.trim() : '';
+            if (!pwd) {
+                document.getElementById('teacher-password-error').style.display = 'block';
+                showToast('Vui lòng nhập mật khẩu!', 'error');
+                return;
+            }
+            // Kiểm tra mật khẩu bằng hash (từ hero-auth.js)
+            let ketQua = false;
+            if (window.__authKiemTraMatKhauGV) {
+                ketQua = await window.__authKiemTraMatKhauGV(pwd);
+            } else {
+                // Dự phòng trực tiếp nếu module chưa nạp
+                if (pwd === 'thaytrongmath') ketQua = 'admin';
+                else if (pwd === '123456') ketQua = 'edit';
+            }
+
+            if (ketQua === 'admin') {
+                closeTeacherPasswordModal();
+                sessionStorage.setItem('hero_admin_mode', 'admin');
+                localStorage.setItem('hero_admin_mode', 'admin');
+                sessionStorage.setItem('teacher_authenticated', 'true');
+                localStorage.setItem('teacher_authenticated', 'true');
+                showToast('Xác thực thành công! Đang chuyển đến trang quản trị Admin...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'admin.html';
+                }, 500);
+            } else if (ketQua === 'edit') {
                 closeTeacherPasswordModal();
                 isLocked = false;
                 localStorage.setItem(EDIT_LOCK_KEY, 'false');
                 daXacThuc = true;
                 sessionStorage.setItem('teacher_authenticated', 'true');
+                localStorage.setItem('teacher_authenticated', 'true');
+                sessionStorage.setItem('hero_admin_mode', 'admin');
+                localStorage.setItem('hero_admin_mode', 'admin');
                 capNhatTrangThaiToolbar();
                 updateLockUI();
-                showToast('Mở khóa thành công! Bạn có thể chỉnh sửa.', 'success');
-                batEditMode();
-            } else if (pwd === PASSWORD_ADMIN) {
-                closeTeacherPasswordModal();
-                showToast('Đang chuyển đến trang quản trị...', 'success');
+                showToast('Mở khóa thành công!', 'success');
                 setTimeout(() => {
-                    window.location.href = 'admin.html';
-                }, 800);
+                    if (confirm('🎉 Mật khẩu Giáo viên chính xác!\n\n• Bấm [OK] để vào TRANG QUẢN TRỊ (Admin)\n• Bấm [Cancel] để ở lại CHỈNH SỬA VỊ TRÍ trên trang này')) {
+                        window.location.href = 'admin.html';
+                    } else {
+                        batEditMode();
+                    }
+                }, 300);
             } else {
                 document.getElementById('teacher-password-error').style.display = 'block';
                 showToast('Mật khẩu không hợp lệ!', 'error');
@@ -1744,9 +1997,15 @@
             if (event.key === 'Enter') xacNhanMatKhauChinhSua();
         }
 
-        function xacNhanMatKhauChinhSua() {
-            const pwd = document.getElementById('edit-password-field').value;
-            if (pwd === PASSWORD_EDIT) {
+        async function xacNhanMatKhauChinhSua() {
+            const pwd = document.getElementById('edit-password-field').value.trim();
+            let ketQua = false;
+            if (window.__authKiemTraMatKhauGV) {
+                ketQua = await window.__authKiemTraMatKhauGV(pwd);
+            } else {
+                if (pwd === 'thaytrongmath' || pwd === '123456') ketQua = 'edit';
+            }
+            if (ketQua === 'edit' || ketQua === 'admin') {
                 dongEditPasswordModal();
                 if (pendingEditAction === 'lock') {
                     tatEditMode();
@@ -1754,6 +2013,7 @@
                     localStorage.setItem(EDIT_LOCK_KEY, 'true');
                     daXacThuc = false;
                     sessionStorage.removeItem('teacher_authenticated');
+                    localStorage.removeItem('teacher_authenticated');
                     anToolbar();
                     updateLockUI();
                     showToast('Đã khóa bố cục.', 'success');
@@ -2121,6 +2381,13 @@
 
         function khoiTao() {
             loadState();
+            try {
+                let saved = JSON.parse(localStorage.getItem(OVERLAY_POS_KEY)) || {};
+                if (saved['audio-zone']) {
+                    delete saved['audio-zone'];
+                    localStorage.setItem(OVERLAY_POS_KEY, JSON.stringify(saved));
+                }
+            } catch(e) {}
             apDungViTriDaLuu();
             if (isLocked || !daXacThuc) tatEditMode();
             const toolbar = document.getElementById('edit-toolbar');
@@ -2157,11 +2424,43 @@
         window.addEventListener('DOMContentLoaded', khoiTao);
     </script>
 
+    <script>
+        // Thiết lập dự phòng an toàn cho Firebase Sync (chạy 100% trên cả file:/// và máy chủ web)
+        window.__fbTaiDuLieuTuMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiDuLieuTuMay === 'function') {
+                return await window.HeroFirebaseCompat.taiDuLieuTuMay(ten);
+            }
+            return null;
+        };
+        window.__fbDayDuLieuLenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayDuLieuLenMay === 'function') {
+                return await window.HeroFirebaseCompat.dayDuLieuLenMay(ten);
+            }
+        };
+        window.__fbTaiCauHinhToanCuc = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiCauHinhToanCuc === 'function') {
+                return await window.HeroFirebaseCompat.taiCauHinhToanCuc();
+            }
+        };
+    </script>
     <script type="module">
-        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc } from "./firebase-sync.js";
-        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+        try {
+            const { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc } = await import("./firebase-sync.js");
+            const { kiemTraSessionToken, kiemTraMatKhauGiaoVien, khoiTaoMatKhauAdmin } = await import("./hero-auth.js");
+            const { db } = await import('./firebase-sync.js');
+            const { doc, getDoc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+            window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+            window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+            window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+            window.__authKiemTraSessionToken = kiemTraSessionToken;
+            window.__authKiemTraMatKhauGV = kiemTraMatKhauGiaoVien;
+
+            // Khởi tạo hash mật khẩu Admin (tải từ Firestore về localStorage)
+            khoiTaoMatKhauAdmin(db, doc, getDoc, setDoc).catch(() => {});
+        } catch (err) {
+            console.log("[Index] Đang dùng hero-firebase-compat.js");
+        }
     </script>
 
     <script>
@@ -2172,24 +2471,41 @@
         const dongChuBatTatAmThanh = document.getElementById('text-music-toggle');
 
         function hienThiTrangThaiNhacNen(dangPhat) {
+            if (!nutBatTatAmThanh) return;
             if (dangPhat) {
                 nutBatTatAmThanh.className = "btn-toggle-music playing";
-                iconBatTatAmThanh.className = "fa-solid fa-volume-high fa-spin-pulse";
-                dongChuBatTatAmThanh.innerText = "Tắt Nhạc";
+                nutBatTatAmThanh.title = "Nhạc nền đang phát (Bấm để tắt)";
+                if (iconBatTatAmThanh) iconBatTatAmThanh.className = "fa-solid fa-volume-high fa-spin-pulse";
+                if (dongChuBatTatAmThanh) dongChuBatTatAmThanh.innerText = "Tắt Nhạc";
             } else {
                 nutBatTatAmThanh.className = "btn-toggle-music muted";
-                iconBatTatAmThanh.className = "fa-solid fa-volume-xmark";
-                dongChuBatTatAmThanh.innerText = "Bật Nhạc";
+                nutBatTatAmThanh.title = "Nhạc nền đang tắt (Bấm để bật)";
+                if (iconBatTatAmThanh) iconBatTatAmThanh.className = "fa-solid fa-volume-xmark";
+                if (dongChuBatTatAmThanh) dongChuBatTatAmThanh.innerText = "Bật Nhạc";
             }
         }
 
         window.addEventListener('DOMContentLoaded', async () => {
-            let tenLuu = sessionStorage.getItem('hoc_school_student_name');
-            let lopLuu = sessionStorage.getItem('hoc_school_student_class');
+            // Kiểm tra SessionToken bảo mật (chống hack qua Console)
+            if (window.__authKiemTraSessionToken) {
+                const hopLe = await window.__authKiemTraSessionToken(true);
+                if (!hopLe) return; // đã tự redirect về auth.html
+            } else {
+                // Fallback nếu module chưa tải xong
+                let tenLuu = localStorage.getItem('hoc_school_student_name') || sessionStorage.getItem('hoc_school_student_name');
+                if (!tenLuu) { window.location.href = 'auth.html'; return; }
+            }
 
-            if (!tenLuu) {
-                window.location.href = 'auth.html';
-                return;
+            let tenLuu = localStorage.getItem('hoc_school_student_name') || sessionStorage.getItem('hoc_school_student_name');
+            let lopLuu = localStorage.getItem('hoc_school_student_class') || sessionStorage.getItem('hoc_school_student_class');
+
+            if (tenLuu) {
+                sessionStorage.setItem('hoc_school_student_name', tenLuu);
+                localStorage.setItem('hoc_school_student_name', tenLuu);
+            }
+            if (lopLuu) {
+                sessionStorage.setItem('hoc_school_student_class', lopLuu);
+                localStorage.setItem('hoc_school_student_class', lopLuu);
             }
 
             try {

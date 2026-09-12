@@ -39,6 +39,7 @@ import {
   getFirestore, doc, getDoc, setDoc, getDocs, collection, deleteDoc,
   increment, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { luuDuLieu, docDuLieu, xoaDuLieu } from './hero-storage.js';
 
 const appFirebase = initializeApp(firebaseConfig);
 const db = getFirestore(appFirebase);
@@ -58,10 +59,14 @@ export { db, appFirebase };
 const CAC_KEY_TOAN_CUC = [
   'math_hero_users_v2',
   'danh_sach_bai_hoc_ly_thuyet',
+  'danh_sach_bai_hoc_ly_thuyet_da_xoa',
   'danh_sach_bo_de_trac_nghiem',
   'ngan_hang_de_trac_nghiem',
+  'ngan_hang_de_trac_nghiem_da_xoa',
   'ngan_hang_de_boss',
+  'ngan_hang_de_boss_da_xoa',
   'ngan_hang_de_vuot_ai',
+  'ngan_hang_de_vuot_ai_da_xoa',
   'math_hero_marketplace',
   'math_hero_shop_items',
   'nhat_ky_dang_nhap',
@@ -69,8 +74,78 @@ const CAC_KEY_TOAN_CUC = [
   'so_luot_boss_toi_da',
   'so_luot_vong_quay_toi_da',
   'so_luot_thach_dau_toi_da',
-  'so_luot_vuot_ai_toi_da'
+  'so_luot_vuot_ai_toi_da',
+  'danh_sach_yeu_cau_quen_pass',
+  'thong_tin_giao_vien_lien_he'
 ];
+
+// ========================================================================
+// [IndexedDB Transparent Caching]
+// Thay thế localStorage cho các mảng/object dữ liệu lớn (giải quyết lỗi 5MB Quota)
+// ========================================================================
+window.heroMemoryStorage = {};
+
+// Ghi đè (Monkey Patch) localStorage API - ĐẶT TRƯỚC KHI KHOITAOBONHO CHẠY
+const originalGetItem = localStorage.getItem.bind(localStorage);
+const originalSetItem = localStorage.setItem.bind(localStorage);
+const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+
+window.__originalGetItem = originalGetItem;
+window.__originalSetItem = originalSetItem;
+window.__originalRemoveItem = originalRemoveItem;
+
+Storage.prototype.getItem = function(key) {
+    if (CAC_KEY_TOAN_CUC.includes(key)) {
+        if (window.heroMemoryStorage && window.heroMemoryStorage[key] !== undefined && window.heroMemoryStorage[key] !== null) {
+            return window.heroMemoryStorage[key];
+        }
+        return originalGetItem(key) || null;
+    }
+    return originalGetItem(key);
+};
+Storage.prototype.setItem = function(key, value) {
+    if (CAC_KEY_TOAN_CUC.includes(key)) {
+        window.heroMemoryStorage[key] = value;
+        luuDuLieu(key, value).catch(() => {}); // Lưu ngầm vào IndexedDB
+        try { originalSetItem(key, value); } catch(e) {} // Luôn sao lưu vào real localStorage
+        return;
+    }
+    originalSetItem(key, value);
+};
+Storage.prototype.removeItem = function(key) {
+    if (CAC_KEY_TOAN_CUC.includes(key)) {
+        delete window.heroMemoryStorage[key];
+        xoaDuLieu(key).catch(() => {});
+        return;
+    }
+    originalRemoveItem(key);
+};
+
+async function khoiTaoBoNho() {
+    await Promise.all(CAC_KEY_TOAN_CUC.map(async (key) => {
+        try {
+            let val = await docDuLieu(key);
+            if (val !== null && val !== undefined) {
+                window.heroMemoryStorage[key] = typeof val === 'string' ? val : JSON.stringify(val);
+            } else {
+                let lsVal = originalGetItem(key);
+                if (lsVal) {
+                    window.heroMemoryStorage[key] = lsVal;
+                    luuDuLieu(key, lsVal).catch(() => {});
+                }
+            }
+        } catch (e) {
+            let lsVal = originalGetItem(key);
+            if (lsVal) window.heroMemoryStorage[key] = lsVal;
+        }
+    }));
+    window.heroStorageReady = true;
+    try { window.dispatchEvent(new CustomEvent('heroStorageReady')); } catch(e){}
+}
+await khoiTaoBoNho(); // Chờ nạp từ IndexedDB xong rồi mới chạy tiếp script
+
+// [HeroStorage] Không tự động xóa rác ở đây nữa, hero-storage.js sẽ tự xóa nếu IDB thành công!
+// Để nếu IDB lỗi trên file://, dữ liệu vẫn được backup ở real localStorage.
 
 // ------------------------------------------------------------------------
 // DANH SÁCH CÁC TIỀN TỐ KEY localStorage thuộc về 1 học sinh cụ thể.
@@ -208,7 +283,7 @@ export async function taiToanBoHocSinhTuMay() {
 // "capNhatLuc" và GIỮ BẢN CÓ MỐC THỜI GIAN MỚI HƠN, thay vì mặc định Cloud thắng.
 // Item cũ (tạo trước khi có bản vá này) chưa có "capNhatLuc" sẽ được coi là
 // mốc = 0, tức luôn nhường cho bất kỳ bản nào có mốc thời gian thật.
-function gopMangTheoId(localRaw, cloudRaw) {
+function gopMangTheoId(localRaw, cloudRaw, key = '') {
   let localArr = [];
   let cloudArr = [];
   try { localArr = JSON.parse(localRaw); } catch(e) {}
@@ -216,17 +291,54 @@ function gopMangTheoId(localRaw, cloudRaw) {
   if (!Array.isArray(localArr)) localArr = [];
   if (!Array.isArray(cloudArr)) cloudArr = [];
 
-  if (cloudArr.length === 0) {
-    return { merged: localArr, hasNewLocal: localArr.length > 0 };
+  // === TOMBSTONE: Lấy danh sách ID đã bị xóa (ưu tiên CAO NHẤT, thắng cả Cloud) ===
+  let dsDaXoa = [];
+  try {
+    // Thử lấy tombstone theo nhiều key khác nhau (tương thích ngược)
+    const rawDaXoa = (key === 'danh_sach_bai_hoc_ly_thuyet')
+      ? localStorage.getItem('danh_sach_bai_hoc_ly_thuyet_da_xoa')
+      : (localStorage.getItem(key + '_da_xoa') || localStorage.getItem('hero_da_xoa_' + key));
+    if (rawDaXoa) dsDaXoa = JSON.parse(rawDaXoa);
+  } catch(e) {}
+  const daXoaSet = new Set(Array.isArray(dsDaXoa) ? dsDaXoa : []);
+
+  if (daXoaSet.size > 0) {
+    console.log('[Firebase Sync] Tombstone cho', key, ':', [...daXoaSet]);
   }
+
+  // Xóa bỏ cờ toàn cục gây lỗi chặn bài học
+  if (key === 'danh_sach_bai_hoc_ly_thuyet') {
+    localStorage.removeItem('hero_da_xoa_ly_thuyet');
+  }
+
+  // Lọc bỏ triệt để các mục đã bị xóa theo Tombstone (cả ở Local lẫn Cloud)
+  let daXoaPhanTuTrenCloud = false;
+  if (daXoaSet.size > 0) {
+    const truocLocal = localArr.length;
+    const truocCloud = cloudArr.length;
+    localArr = localArr.filter(x => x && x.id && !daXoaSet.has(x.id));
+    cloudArr = cloudArr.filter(x => x && x.id && !daXoaSet.has(x.id));
+    if (cloudArr.length !== truocCloud || localArr.length !== truocLocal) {
+      daXoaPhanTuTrenCloud = true;
+    }
+  }
+
+  if (daXoaPhanTuTrenCloud) {
+    console.log('[Firebase Sync] Đã lọc bỏ mục bị xóa theo Tombstone cho key:', key);
+  }
+
+  if (cloudArr.length === 0) {
+    return { merged: localArr, hasNewLocal: localArr.length > 0 || daXoaPhanTuTrenCloud };
+  }
+  // QUAN TRỌNG: Kể cả khi localArr rỗng, tombstone vẫn đã lọc cloudArr ở trên → an toàn tuyệt đối
   if (localArr.length === 0) {
-    return { merged: cloudArr, hasNewLocal: false };
+    return { merged: cloudArr, hasNewLocal: daXoaPhanTuTrenCloud };
   }
 
   const layMoc = (item) => (item && typeof item.capNhatLuc === 'number') ? item.capNhatLuc : 0;
 
   const cloudMap = new Map(cloudArr.filter(x => x && x.id).map(x => [x.id, x]));
-  let hasNewLocal = false;
+  let hasNewLocal = daXoaPhanTuTrenCloud;
   const merged = [];
   const daXuLy = new Set();
 
@@ -288,11 +400,38 @@ export async function taiCauHinhToanCuc() {
       'danh_sach_bo_de_trac_nghiem',
       'danh_sach_bai_hoc_ly_thuyet',
       'ngan_hang_de_boss',
-      'ngan_hang_de_vuot_ai'
+      'ngan_hang_de_vuot_ai',
+      'danh_sach_yeu_cau_quen_pass'
     ];
 
-    // 4a) Các key cố định (ngân hàng đề, shop, cấu hình lượt...)
-    const promises = CAC_KEY_TOAN_CUC.map(async (key) => {
+    // GIAI ĐOẠN 1: Tải và gộp tất cả các Tombstone key (*_da_xoa) TRƯỚC TIÊN
+    const tombstoneKeys = CAC_KEY_TOAN_CUC.filter(k => k.endsWith('_da_xoa'));
+    await Promise.all(tombstoneKeys.map(async (key) => {
+      try {
+        const refKey = doc(db, "mathhero_global", key);
+        const snap = await getDoc(refKey);
+        const localVal = localStorage.getItem(key);
+        let localArr = [];
+        let cloudArr = [];
+        try { localArr = JSON.parse(localVal || '[]'); } catch(e) {}
+        if (snap.exists() && snap.data().value !== undefined) {
+          try { cloudArr = JSON.parse(snap.data().value || '[]'); } catch(e) {}
+        }
+        if (!Array.isArray(localArr)) localArr = [];
+        if (!Array.isArray(cloudArr)) cloudArr = [];
+        const unionSet = new Set([...localArr, ...cloudArr]);
+        const mergedArr = Array.from(unionSet);
+
+        localStorage.setItem(key, JSON.stringify(mergedArr));
+        if (mergedArr.length !== cloudArr.length || localArr.some(id => !cloudArr.includes(id))) {
+          dayCauHinhToanCuc(key).catch(() => {});
+        }
+      } catch(e) {}
+    }));
+
+    // GIAI ĐOẠN 2: Tải và gộp các key cấu hình và mảng dữ liệu còn lại
+    const dataKeys = CAC_KEY_TOAN_CUC.filter(k => !k.endsWith('_da_xoa'));
+    const promises = dataKeys.map(async (key) => {
       const refKey = doc(db, "mathhero_global", key);
       const snap = await getDoc(refKey);
 
@@ -303,13 +442,13 @@ export async function taiCauHinhToanCuc() {
 
         // Nếu là danh sách bộ đề / lý thuyết -> Gộp thông minh theo ID
         if (CAC_KEY_MANG_ID.includes(key)) {
-          const { merged, hasNewLocal } = gopMangTheoId(localVal, cloudVal);
+          const { merged, hasNewLocal } = gopMangTheoId(localVal, cloudVal, key);
           localStorage.setItem(key, JSON.stringify(merged));
           // Nếu máy cục bộ có đề mới mà Cloud chưa có -> đẩy bản gộp ngược lên Cloud
           if (hasNewLocal) {
             dayCauHinhToanCuc(key).catch(() => {});
           }
-        } 
+        }
         // Nếu là danh sách tài khoản học sinh -> gộp theo username
         else if (key === 'math_hero_users_v2') {
           const { merged, hasNewLocal } = gopTaiKhoanHocSinh(localVal, cloudVal);
@@ -491,3 +630,19 @@ export async function xoaHocSinhTrenMay(tenHocSinh) {
     console.error("[Firebase Sync] Lỗi khi xóa học sinh:", loi);
   }
 }
+
+// ========================================================================
+// 10) GHI ĐÈ THẲNG FIREBASE (BYPASS localStorage & merge)
+//     Dùng khi xóa trắng dữ liệu để đảm bảo không bị phục hồi
+// ========================================================================
+export async function forceGhiDeFirebase(collectionName, docId, data) {
+  try {
+    const refDoc = doc(db, collectionName, docId);
+    await setDoc(refDoc, data);
+    console.log("[Firebase Sync] Force ghi đè Firebase:", collectionName, "/", docId);
+  } catch (loi) {
+    console.error("[Firebase Sync] Lỗi force ghi đè Firebase:", loi);
+    throw loi;
+  }
+}
+

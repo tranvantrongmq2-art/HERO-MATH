@@ -455,6 +455,11 @@
                 <label><i class="fa-solid fa-key"></i> Mật mã</label>
                 <input type="password" id="login-pass" placeholder="Nhập mật mã..." autocomplete="off" />
             </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: -6px; margin-bottom: 14px;">
+                <a href="javascript:void(0)" onclick="moModalQuenPass()" style="color: #00ffff; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; opacity: 0.85; transition: opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.85'">
+                    <i class="fa-solid fa-circle-question"></i> Quên mật mã? Nhấn vào đây
+                </a>
+            </div>
             <button class="btn-enter" onclick="tienHanhDangNhap()">BẮT ĐẦU HÀNH TRÌNH <i class="fa-solid fa-rocket"></i></button>
         </div>
 
@@ -487,15 +492,111 @@
         <button class="btn-exit-game" onclick="thoatKhoiTroChoi()"><i class="fa-solid fa-house"></i> Trở về trang chủ</button>
     </div>
 
+    <!-- MODAL HỌC SINH XIN CẤP LẠI MẬT MÃ -->
+    <div id="modal-quen-pass" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); z-index:99999; justify-content:center; align-items:center; padding:16px;">
+        <div style="background:linear-gradient(145deg, #0d1626, #060a12); border:1px solid rgba(0, 255, 255, 0.3); box-shadow:0 0 35px rgba(0, 255, 255, 0.2); border-radius:18px; width:100%; max-width:480px; padding:24px; position:relative; color:#fff;">
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; border-bottom:1px solid rgba(0,255,255,0.15); padding-bottom:12px;">
+                <h3 style="margin:0; font-size:1.15rem; color:#00ffff; display:flex; align-items:center; gap:8px;">
+                    <i class="fa-solid fa-key"></i> Xin Cấp Lại Mật Mã
+                </h3>
+                <button onclick="dongModalQuenPass()" style="background:transparent; border:none; color:#bdc3c7; font-size:1.4rem; cursor:pointer; line-height:1;" title="Đóng">&times;</button>
+            </div>
+
+            <!-- LIÊN HỆ TRỰC TIẾP GIÁO VIÊN -->
+            <div id="box-gv-contact" style="background:rgba(0, 198, 255, 0.08); border:1px solid rgba(0, 198, 255, 0.25); border-radius:12px; padding:14px; margin-bottom:16px;">
+                <div style="font-weight:bold; color:#00ffff; font-size:0.9rem; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-chalkboard-user"></i> <span id="lbl-modal-gv-ten">Thầy Trọng Toán</span>
+                </div>
+                <div id="lbl-modal-gv-ghichu" style="font-size:0.82rem; color:#bdc3c7; margin-bottom:10px; line-height:1.4;">
+                    Nhắn tin qua Zalo hoặc gửi yêu cầu bên dưới để Thầy cấp lại mật mã cho em nhé!
+                </div>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <a id="btn-zalo-gv" href="https://zalo.me" target="_blank" style="flex:1; min-width:140px; text-decoration:none; text-align:center; background:#0068ff; color:#fff; font-weight:bold; padding:8px 12px; border-radius:8px; font-size:0.85rem; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                        <i class="fa-solid fa-comment-dots"></i> Nhắn Tin Zalo
+                    </a>
+                    <a id="btn-call-gv" href="tel:" style="flex:1; min-width:140px; text-decoration:none; text-align:center; background:#2ecc71; color:#000; font-weight:bold; padding:8px 12px; border-radius:8px; font-size:0.85rem; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                        <i class="fa-solid fa-phone"></i> Gọi Điện Thoại
+                    </a>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin:10px 0; color:#7f9bb3; font-size:0.8rem; position:relative;">
+                <span style="background:#0a101d; padding:0 10px; position:relative; z-index:1;">HOẶC GỬI YÊU CẦU LÊN HỆ THỐNG</span>
+                <div style="position:absolute; top:50%; left:0; width:100%; height:1px; background:rgba(255,255,255,0.1); z-index:0;"></div>
+            </div>
+
+            <!-- FORM GỬI YÊU CẦU -->
+            <div style="margin-top:12px;">
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;"><i class="fa-solid fa-id-card-clip"></i> Họ và tên của em (*)</label>
+                    <input type="text" id="qp-name" placeholder="Ví dụ: Trần Văn Trong" style="padding:10px 14px; font-size:0.9rem;" />
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:0.75rem;"><i class="fa-solid fa-graduation-cap"></i> Khối lớp (*)</label>
+                        <select id="qp-grade" style="padding:10px 14px; font-size:0.9rem;">
+                            <option value="Khối 6">Khối 6</option>
+                            <option value="Khối 7" selected>Khối 7</option>
+                            <option value="Khối 8">Khối 8</option>
+                            <option value="Khối 9">Khối 9</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:0.75rem;"><i class="fa-solid fa-users-rectangle"></i> Lớp cụ thể</label>
+                        <input type="text" id="qp-classroom" placeholder="VD: 7A1" style="padding:10px 14px; font-size:0.9rem;" />
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:12px;">
+                    <label style="font-size:0.75rem;"><i class="fa-solid fa-phone"></i> SĐT hoặc Zalo của em / phụ huynh (nếu có)</label>
+                    <input type="text" id="qp-phone" placeholder="Để Thầy báo mật mã mới khi đã reset..." style="padding:10px 14px; font-size:0.9rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label style="font-size:0.75rem;"><i class="fa-solid fa-message"></i> Lời nhắn gửi Thầy Cô</label>
+                    <input type="text" id="qp-note" placeholder="Ví dụ: Em lỡ quên mật mã, nhờ Thầy reset lại thành 123456 giúp em ạ" style="padding:10px 14px; font-size:0.9rem;" />
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button onclick="dongModalQuenPass()" type="button" style="flex:1; padding:12px; background:#2c3e50; border:none; border-radius:10px; color:#bdc3c7; font-weight:bold; cursor:pointer;">
+                        Hủy
+                    </button>
+                    <button onclick="guiYeuCauQuenPass()" type="button" class="btn-enter" style="flex:2; margin:0; padding:12px; font-size:0.9rem;">
+                        GỬI YÊU CẦU <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
 
     <script type="module">
         import { taiCauHinhToanCuc, dayCauHinhToanCuc, taiDuLieuTuMay } from './firebase-sync.js';
+        import { hashMatKhau, luuSessionToken, chuyenDoiMatKhauCu, khoiTaoMatKhauAdmin } from './hero-auth.js';
+        import { db } from './firebase-sync.js';
+        import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
         window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
         window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
         window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+        window.__authHashMatKhau = hashMatKhau;
+        window.__authLuuSessionToken = luuSessionToken;
+        window.__authChuyenDoiMatKhauCu = chuyenDoiMatKhauCu;
         window.__fbDataReady = false;
-        taiCauHinhToanCuc().finally(() => { window.__fbDataReady = true; });
+
+        (async () => {
+            try {
+                await taiCauHinhToanCuc();
+                // Khởi tạo mật khẩu Admin trên Firestore (chạy 1 lần)
+                await khoiTaoMatKhauAdmin(db, doc, getDoc, setDoc);
+                // Chuyển đổi mật khẩu plaintext cũ sang hash
+                const coThayDoi = await chuyenDoiMatKhauCu();
+                if (coThayDoi) {
+                    await dayCauHinhToanCuc('math_hero_users_v2');
+                }
+            } catch(e) { console.error('[Auth Init]', e); }
+            window.__fbDataReady = true;
+        })();
     </script>
 
     <script>
@@ -569,7 +670,7 @@
         const amThanhNenMedia = document.getElementById('bg-fairy-music');
 
         window.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('hoc_school_student_name')) {
+            if (localStorage.getItem('hoc_school_student_name') || sessionStorage.getItem('hoc_school_student_name')) {
                 window.location.href = 'index.html';
             }
             let playPromise = amThanhNenMedia.play();
@@ -656,7 +757,7 @@
             }
         }
 
-        function tienHanhDangKy() {
+        async function tienHanhDangKy() {
             phatAmThanhClick();
             if (!window.__fbDataReady) { showToast("Hệ thống đang đồng bộ dữ liệu, vui lòng chờ 1-2 giây rồi thử lại!", "error"); return; }
             let ten = document.getElementById('reg-name').value.trim();
@@ -669,7 +770,9 @@
             let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
             if (users[ten]) { showToast("Chiến binh này đã tồn tại!", "error"); return; }
 
-            users[ten] = { class: lop, classroom: lopCuThe, pass: pass };
+            // Mã hóa mật khẩu bằng SHA-256 trước khi lưu
+            const hashedPass = await window.__authHashMatKhau(pass);
+            users[ten] = { class: lop, classroom: lopCuThe, pass: hashedPass, _hashed: true };
             localStorage.setItem('math_hero_users_v2', JSON.stringify(users));
             window.__fbDayCauHinhToanCuc('math_hero_users_v2');
             showToast("Tạo ấn ký thành công! Hãy đăng nhập.", "success");
@@ -692,16 +795,42 @@
             let lopCuTheHs = "";
 
             if (users[ten]) {
-                if (typeof users[ten] === 'string' && users[ten] === pass) { valid = true; } else if (typeof users[ten] === 'object' && users[ten].pass === pass) { valid = true;
-                    lopHs = users[ten].class;
-                    lopCuTheHs = users[ten].classroom || ""; }
+                // Hash mật khẩu người dùng nhập để so sánh
+                const hashedInput = await window.__authHashMatKhau(pass);
+
+                if (typeof users[ten] === 'string') {
+                    // Dạng cũ (plaintext) - đã được migration nhưng phòng trường hợp chưa kịp
+                    if (users[ten] === pass) { valid = true; }
+                } else if (typeof users[ten] === 'object') {
+                    if (users[ten]._hashed) {
+                        // Mật khẩu đã hash → so sánh hash với hash
+                        if (users[ten].pass === hashedInput) {
+                            valid = true;
+                            lopHs = users[ten].class;
+                            lopCuTheHs = users[ten].classroom || "";
+                        }
+                    } else {
+                        // Mật khẩu chưa hash (chưa kịp migration) → so sánh plaintext
+                        if (users[ten].pass === pass) {
+                            valid = true;
+                            lopHs = users[ten].class;
+                            lopCuTheHs = users[ten].classroom || "";
+                        }
+                    }
+                }
             }
 
             if (!valid) { showToast("Sai thông tin danh tính hoặc mật mã!", "error"); return; }
 
+            localStorage.setItem('hoc_school_student_name', ten);
+            localStorage.setItem('hoc_school_student_class', lopHs);
+            localStorage.setItem('hoc_school_student_classroom', lopCuTheHs);
             sessionStorage.setItem('hoc_school_student_name', ten);
             sessionStorage.setItem('hoc_school_student_class', lopHs);
             sessionStorage.setItem('hoc_school_student_classroom', lopCuTheHs);
+
+            // Tạo SessionToken bảo mật để chống hack qua Console
+            await window.__authLuuSessionToken(ten);
 
             await window.__fbTaiDuLieuTuMay(ten);
 
@@ -711,6 +840,92 @@
             window.__fbDayCauHinhToanCuc('nhat_ky_dang_nhap');
 
             window.location.href = 'index.html';
+        }
+
+        // ============================================================
+        //  XỬ LÝ QUÊN MẬT MÃ & LIÊN HỆ GIÁO VIÊN
+        // ============================================================
+        function moModalQuenPass() {
+            phatAmThanhClick();
+            let gvInfo = null;
+            try {
+                gvInfo = JSON.parse(localStorage.getItem('thong_tin_giao_vien_lien_he'));
+            } catch(e) {}
+
+            const tenGv = gvInfo?.hoten || 'Thầy Trọng Toán';
+            const phoneGv = gvInfo?.phone || '0912345678';
+            const ghiChuGv = gvInfo?.ghichu || 'Nhắn tin qua Zalo hoặc gửi yêu cầu bên dưới để Thầy cấp lại mật mã cho em nhé!';
+
+            const lblTen = document.getElementById('lbl-modal-gv-ten');
+            const lblGhiChu = document.getElementById('lbl-modal-gv-ghichu');
+            const btnZalo = document.getElementById('btn-zalo-gv');
+            const btnCall = document.getElementById('btn-call-gv');
+
+            if (lblTen) lblTen.innerText = tenGv;
+            if (lblGhiChu) lblGhiChu.innerText = ghiChuGv;
+            const cleanPhone = phoneGv.replace(/[^0-9]/g, '');
+            if (btnZalo) btnZalo.href = cleanPhone ? `https://zalo.me/${cleanPhone}` : 'https://zalo.me';
+            if (btnCall) btnCall.href = cleanPhone ? `tel:${cleanPhone}` : 'tel:';
+
+            // Tự động điền họ tên nếu học sinh đã gõ ở ô đăng nhập
+            const loginName = (document.getElementById('login-name')?.value || '').trim();
+            const qpName = document.getElementById('qp-name');
+            if (qpName && loginName) qpName.value = loginName;
+
+            const modal = document.getElementById('modal-quen-pass');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function dongModalQuenPass() {
+            phatAmThanhClick();
+            const modal = document.getElementById('modal-quen-pass');
+            if (modal) modal.style.display = 'none';
+        }
+
+        async function guiYeuCauQuenPass() {
+            phatAmThanhClick();
+            const ten = (document.getElementById('qp-name')?.value || '').trim();
+            const khoi = document.getElementById('qp-grade')?.value || 'Khối 7';
+            const lop = (document.getElementById('qp-classroom')?.value || '').trim();
+            const phone = (document.getElementById('qp-phone')?.value || '').trim();
+            const lyDo = (document.getElementById('qp-note')?.value || '').trim() || 'Em quên mật mã, nhờ Thầy đặt lại 123456 giúp em ạ';
+
+            if (!ten) {
+                showToast("Vui lòng nhập Họ và tên của em!", "error");
+                return;
+            }
+
+            let dsReq = [];
+            try {
+                dsReq = JSON.parse(localStorage.getItem('danh_sach_yeu_cau_quen_pass')) || [];
+            } catch(e) {}
+            if (!Array.isArray(dsReq)) dsReq = [];
+
+            const newReq = {
+                id: "req_" + Date.now(),
+                ten: ten,
+                khoi: khoi,
+                lop: lop,
+                phone: phone,
+                lyDo: lyDo,
+                thoiGian: new Date().toLocaleString('vi-VN'),
+                daXuLy: false,
+                capNhatLuc: Date.now()
+            };
+
+            dsReq.unshift(newReq);
+            localStorage.setItem('danh_sach_yeu_cau_quen_pass', JSON.stringify(dsReq));
+
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                try {
+                    await window.__fbDayCauHinhToanCuc('danh_sach_yeu_cau_quen_pass');
+                } catch(e) {
+                    console.warn("[Auth] Lỗi gửi yêu cầu Firebase:", e);
+                }
+            }
+
+            dongModalQuenPass();
+            showToast("Đã gửi yêu cầu tới Giáo Viên! Thầy Cô sẽ đặt lại mật mã thành 123456 cho em sớm nhất.", "success");
         }
     </script>
 

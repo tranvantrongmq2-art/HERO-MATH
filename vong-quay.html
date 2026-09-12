@@ -266,8 +266,10 @@
     <script type="module">
         import { db, taiDuLieuTuMay, dayDuLieuLenMay } from "./firebase-sync.js";
         import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { kiemTraSessionToken } from './hero-auth.js';
         window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
         window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+        kiemTraSessionToken(true).catch(() => {});
 
         window.__fbDaNopTuLuanHomNay = async function (tenHocSinh) {
             try {

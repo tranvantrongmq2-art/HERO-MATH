@@ -12,6 +12,11 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Chạy 100% trên cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
+
     <style>
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
         body { 
@@ -505,6 +510,18 @@
     <div class="container">
         <!-- TOP BAR -->
         <div class="header-box-boss">
+            <div id="boss-header-grade-container" style="margin-right:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span id="boss-student-grade-badge" style="background:#1e293b; color:#38bdf8; padding:6px 14px; border-radius:20px; font-weight:700; font-size:0.85rem; border:1px solid rgba(56, 189, 248, 0.3); display:inline-flex; align-items:center; gap:6px;">
+                    <i class="fa-solid fa-graduation-cap"></i> <span id="txt-boss-student-grade">Khối lớp</span>
+                </span>
+                <select id="sel-boss-switch-grade" onchange="chuyenDoiKhoiLopBoss(this.value)" style="background:#0b111e; color:#cbd5e1; border:1px solid #334155; padding:5px 10px; border-radius:8px; font-size:0.8rem; font-weight:600; cursor:pointer;" title="Chuyển đổi khối đề Thử Thách Tối Thượng">
+                    <option value="">-- Chọn khối đề --</option>
+                    <option value="Khối 6">Khối 6</option>
+                    <option value="Khối 7">Khối 7</option>
+                    <option value="Khối 8">Khối 8</option>
+                    <option value="Khối 9">Khối 9</option>
+                </select>
+            </div>
             <a href="index.html" class="btn-home-boss"><i class="fa-solid fa-circle-chevron-left"></i> Trở về</a>
         </div>
 
@@ -570,13 +587,48 @@
 
     <div id="toast-box"></div>
 
+    <script>
+        // Thiết lập dự phòng an toàn cho Firebase Sync (chạy 100% trên cả file:/// và máy chủ web)
+        window.__fbTaiDuLieuTuMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiDuLieuTuMay === 'function') {
+                return await window.HeroFirebaseCompat.taiDuLieuTuMay(ten);
+            }
+            return null;
+        };
+        window.__fbDayDuLieuLenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayDuLieuLenMay === 'function') {
+                return await window.HeroFirebaseCompat.dayDuLieuLenMay(ten);
+            }
+        };
+        window.__fbTaiCauHinhToanCuc = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiCauHinhToanCuc === 'function') {
+                return await window.HeroFirebaseCompat.taiCauHinhToanCuc();
+            }
+        };
+        window.__fbDayCauHinhToanCuc = async (key) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayCauHinhToanCuc === 'function') {
+                return await window.HeroFirebaseCompat.dayCauHinhToanCuc(key);
+            }
+        };
+        window.__fbGhiNhatKyHoatDong = async (ten, loai, dung, sai, exp) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.ghiNhatKyHoatDong === 'function') {
+                return await window.HeroFirebaseCompat.ghiNhatKyHoatDong(ten, loai, dung, sai, exp);
+            }
+        };
+    </script>
     <script type="module">
-        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, ghiNhatKyHoatDong } from "./firebase-sync.js";
-        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
-        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
-        window.__fbGhiNhatKyHoatDong = ghiNhatKyHoatDong;
+        try {
+            const { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, ghiNhatKyHoatDong } = await import("./firebase-sync.js");
+            const { kiemTraSessionToken } = await import('./hero-auth.js');
+            window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+            window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+            window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+            window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+            window.__fbGhiNhatKyHoatDong = ghiNhatKyHoatDong;
+            if (typeof kiemTraSessionToken === 'function') kiemTraSessionToken(true).catch(() => {});
+        } catch (err) {
+            console.log("[Thử Thách Tối Thượng] Đang dùng hero-firebase-compat.js");
+        }
     </script>
     <script>
         // ============================================================
@@ -698,18 +750,50 @@
         // ============================================================
         //  HÀM TIỆN ÍCH
         // ============================================================
+        function trichXuatSoKhoiLop(chuoi) {
+            if (!chuoi) return null;
+            let ketQua = String(chuoi).match(/[6-9]/);
+            return ketQua ? ketQua[0] : null;
+        }
+
         function layTenHocSinhHienTai() {
-            let ten = sessionStorage.getItem('hoc_school_student_name');
-            if (ten) return ten;
+            let ten = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name');
+            if (ten) {
+                sessionStorage.setItem('hoc_school_student_name', ten);
+                return ten;
+            }
             let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
             if (nhatKy.length > 0) {
                 let lastUser = nhatKy[nhatKy.length - 1];
                 ten = lastUser.name;
                 sessionStorage.setItem('hoc_school_student_name', ten);
-                sessionStorage.setItem('hoc_school_student_class', lastUser.className || 'Khối 7');
+                if (lastUser.className) {
+                    sessionStorage.setItem('hoc_school_student_class', lastUser.className);
+                    localStorage.setItem('hoc_school_student_class', lastUser.className);
+                }
                 return ten;
             }
             return null;
+        }
+
+        function layKhoiHocSinhHienTai() {
+            let lop = sessionStorage.getItem('hoc_school_student_class') || localStorage.getItem('hoc_school_student_class');
+            if (lop) return lop;
+            let lopCuThe = sessionStorage.getItem('hoc_school_student_classroom') || localStorage.getItem('hoc_school_student_classroom');
+            if (lopCuThe) return lopCuThe;
+            let ten = layTenHocSinhHienTai();
+            if (ten) {
+                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+                if (users[ten] && (users[ten].class || users[ten].className)) {
+                    return users[ten].class || users[ten].className;
+                }
+                let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                let myLog = [...nhatKy].reverse().find(it => it.name === ten);
+                if (myLog && (myLog.className || myLog.class)) {
+                    return myLog.className || myLog.class;
+                }
+            }
+            return 'Khối 7';
         }
 
         function laySoLuotBossToiDa() {
@@ -963,14 +1047,58 @@
         // ============================================================
         //  TẢI CÂU HỎI & BẮT ĐẦU TRẬN
         // ============================================================
-        function docNganHangDeBoss() {
+        function docNganHangDeBoss(khoiEpBuoc) {
             let duLieuNganHang = localStorage.getItem('ngan_hang_de_boss') || "[]";
-            let khoDeBoss = JSON.parse(duLieuNganHang);
-            let khoiHocSinh = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
+            let khoDeBoss = [];
+            try {
+                khoDeBoss = JSON.parse(duLieuNganHang);
+                if (!Array.isArray(khoDeBoss)) khoDeBoss = [];
+            } catch (e) {
+                khoDeBoss = [];
+            }
 
-            let cacBoDePhuHop = khoDeBoss.filter(b => !b.grade || b.grade === 'all' || b.grade === khoiHocSinh);
+            let msgEl = document.getElementById('lbl-question-text');
+            let qArea = document.getElementById('quiz-area');
+
+            if (khoDeBoss.length === 0) {
+                if (msgEl) {
+                    msgEl.innerHTML = `<span style="color:#e74c3c;"><i class="fa-solid fa-circle-exclamation"></i> Thầy cô chưa nạp bộ đề Thử Thách Tối Thượng nào trong Admin. Thầy cô vui lòng vào trang Quản Trị để tạo đề!</span>`;
+                }
+                if (qArea) qArea.style.display = 'block';
+                return;
+            }
+
+            let khoiHocSinh = khoiEpBuoc || layKhoiHocSinhHienTai();
+            let soKhoiHs = trichXuatSoKhoiLop(khoiHocSinh);
+
+            // Cập nhật nhãn hiển thị khối lớp & dropdown chuyển khối
+            let badgeKhoiText = document.getElementById('txt-boss-student-grade');
+            if (badgeKhoiText) {
+                badgeKhoiText.innerText = soKhoiHs ? ('Khối ' + soKhoiHs) : khoiHocSinh;
+            }
+            let selSwitch = document.getElementById('sel-boss-switch-grade');
+            if (selSwitch && soKhoiHs) {
+                selSwitch.value = 'Khối ' + soKhoiHs;
+            }
+
+            // Lọc bộ đề phù hợp: không bị ẩn VÀ (không gán khối / all / trùng khối với học sinh)
+            let cacBoDePhuHop = khoDeBoss.filter(b => {
+                if (b.hidden) return false;
+                if (!b.grade || b.grade === 'all') return true;
+                let soKhoiDe = trichXuatSoKhoiLop(b.grade);
+                if (soKhoiDe && soKhoiHs) return soKhoiDe === soKhoiHs;
+                return b.grade === khoiHocSinh;
+            });
+
+            // Nếu không tìm thấy đề đúng khối, kiểm tra xem có bất kỳ đề nào chưa ẩn không để fallback
+            if (cacBoDePhuHop.length === 0) {
+                cacBoDePhuHop = khoDeBoss.filter(b => !b.hidden);
+            }
+
             let khoCauHoiBoss = [];
+            let tenCacBoDe = [];
             cacBoDePhuHop.forEach(bo => {
+                if (bo.title) tenCacBoDe.push(bo.title);
                 if (Array.isArray(bo.questions)) {
                     let daChuanHoa = chuanHoaCauHoi(bo.questions);
                     khoCauHoiBoss = khoCauHoiBoss.concat(daChuanHoa);
@@ -982,15 +1110,22 @@
             });
 
             if (khoCauHoiBoss.length === 0) {
-                let msgEl = document.getElementById('lbl-question-text');
-                msgEl.innerHTML = `<span style="color:#e74c3c;"><i class="fa-solid fa-circle-exclamation"></i> Thầy giáo chưa nạp bộ đề nào dành cho <b>${khoiHocSinh}</b>. Vui lòng quay lại sau!</span>`;
-                document.getElementById('quiz-area').style.display = 'block';
+                if (msgEl) {
+                    msgEl.innerHTML = `<span style="color:#e74c3c;"><i class="fa-solid fa-circle-exclamation"></i> Chưa có câu hỏi nào cho <b>${khoiHocSinh}</b>. Thầy cô vui lòng nạp đề trong Admin hoặc chọn khối lớp khác ở góc trên!</span>`;
+                }
+                if (qArea) qArea.style.display = 'block';
                 return;
             }
 
-            const SO_CAU_MOI_TRAN = 20;
+            // Cập nhật tiêu đề trận Boss nếu có tên bộ đề
+            let tieuDeBoss = document.querySelector('.boss-name');
+            if (tieuDeBoss && tenCacBoDe.length > 0) {
+                tieuDeBoss.innerHTML = `<i class="fa-solid fa-mountain"></i> ${tenCacBoDe[0].toUpperCase()}`;
+            }
+
+            const SO_CAU_MOI_TRAN = Math.min(20, khoCauHoiBoss.length);
             danhSachCauHoi = layNgauNhienNCau(khoCauHoiBoss, SO_CAU_MOI_TRAN);
-            document.getElementById('quiz-area').style.display = 'block';
+            if (qArea) qArea.style.display = 'block';
 
             bossHP = HP_MAX;
             playerHP = HP_MAX;
@@ -1013,6 +1148,13 @@
 
             indexCauHienTai = 0;
             taiCauHoiHT();
+        }
+
+        function chuyenDoiKhoiLopBoss(khoiMoi) {
+            if (!khoiMoi) return;
+            sessionStorage.setItem('hoc_school_student_class', khoiMoi);
+            localStorage.setItem('hoc_school_student_class', khoiMoi);
+            docNganHangDeBoss(khoiMoi);
         }
 
         function taiCauHoiHT() {
@@ -1202,43 +1344,86 @@
         // ============================================================
         window.addEventListener('DOMContentLoaded', async () => {
             let tenSomKiemTra = layTenHocSinhHienTai();
-            await Promise.all([
-                window.__fbTaiCauHinhToanCuc(),
-                tenSomKiemTra ? window.__fbTaiDuLieuTuMay(tenSomKiemTra) : Promise.resolve()
-            ]);
+            try {
+                if (typeof window.__fbTaiCauHinhToanCuc === 'function') {
+                    await window.__fbTaiCauHinhToanCuc();
+                }
+                if (tenSomKiemTra && typeof window.__fbTaiDuLieuTuMay === 'function') {
+                    await window.__fbTaiDuLieuTuMay(tenSomKiemTra);
+                }
+            } catch (errSync) {
+                console.warn("[Thử Thách Tối Thượng] Lỗi đồng bộ khởi tạo:", errSync);
+            }
+
+            let ten = layTenHocSinhHienTai();
+            if (!ten) {
+                hienThiFormDangNhapNhanh();
+                return;
+            }
 
             let coLuot = kiemTraVaHienThiLuotBoss();
             if (coLuot) {
                 phatAmThanhHanhDong('danger_alarm');
-
-                let ten = layTenHocSinhHienTai();
-                if (ten) {
-                    docNganHangDeBoss();
-                } else {
-                    document.querySelector('.boss-card').insertAdjacentHTML('afterend', `
-                        <div style="background:#1a2236; padding:16px; border-radius:12px; margin-top:12px; text-align:center; border:1px solid #3498db;">
-                            <p style="color:#f1c40f; font-weight:bold; font-size:0.95rem;"><i class="fa-solid fa-circle-exclamation"></i> Nhập tên để bắt đầu!</p>
-                            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:6px;">
-                                <input type="text" id="quick-name-input" placeholder="Họ và tên" style="padding:10px; border-radius:8px; background:#0b111e; border:1px solid #233354; color:white; font-size:0.95rem; flex:1; min-width:160px;">
-                                <button onclick="dangNhapNhanh()" style="background:#3498db; color:white; border:none; padding:10px 18px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.95rem;">Vào trận</button>
-                            </div>
-                        </div>
-                    `);
-                }
+                docNganHangDeBoss();
             }
         });
+
+        function hienThiFormDangNhapNhanh() {
+            let oldBox = document.getElementById('quick-login-box');
+            if (oldBox) oldBox.remove();
+
+            let statusEl = document.getElementById('boss-luot-status');
+            if (statusEl) statusEl.style.display = 'none';
+
+            let khoiHienTai = layKhoiHocSinhHienTai();
+            let soKhoi = trichXuatSoKhoiLop(khoiHienTai) || '9';
+
+            document.querySelector('.boss-card').insertAdjacentHTML('afterend', `
+                <div id="quick-login-box" style="background:#1a2236; padding:18px; border-radius:12px; margin-top:14px; text-align:center; border:1px solid #3498db; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+                    <p style="color:#f1c40f; font-weight:bold; font-size:1rem; margin-bottom:10px;"><i class="fa-solid fa-circle-exclamation"></i> Nhập họ tên và chọn khối lớp để bắt đầu Thử Thách Tối Thượng!</p>
+                    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                        <input type="text" id="quick-name-input" placeholder="Họ và tên học sinh..." style="padding:10px 14px; border-radius:8px; background:#0b111e; border:1px solid #233354; color:white; font-size:0.95rem; flex:2; min-width:180px;">
+                        <select id="quick-grade-select" style="padding:10px 14px; border-radius:8px; background:#0b111e; border:1px solid #233354; color:white; font-size:0.95rem; flex:1; min-width:110px;">
+                            <option value="Khối 6" ${soKhoi === '6' ? 'selected' : ''}>Khối 6</option>
+                            <option value="Khối 7" ${soKhoi === '7' ? 'selected' : ''}>Khối 7</option>
+                            <option value="Khối 8" ${soKhoi === '8' ? 'selected' : ''}>Khối 8</option>
+                            <option value="Khối 9" ${soKhoi === '9' ? 'selected' : ''}>Khối 9</option>
+                        </select>
+                        <button onclick="dangNhapNhanh()" style="background:#3498db; color:white; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer; font-size:0.95rem; display:inline-flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-play"></i> Vào Trận
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
 
         async function dangNhapNhanh() {
             let input = document.getElementById('quick-name-input');
             if (!input) return;
             let name = input.value.trim();
-            if (!name) return alert('Vui lòng nhập tên!');
+            if (!name) return alert('Vui lòng nhập họ và tên!');
+            let selGrade = document.getElementById('quick-grade-select');
+            let grade = selGrade ? selGrade.value : 'Khối 9';
+
             sessionStorage.setItem('hoc_school_student_name', name);
-            sessionStorage.setItem('hoc_school_student_class', 'Khối 7');
-            await window.__fbTaiDuLieuTuMay(name);
-            let quick = document.querySelector('.boss-card + div');
+            localStorage.setItem('hoc_school_student_name', name);
+            sessionStorage.setItem('hoc_school_student_class', grade);
+            localStorage.setItem('hoc_school_student_class', grade);
+
+            try {
+                if (typeof window.__fbTaiDuLieuTuMay === 'function') {
+                    await window.__fbTaiDuLieuTuMay(name);
+                }
+            } catch (e) {}
+
+            let quick = document.getElementById('quick-login-box');
             if (quick) quick.remove();
-            docNganHangDeBoss();
+
+            let coLuot = kiemTraVaHienThiLuotBoss();
+            if (coLuot) {
+                phatAmThanhHanhDong('danger_alarm');
+                docNganHangDeBoss();
+            }
         }
 
         function kiemTraVaHienThiLuotBoss() {
@@ -1254,10 +1439,7 @@
             }
 
             if (!duLieu) {
-                thongBaoEl.style.background = 'rgba(231,76,60,0.12)';
-                thongBaoEl.style.borderColor = '#e74c3c';
-                thongBaoEl.style.color = '#e74c3c';
-                thongBaoEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Chưa xác định danh tính. Vui lòng đăng nhập.`;
+                thongBaoEl.style.display = 'none';
                 return false;
             }
 

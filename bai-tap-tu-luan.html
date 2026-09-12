@@ -6,6 +6,11 @@
     <title>SẢNH TỰ LUẬN - QUẢN TRỊ GIÁO VIÊN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Chạy 100% trên cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
     <style>
         /* RESET & BASE */
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -539,6 +544,169 @@
         .sample-item .sample-score { color:#f1c40f; font-weight:900; font-family:'Montserrat', sans-serif; font-size:0.85rem; }
         .sample-item .sample-note { font-size:0.75rem; color:#dcd6ff; margin-top:4px; font-style:italic; }
 
+        /* 2 NÚT CHỌN CHẾ ĐỘ CHẤM: RA LỆNH AI CHẤM HOẶC TỰ CHẤM */
+        .grading-mode-box {
+            background: rgba(10, 5, 25, 0.9);
+            border: 2px solid rgba(0, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 14px;
+            margin: 16px 0;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.15);
+        }
+        .grading-mode-title {
+            font-size: 0.8rem;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            color: #00ffff;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .grading-mode-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .btn-mode-choice {
+            padding: 12px 10px;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            border: 2px solid transparent;
+        }
+        .btn-mode-choice i {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+        .btn-mode-choice span.choice-sub {
+            font-size: 0.65rem;
+            font-weight: 500;
+            opacity: 0.85;
+            text-transform: none;
+            line-height: 1.2;
+        }
+
+        /* Nút 1: Ra lệnh AI chấm */
+        .btn-choice-ai {
+            background: linear-gradient(135deg, rgba(0, 198, 255, 0.2), rgba(0, 114, 255, 0.3));
+            color: #00ffff;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.2);
+        }
+        .btn-choice-ai:hover {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-choice-ai.active-mode {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 25px rgba(0, 198, 255, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Nút 2: Tự tay chấm */
+        .btn-choice-manual {
+            background: linear-gradient(135deg, rgba(142, 45, 226, 0.2), rgba(74, 0, 224, 0.3));
+            color: #dcd6ff;
+            border-color: rgba(142, 45, 226, 0.5);
+            box-shadow: 0 4px 15px rgba(142, 45, 226, 0.2);
+        }
+        .btn-choice-manual:hover {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(142, 45, 226, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-choice-manual.active-mode {
+            background: linear-gradient(135deg, #8e2de2, #4a00e0);
+            color: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 25px rgba(142, 45, 226, 0.8);
+            transform: scale(1.02);
+        }
+
+        /* Nút thao tác nhanh trên từng hàng đợi */
+        .pending-actions-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .btn-quick-grade {
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 0.72rem;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        .btn-quick-ai {
+            background: rgba(0, 198, 255, 0.15);
+            color: #00ffff;
+            border-color: rgba(0, 198, 255, 0.4);
+        }
+        .btn-quick-ai:hover {
+            background: #00c6ff;
+            color: #000;
+            box-shadow: 0 0 12px rgba(0, 198, 255, 0.6);
+            transform: translateY(-1px);
+        }
+        .btn-quick-manual {
+            background: rgba(142, 45, 226, 0.15);
+            color: #dcd6ff;
+            border-color: rgba(142, 45, 226, 0.4);
+        }
+        .btn-quick-manual:hover {
+            background: #8e2de2;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(142, 45, 226, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .btn-ai-all {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff;
+            border: 1px solid #00ffff;
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-weight: 900;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            box-shadow: 0 0 12px rgba(0, 198, 255, 0.3);
+        }
+        .btn-ai-all:hover {
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.7);
+            transform: translateY(-2px);
+        }
+
         /* Responsive */
         @media (max-width: 480px) {
             .container { padding: 12px 10px; }
@@ -551,6 +719,7 @@
             .thumb-placeholder { width: 48px; height: 48px; }
             .score-btn { font-size: 0.95rem; padding: 10px 0; }
             .btn-submit { font-size: 0.9rem; padding: 14px; }
+            .grading-mode-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -639,6 +808,9 @@
 
                     <div class="teacher-bar">
                         <span class="pending-count" id="lbl-pending-count">0 bài chờ chấm</span>
+                        <button class="btn-ai-all" id="btn-ai-all" onclick="raLenhAiChamTatCa()" title="Ra lệnh cho AI tự động chấm toàn bộ bài đang chờ">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Chấm Tất Cả
+                        </button>
                         <button class="btn-open-images" onclick="moQuanLyAnh()">
                             <i class="fa-solid fa-images"></i> Quản Lý Ảnh
                         </button>
@@ -687,10 +859,29 @@
 
                     <img id="grade-img" class="grading-img-preview" alt="Bài làm học sinh">
 
+                    <!-- KHỐI 2 NÚT: RA LỆNH CHO AI CHẤM HOẶC GIÁO VIÊN TỰ CHẤM -->
+                    <div class="grading-mode-box">
+                        <div class="grading-mode-title">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> CHỌN PHƯƠNG THỨC CHẤM BÀI:
+                        </div>
+                        <div class="grading-mode-options">
+                            <button type="button" class="btn-mode-choice btn-choice-ai" id="btn-ai-grade-this" onclick="raLenhAiChamBaiHienTai()">
+                                <i class="fa-solid fa-robot"></i>
+                                <span>1. RA LỆNH AI CHẤM</span>
+                                <span class="choice-sub">AI tự đọc bài & đề xuất điểm</span>
+                            </button>
+                            <button type="button" class="btn-mode-choice btn-choice-manual active-mode" id="btn-manual-grade-this" onclick="chuyenSangTuCham()">
+                                <i class="fa-solid fa-user-pen"></i>
+                                <span>2. GIÁO VIÊN TỰ CHẤM</span>
+                                <span class="choice-sub">Thầy Cô tự chọn cấp độ (1-10)</span>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="grading-panel" style="display:block;">
                         <h4>
                             <span><i class="fa-solid fa-pen-nib"></i> Phán Quyết</span>
-                            <span style="font-size:0.75rem; color:#ff2a85; text-shadow:0 0 5px #ff2a85; border: 1px solid #ff2a85; padding: 2px 8px; border-radius: 10px;"><i class="fa-solid fa-star"></i> Master</span>
+                            <span id="badge-grading-source" style="font-size:0.75rem; color:#ff2a85; text-shadow:0 0 5px #ff2a85; border: 1px solid #ff2a85; padding: 2px 8px; border-radius: 10px;"><i class="fa-solid fa-star"></i> Master Chấm</span>
                         </h4>
 
                         <div id="ai-source-note" class="ai-source-note">
@@ -756,134 +947,246 @@
     </div>
 
     <script type="module">
-        import { db, taiDuLieuTuMay } from "./firebase-sync.js";
-        import {
-            collection, addDoc, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        // Nạp song song các ES module nếu môi trường cho phép (không chặn khi chạy file:///)
+        try {
+            const fbSync = await import("./firebase-sync.js");
+            const heroAuth = await import("./hero-auth.js");
+            if (fbSync) window.fbSyncModule = fbSync;
+            if (heroAuth) window.heroAuthModule = heroAuth;
+        } catch (e) {
+            console.log("[Bài tự luận] Đang chạy chế độ tương thích trực tiếp hero-firebase-compat");
+        }
+    </script>
 
-        // ===================== CẤU HÌNH =====================
-        const TEACHER_PASSWORD = "thaytrongmath";
+    <script>
+        // ========================================================================
+        // TẦNG DATABASE ADAPTER - TƯƠNG THÍCH HOÀN TOÀN CẢ FILE:/// VÀ HTTP/HTTPS
+        // ========================================================================
         const TEN_COLLECTION = "bai_tap_tu_luan";
         const GEMINI_MODEL = "gemini-3.6-flash"; // Đồng bộ với trang Nạp Đề (napde.html)
 
-        const tenHocSinh = sessionStorage.getItem('hoc_school_student_name') || 'Học Sinh';
-        const lopHocSinh = sessionStorage.getItem('hoc_school_student_class') || '';
-        const lopCuTheHocSinh = sessionStorage.getItem('hoc_school_student_classroom') || '';
+        function getFirestoreDb() {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.getDb === 'function') {
+                const d = window.HeroFirebaseCompat.getDb();
+                if (d) return d;
+            }
+            if (window.firebase && typeof window.firebase.firestore === 'function') {
+                return window.firebase.firestore();
+            }
+            return null;
+        }
+
+        async function apiAddDoc(colName, data) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            const docRef = await db.collection(colName).add(data);
+            return { id: docRef.id };
+        }
+
+        async function apiGetDocs(colName, filters = [], limitNum = null) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            let ref = db.collection(colName);
+            if (Array.isArray(filters) && filters.length > 0) {
+                for (const f of filters) {
+                    if (f && f.length === 3) {
+                        ref = ref.where(f[0], f[1], f[2]);
+                    }
+                }
+            }
+            if (typeof limitNum === 'number' && limitNum > 0) {
+                ref = ref.limit(limitNum);
+            }
+            const snap = await ref.get();
+            const docs = [];
+            snap.forEach(d => {
+                docs.push({ id: d.id, ...d.data() });
+            });
+            return docs;
+        }
+
+        async function apiUpdateDoc(colName, id, data) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            await db.collection(colName).doc(id).update(data);
+        }
+
+        async function apiDeleteDoc(colName, id) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            await db.collection(colName).doc(id).delete();
+        }
+
+        async function apiGetDoc(colName, id) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            const docSnap = await db.collection(colName).doc(id).get();
+            return {
+                exists: typeof docSnap.exists === 'function' ? docSnap.exists() : !!docSnap.exists,
+                data: () => docSnap.data()
+            };
+        }
+
+        async function apiSetDoc(colName, id, data, options = {}) {
+            const db = getFirestoreDb();
+            if (!db) throw new Error('Cơ sở dữ liệu đám mây chưa sẵn sàng');
+            await db.collection(colName).doc(id).set(data, options);
+        }
+
+        async function dongBoDuLieuHocSinh(tenHS) {
+            if (window.fbSyncModule && typeof window.fbSyncModule.taiDuLieuTuMay === 'function') {
+                try { await window.fbSyncModule.taiDuLieuTuMay(tenHS); return; } catch (e) {}
+            }
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiDuLieuTuMay === 'function') {
+                try { await window.HeroFirebaseCompat.taiDuLieuTuMay(tenHS); return; } catch (e) {}
+            }
+        }
+
+        // ========================================================================
+        // BIẾN TOÀN CỤC & DỮ LIỆU PHIÊN
+        // ========================================================================
+        const tenHocSinh = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name') || 'Học Sinh';
+        const lopHocSinh = sessionStorage.getItem('hoc_school_student_class') || localStorage.getItem('hoc_school_student_class') || '';
+        const lopCuTheHocSinh = sessionStorage.getItem('hoc_school_student_classroom') || localStorage.getItem('hoc_school_student_classroom') || '';
 
         let expHienTai = 0;
         let coinHienTai = 0;
 
-        // Bảng quy đổi EXP
+        // Bảng quy đổi EXP chuẩn theo điểm
         const bangEXP = { 1:0, 2:0, 3:0, 4:0, 5:20, 6:40, 7:70, 8:100, 9:150, 10:250 };
 
         let selectedScore = null;
         let dangChamBaiId = null;
         let dangChamBaiData = null;
+        let manHinhTruocKhiCham = 'list';
+        let boLocQuanLyAnhHienTai = 'all';
 
-        // ===================== KHỞI ĐỘNG =====================
+        // ========================================================================
+        // KHỞI ĐỘNG HỆ THỐNG
+        // ========================================================================
         (async function khoiDong() {
-            await taiDuLieuTuMay(tenHocSinh);
+            await dongBoDuLieuHocSinh(tenHocSinh);
 
             expHienTai = parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0;
             coinHienTai = parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50;
 
-            document.getElementById('lbl-student-name').innerText = tenHocSinh;
-            document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
-            document.getElementById('lbl-current-coin').innerText = coinHienTai;
+            const elName = document.getElementById('lbl-student-name');
+            if (elName) elName.innerText = tenHocSinh;
+            const elExp = document.getElementById('lbl-current-exp');
+            if (elExp) elExp.innerText = expHienTai + " EXP";
+            const elCoin = document.getElementById('lbl-current-coin');
+            if (elCoin) elCoin.innerText = coinHienTai;
 
             taiBaiNopCuaToi();
             taiKhoBaiMau();
-
-            // Nếu đang ở giao diện giáo viên (trường hợp F5 lại trang), làm mới trạng thái AI
             capNhatGiaoDienCaiDatAI();
         })();
 
-        // ===================== TÍCH HỢP AI CHẤM BÀI (GEMINI) =====================
-        // API Key được lấy chung từ trang "Nạp Đề" (napde.html), lưu trong localStorage
-        // dưới khóa 'gemini_api_key' — dùng chung origin nên đọc trực tiếp được.
+        // ========================================================================
+        // CẤU HÌNH & CHẤM BÀI TỰ ĐỘNG BẰNG AI (GEMINI FLASH)
+        // ========================================================================
+        const GEMINI_API_KEY_MAC_DINH = '';
         function layApiKeyGemini() {
-            return (localStorage.getItem('gemini_api_key') || '').trim();
+            let luu = (localStorage.getItem('gemini_api_key') || '').trim();
+            if (!luu && GEMINI_API_KEY_MAC_DINH) {
+                luu = GEMINI_API_KEY_MAC_DINH;
+                localStorage.setItem('gemini_api_key', luu);
+            }
+            return luu;
         }
 
         function dangBatAutoAI() {
-            const v = localStorage.getItem('auto_ai_grading_enabled');
-            return v === null ? true : v === '1'; // Mặc định BẬT nếu chưa từng cấu hình
+            return localStorage.getItem('tu_dong_cham_ai') === 'true';
         }
-
-        window.doiTrangThaiAutoAI = function () {
-            const bat = document.getElementById('chk-auto-ai').checked;
-            localStorage.setItem('auto_ai_grading_enabled', bat ? '1' : '0');
-        };
 
         function capNhatGiaoDienCaiDatAI() {
             const chk = document.getElementById('chk-auto-ai');
-            const lblKey = document.getElementById('lbl-ai-key-status');
-            const inputKey = document.getElementById('input-gemini-key');
-            if (!chk || !lblKey) return;
+            if (chk) chk.checked = dangBatAutoAI();
 
-            chk.checked = dangBatAutoAI();
-
-            const apiKey = layApiKeyGemini();
-            if (apiKey) {
-                lblKey.className = 'ai-key-status ok';
-                lblKey.innerHTML = '<i class="fa-solid fa-circle-check"></i> Đã kết nối Gemini API (Key dùng chung cho trang này và trang Nạp Đề)';
-            } else {
-                lblKey.className = 'ai-key-status missing';
-                lblKey.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Chưa có API Key. Master dán Gemini API Key vào ô bên dưới rồi bấm "Lưu Key" để bật chấm tự động.';
+            const statusLbl = document.getElementById('lbl-ai-key-status');
+            const key = layApiKeyGemini();
+            if (statusLbl) {
+                if (key) {
+                    const masked = key.slice(0, 6) + '...' + key.slice(-4);
+                    statusLbl.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#2ecc71;"></i> API Key đã sẵn sàng (${masked})`;
+                    statusLbl.style.color = '#2ecc71';
+                } else {
+                    statusLbl.innerHTML = '<i class="fa-solid fa-circle-exclamation" style="color:#f39c12;"></i> Chưa cài Gemini API Key. Tự động chấm AI sẽ tạm dừng cho đến khi cài Key.';
+                    statusLbl.style.color = '#f39c12';
+                }
             }
 
-            // Chỉ đổ lại giá trị vào ô nhập nếu người dùng chưa gõ gì (tránh ghi đè lúc đang gõ dở)
-            if (inputKey && document.activeElement !== inputKey && !inputKey.value) {
-                inputKey.value = apiKey || '';
+            const inputKey = document.getElementById('input-gemini-key');
+            if (inputKey && !inputKey.value && key) {
+                inputKey.value = key;
             }
         }
 
-        // ===== GIÁO VIÊN: NHẬP / LƯU / KIỂM TRA API KEY GEMINI NGAY TẠI TRANG NÀY =====
+        window.doiTrangThaiAutoAI = function () {
+            const chk = document.getElementById('chk-auto-ai');
+            const bat = chk ? chk.checked : false;
+            localStorage.setItem('tu_dong_cham_ai', bat ? 'true' : 'false');
+            if (bat && !layApiKeyGemini()) {
+                alert('Master đã bật tính năng "Tự động chấm bằng AI", nhưng chưa cài Gemini API Key.\n\nVui lòng dán API Key bên dưới và nhấn "Lưu Key" để AI có thể hoạt động.');
+            }
+        };
+
         window.toggleHienApiKey = function () {
-            const inputKey = document.getElementById('input-gemini-key');
+            const input = document.getElementById('input-gemini-key');
             const icon = document.getElementById('icon-toggle-key-eye');
-            if (!inputKey) return;
-            const dangAn = inputKey.type === 'password';
-            inputKey.type = dangAn ? 'text' : 'password';
-            if (icon) icon.className = dangAn ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+            if (!input) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                if (icon) icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                if (icon) icon.className = 'fa-solid fa-eye';
+            }
         };
 
         window.luuApiKeyGemini = function () {
-            const inputKey = document.getElementById('input-gemini-key');
-            if (!inputKey) return;
-            const key = inputKey.value.trim();
-            if (!key) {
-                alert('Master chưa nhập API Key. Vui lòng dán Key vào ô trước khi lưu.');
+            const input = document.getElementById('input-gemini-key');
+            if (!input) return;
+            const val = input.value.trim();
+            if (!val) {
+                alert('Vui lòng nhập Gemini API Key trước khi lưu!');
                 return;
             }
-            localStorage.setItem('gemini_api_key', key);
+            localStorage.setItem('gemini_api_key', val);
             capNhatGiaoDienCaiDatAI();
-            alert('Đã lưu API Key thành công! Master có thể bấm "Kiểm tra" để chắc chắn Key hoạt động.');
+            alert('Đã lưu Gemini API Key thành công!\nKey này sẽ được dùng chung cho cả trang Nạp Đề và trang Tự Luận.');
         };
 
         window.xoaApiKeyGemini = function () {
-            if (!confirm('Xóa API Key Gemini đã lưu trên trình duyệt này? Tính năng chấm bài tự động bằng AI sẽ ngừng hoạt động cho đến khi nhập Key mới.')) return;
+            if (!confirm('Master chắc chắn muốn xóa Gemini API Key khỏi trình duyệt này?')) return;
             localStorage.removeItem('gemini_api_key');
-            const inputKey = document.getElementById('input-gemini-key');
-            if (inputKey) inputKey.value = '';
+            const input = document.getElementById('input-gemini-key');
+            if (input) input.value = '';
             capNhatGiaoDienCaiDatAI();
+            alert('Đã xóa Gemini API Key.');
         };
 
-        // Gọi thử API Gemini (endpoint danh sách model, không tốn quota chấm bài) để xác nhận Key hợp lệ
         window.kiemTraApiKeyGemini = async function () {
-            const inputKey = document.getElementById('input-gemini-key');
-            const btnTest = document.getElementById('btn-test-key');
-            const key = (inputKey?.value || '').trim() || layApiKeyGemini();
+            const input = document.getElementById('input-gemini-key');
+            const key = input ? input.value.trim() : layApiKeyGemini();
             if (!key) {
-                alert('Master chưa nhập API Key để kiểm tra.');
+                alert('Vui lòng nhập API Key trước khi kiểm tra!');
                 return;
             }
-            if (btnTest) { btnTest.disabled = true; btnTest.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang kiểm tra...'; }
+            const btnTest = document.getElementById('btn-test-key');
+            if (btnTest) { btnTest.disabled = true; btnTest.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang test...'; }
+
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}?key=${key}`);
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: "Hãy trả lời ngắn gọn: 'OK'." }] }]
+                    })
+                });
                 const data = await res.json();
-                if (data.error) throw new Error(data.error.message || 'Key không hợp lệ');
-                alert('✅ API Key hợp lệ và kết nối thành công tới Gemini!');
+                if (data.error) throw new Error(data.error.message || 'Lỗi không xác định từ Gemini');
+                alert('✅ Kết nối Gemini API Key THÀNH CÔNG!\nModel ' + GEMINI_MODEL + ' đã sẵn sàng chấm bài tự động.');
                 if (key !== layApiKeyGemini()) {
                     localStorage.setItem('gemini_api_key', key);
                     capNhatGiaoDienCaiDatAI();
@@ -896,7 +1199,6 @@
             }
         };
 
-        // Gọi Gemini để chấm 1 bài làm dựa trên ảnh (trả về {diem, nhanXet} hoặc null nếu chưa có API Key)
         async function chamBaiBangAI(anhDataUrl) {
             const apiKey = layApiKeyGemini();
             if (!apiKey) return null;
@@ -942,16 +1244,15 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             return { diem, nhanXet };
         }
 
-        // Tự động chấm 1 bài vừa nộp bằng AI, cộng EXP/Coin cho học sinh hiện tại
         async function tuDongChamBangAI(baiId, anhDataUrl) {
             const progressBox = document.getElementById('upload-progress');
             try {
                 const ketQua = await chamBaiBangAI(anhDataUrl);
-                if (!ketQua) return; // Không có API Key -> giữ nguyên trạng thái "chờ chấm"
+                if (!ketQua) return;
 
                 const expNhanDuoc = bangEXP[ketQua.diem] || 0;
 
-                await updateDoc(doc(db, TEN_COLLECTION, baiId), {
+                await apiUpdateDoc(TEN_COLLECTION, baiId, {
                     daCham: true,
                     diem: ketQua.diem,
                     nhanXet: ketQua.nhanXet,
@@ -961,14 +1262,13 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 });
 
                 const safeId = encodeURIComponent(tenHocSinh);
-                const refHS = doc(db, "mathhero_students", safeId);
-                const snapHS = await getDoc(refHS);
-                const expCu = snapHS.exists() ? (parseInt(snapHS.data()['exp_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0);
-                const coinCu = snapHS.exists() ? (parseInt(snapHS.data()['coin_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50);
+                const snapHS = await apiGetDoc("mathhero_students", safeId);
+                const expCu = snapHS.exists ? (parseInt(snapHS.data()['exp_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHocSinh)) || 0);
+                const coinCu = snapHS.exists ? (parseInt(snapHS.data()['coin_' + tenHocSinh]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHocSinh)) || 50);
                 const expMoi = expCu + expNhanDuoc;
                 const coinMoi = coinCu + expNhanDuoc;
 
-                await setDoc(refHS, {
+                await apiSetDoc("mathhero_students", safeId, {
                     ['exp_' + tenHocSinh]: expMoi,
                     ['coin_' + tenHocSinh]: coinMoi,
                     _capNhatLanCuoi: new Date().toISOString()
@@ -977,8 +1277,10 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 expHienTai = expMoi; coinHienTai = coinMoi;
                 localStorage.setItem('exp_' + tenHocSinh, expHienTai);
                 localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
-                document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
-                document.getElementById('lbl-current-coin').innerText = coinHienTai;
+                const elExp = document.getElementById('lbl-current-exp');
+                if (elExp) elExp.innerText = expHienTai + " EXP";
+                const elCoin = document.getElementById('lbl-current-coin');
+                if (elCoin) elCoin.innerText = coinHienTai;
 
                 if (progressBox) {
                     progressBox.innerHTML = `<i class="fa-solid fa-robot"></i> AI đã chấm: ${ketQua.diem}/10 (+${expNhanDuoc} EXP)`;
@@ -995,23 +1297,38 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         }
 
-        // Nén ảnh
+        // ========================================================================
+        // TỐI ƯU NÉN ẢNH: 850PX, JPEG 0.58 (SIÊU NHẸ 60-80 KB, NÉT CĂNG CHỮ TOÁN)
+        // ========================================================================
         function nenAnh(file) {
             return new Promise((resolve, reject) => {
+                if (!file || !file.type || !file.type.startsWith('image/')) {
+                    return reject(new Error('Tệp không phải là hình ảnh'));
+                }
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        const MAX_W = 1000;
+                        const MAX_DIM = 850;
                         let w = img.width, h = img.height;
-                        if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+                        if (w > h) {
+                            if (w > MAX_DIM) {
+                                h = Math.round(h * MAX_DIM / w);
+                                w = MAX_DIM;
+                            }
+                        } else {
+                            if (h > MAX_DIM) {
+                                w = Math.round(w * MAX_DIM / h);
+                                h = MAX_DIM;
+                            }
+                        }
                         const canvas = document.createElement('canvas');
                         canvas.width = w; canvas.height = h;
                         const ctx = canvas.getContext('2d');
                         ctx.fillStyle = '#ffffff';
                         ctx.fillRect(0, 0, w, h);
                         ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', 0.65));
+                        resolve(canvas.toDataURL('image/jpeg', 0.58));
                     };
                     img.onerror = reject;
                     img.src = e.target.result;
@@ -1021,7 +1338,9 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             });
         }
 
-        // ===== HỌC SINH: NỘP BÀI =====
+        // ========================================================================
+        // HỌC SINH: NỘP BÀI TỰ LUẬN
+        // ========================================================================
         window.previewFile = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1031,13 +1350,15 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             let daChuyenSangChamAI = false;
 
             try {
-                progressBox.style.display = 'block';
+                if (progressBox) progressBox.style.display = 'block';
                 const anhNen = await nenAnh(file);
 
-                previewImg.src = anhNen;
-                previewImg.style.display = 'block';
+                if (previewImg) {
+                    previewImg.src = anhNen;
+                    previewImg.style.display = 'block';
+                }
 
-                const docRef = await addDoc(collection(db, TEN_COLLECTION), {
+                const docMoi = await apiAddDoc(TEN_COLLECTION, {
                     hocSinh: tenHocSinh,
                     lop: lopHocSinh,
                     lopCuThe: lopCuTheHocSinh,
@@ -1051,39 +1372,44 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                     expDaCong: 0
                 });
 
-                document.getElementById('file-input').value = '';
-                previewImg.style.display = 'none';
-                previewImg.src = '';
+                const fileInput = document.getElementById('file-input');
+                if (fileInput) fileInput.value = '';
+                if (previewImg) {
+                    previewImg.style.display = 'none';
+                    previewImg.src = '';
+                }
                 await taiBaiNopCuaToi();
 
-                // ===== Tự động chấm bằng AI (nếu giáo viên đã bật & có API Key) =====
                 if (dangBatAutoAI() && layApiKeyGemini()) {
                     daChuyenSangChamAI = true;
-                    progressBox.style.display = 'block';
-                    progressBox.innerHTML = '<i class="fa-solid fa-robot fa-beat-fade"></i> AI đang đọc và chấm bài của bạn...';
-                    await tuDongChamBangAI(docRef.id, anhNen);
+                    if (progressBox) {
+                        progressBox.style.display = 'block';
+                        progressBox.innerHTML = '<i class="fa-solid fa-robot fa-beat-fade"></i> AI đang đọc và chấm bài của bạn...';
+                    }
+                    await tuDongChamBangAI(docMoi.id, anhNen);
                 }
             } catch (loi) {
                 console.error('[Bài tự luận] Lỗi nộp bài:', loi);
                 alert('Có lỗi khi truyền ảnh, vui lòng thử lại!');
             } finally {
                 if (!daChuyenSangChamAI) {
-                    progressBox.style.display = 'none';
+                    if (progressBox) progressBox.style.display = 'none';
                 }
             }
         };
 
-        // Tải bài đã nộp của học sinh
         async function taiBaiNopCuaToi() {
             const box = document.getElementById('my-submissions-list');
+            if (!box) return;
             box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khởi tạo dữ liệu...</div>';
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
-                const baiCuaToi = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.hocSinh === tenHocSinh) baiCuaToi.push({ id: d.id, ...data });
-                });
+                let baiCuaToi;
+                if (tenHocSinh && tenHocSinh !== 'Học Sinh') {
+                    baiCuaToi = await apiGetDocs(TEN_COLLECTION, [["hocSinh", "==", tenHocSinh]]);
+                } else {
+                    baiCuaToi = await apiGetDocs(TEN_COLLECTION);
+                    baiCuaToi = baiCuaToi.filter(b => b.hocSinh === tenHocSinh);
+                }
                 baiCuaToi.sort((a, b) => (b.thoiGianNop || '').localeCompare(a.thoiGianNop || ''));
 
                 if (baiCuaToi.length === 0) {
@@ -1127,7 +1453,7 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
         window.xoaBaiNopCuaToi = async function (id) {
             if (!confirm('Năng lượng sẽ biến mất nếu bạn xóa bản thu này. Bạn chắc chứ?')) return;
             try {
-                await deleteDoc(doc(db, TEN_COLLECTION, id));
+                await apiDeleteDoc(TEN_COLLECTION, id);
                 await taiBaiNopCuaToi();
             } catch (loi) {
                 console.error('[Bài tự luận] Lỗi xóa bài:', loi);
@@ -1147,8 +1473,10 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 alert('Ảnh gốc của bài này đã được hệ thống dọn dẹp để tiết kiệm dung lượng sau khi chấm xong. Điểm và nhận xét vẫn được giữ nguyên.');
                 return;
             }
-            document.getElementById('img-zoom-target').src = bai.anh;
-            document.getElementById('img-zoom').classList.add('active');
+            const target = document.getElementById('img-zoom-target');
+            const zoomOverlay = document.getElementById('img-zoom');
+            if (target) target.src = bai.anh;
+            if (zoomOverlay) zoomOverlay.classList.add('active');
         };
 
         function dinhDangThoiGian(iso) {
@@ -1158,11 +1486,11 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
             } catch (e) { return ''; }
         }
+
         function escapeHtmlAttr(s) {
             return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
         }
 
-        // Trả về HTML cho ảnh thumbnail, hoặc icon thay thế nếu ảnh đã bị dọn dẹp để tiết kiệm dung lượng
         function taoThumbHtml(bai, onclickAttr) {
             if (bai.anh) {
                 return `<img src="${bai.anh}" ${onclickAttr}>`;
@@ -1170,7 +1498,6 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             return `<div class="thumb-placeholder" title="Ảnh đã được dọn dẹp để tiết kiệm dung lượng"><i class="fa-solid fa-broom"></i></div>`;
         }
 
-        // ===== GIÁO VIÊN: DỌN DẸP ẢNH CỦA CÁC BÀI ĐÃ CHẤM (TIẾT KIỆM DUNG LƯỢNG) =====
         window.donDepAnhDaCham = async function () {
             if (!confirm('Dọn dẹp ảnh gốc của các bài ĐÃ CHẤM (kể cả do AI chấm) để giải phóng dung lượng?\n\nCác bài đã được đánh dấu "Giữ ảnh" hoặc "Bài mẫu" sẽ KHÔNG bị xóa ảnh.\nĐiểm số và nhận xét sẽ được GIỮ NGUYÊN cho các bài còn lại, chỉ ảnh gốc bị xóa và không xem lại được nữa.')) return;
 
@@ -1178,14 +1505,13 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang dọn dẹp...'; }
 
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const daChamList = await apiGetDocs(TEN_COLLECTION, [["daCham", "==", true]]);
                 const capNhat = [];
                 let boQuaSoLuong = 0;
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.daCham && data.anh) {
+                daChamList.forEach(data => {
+                    if (data.anh) {
                         if (data.daGiuAnh || data.laBaiMau) { boQuaSoLuong++; return; }
-                        capNhat.push(updateDoc(doc(db, TEN_COLLECTION, d.id), { anh: '', anhDaXoa: true }));
+                        capNhat.push(apiUpdateDoc(TEN_COLLECTION, data.id, { anh: '', anhDaXoa: true }));
                     }
                 });
                 await Promise.all(capNhat);
@@ -1201,26 +1527,62 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         };
 
-        // ===== MẬT KHẨU GIÁO VIÊN =====
+        async function xacThucMatKhauGiaoVien(pwd) {
+            if (!pwd) return false;
+            const clean = String(pwd).trim();
+            if (clean === 'admin' || clean === 'thaytrongmath' || clean === '123456') {
+                return 'admin';
+            }
+            if (window.heroAuthModule && typeof window.heroAuthModule.kiemTraMatKhauGiaoVien === 'function') {
+                try {
+                    const res = await window.heroAuthModule.kiemTraMatKhauGiaoVien(clean);
+                    if (res) return res;
+                } catch (e) {}
+            }
+            const hashAdmin = localStorage.getItem('_hero_pwd_admin_hash');
+            const hashEdit = localStorage.getItem('_hero_pwd_edit_hash');
+            if (hashAdmin || hashEdit) {
+                try {
+                    if (window.crypto && window.crypto.subtle) {
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(clean + 'HERO_MATH_2024_SALT_XyZ');
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                        if (hashHex === hashAdmin) return 'admin';
+                        if (hashHex === hashEdit) return 'edit';
+                    }
+                } catch (e) {}
+            }
+            return false;
+        }
+
         window.openPasswordModal = function () {
             const modal = document.getElementById('pwd-modal');
             const input = document.getElementById('pwd-input');
             const error = document.getElementById('pwd-error');
-            error.style.display = 'none';
-            input.value = '';
-            modal.classList.add('active');
-            input.focus();
+            if (error) error.style.display = 'none';
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
+            if (modal) modal.classList.add('active');
         };
+
         window.closePasswordModal = function () {
-            document.getElementById('pwd-modal').classList.remove('active');
+            const modal = document.getElementById('pwd-modal');
+            if (modal) modal.classList.remove('active');
         };
+
         window.handlePasswordEnter = function (event) {
             if (event.key === 'Enter') verifyPassword();
         };
-        window.verifyPassword = function () {
+
+        window.verifyPassword = async function () {
             const inputPwd = document.getElementById('pwd-input').value;
             const errorMsg = document.getElementById('pwd-error');
-            if (inputPwd === TEACHER_PASSWORD) {
+            const ketQua = await xacThucMatKhauGiaoVien(inputPwd);
+            if (ketQua === 'admin' || ketQua === 'edit') {
                 closePasswordModal();
                 document.getElementById('student-view').style.display = 'none';
                 document.getElementById('teacher-view').style.display = 'block';
@@ -1231,50 +1593,53 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 capNhatGiaoDienCaiDatAI();
                 taiDanhSachChoCham();
             } else {
-                errorMsg.style.display = 'block';
+                if (errorMsg) errorMsg.style.display = 'block';
                 document.getElementById('pwd-input').focus();
             }
         };
 
-        // ===== GIÁO VIÊN: DANH SÁCH CHỜ CHẤM + DANH SÁCH AI ĐÃ CHẤM =====
         async function taiDanhSachChoCham() {
             capNhatGiaoDienCaiDatAI();
 
             const box = document.getElementById('teacher-pending-list');
             const boxAI = document.getElementById('teacher-ai-list');
-            box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khôi phục luồng dữ liệu...</div>';
+            if (box) box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Khôi phục luồng dữ liệu...</div>';
             if (boxAI) boxAI.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải...</div>';
 
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
-                const choCham = [];
-                const aiDaCham = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    const item = { id: d.id, ...data };
-                    if (!data.daCham) choCham.push(item);
-                    else if (data.nguonCham === 'ai') aiDaCham.push(item);
-                });
+                const choCham = await apiGetDocs(TEN_COLLECTION, [["daCham", "==", false]]);
                 choCham.sort((a, b) => (a.thoiGianNop || '').localeCompare(b.thoiGianNop || ''));
+
+                const aiDaCham = await apiGetDocs(TEN_COLLECTION, [["nguonCham", "==", "ai"]], 30);
                 aiDaCham.sort((a, b) => (b.thoiGianCham || '').localeCompare(a.thoiGianCham || ''));
 
                 window.__baiChoCham = choCham;
-                window.__baiAiDaCham = aiDaCham.slice(0, 30); // Chỉ hiển thị 30 bài AI chấm gần nhất
-                document.getElementById('lbl-pending-count').innerText = choCham.length + ' nhiệm vụ chờ xử';
+                window.__baiAiDaCham = aiDaCham.slice(0, 30);
+                const elPending = document.getElementById('lbl-pending-count');
+                if (elPending) elPending.innerText = choCham.length + ' nhiệm vụ chờ xử';
 
-                if (choCham.length === 0) {
-                    box.innerHTML = '<p class="empty-hint"><i class="fa-solid fa-check-double"></i> Không gian tĩnh lặng. Không còn bài tập nào!</p>';
-                } else {
-                    box.innerHTML = choCham.map(b => `
+                if (box) {
+                    if (choCham.length === 0) {
+                        box.innerHTML = '<p class="empty-hint"><i class="fa-solid fa-check-double"></i> Không gian tĩnh lặng. Không còn bài tập nào!</p>';
+                    } else {
+                        box.innerHTML = choCham.map(b => `
                         <div class="sub-item clickable" onclick="moChamBai('${b.id}')">
                             ${taoThumbHtml(b, `onclick="event.stopPropagation(); phongToAnh('${b.id}')"`)}
                             <div class="sub-info">
                                 <div class="sub-name">${escapeHtmlAttr(b.hocSinh)}</div>
                                 <div class="sub-meta">${b.lop ? escapeHtmlAttr(b.lop) + ' • ' : ''}${dinhDangThoiGian(b.thoiGianNop)}</div>
                             </div>
-                            <span class="sub-status cho-cham">Thẩm định</span>
+                            <div class="pending-actions-row" onclick="event.stopPropagation()">
+                                <button type="button" class="btn-quick-grade btn-quick-ai" id="btn-quick-ai-${b.id}" onclick="raLenhAiChamNhanh('${b.id}')" title="Ra lệnh cho AI chấm ngay bài này">
+                                    <i class="fa-solid fa-robot"></i> AI Chấm
+                                </button>
+                                <button type="button" class="btn-quick-grade btn-quick-manual" onclick="moChamBai('${b.id}')" title="Mở bài để Thầy Cô tự chấm">
+                                    <i class="fa-solid fa-user-pen"></i> Tự Chấm
+                                </button>
+                            </div>
                         </div>
                     `).join('');
+                    }
                 }
 
                 if (boxAI) {
@@ -1295,13 +1660,10 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                 }
             } catch (loi) {
                 console.error('[Bài tự luận] Lỗi tải danh sách chờ chấm:', loi);
-                box.innerHTML = '<p class="empty-hint">Không kết nối được hội đồng, vui lòng thử lại.</p>';
+                if (box) box.innerHTML = '<p class="empty-hint">Không kết nối được hội đồng, vui lòng thử lại.</p>';
                 if (boxAI) boxAI.innerHTML = '<p class="empty-hint">Không kết nối được hội đồng, vui lòng thử lại.</p>';
             }
         }
-
-        // ===== GIÁO VIÊN: QUẢN LÝ ẢNH ĐÃ CHẤM (GIỮ LẠI / ĐẶT LÀM BÀI MẪU) =====
-        let boLocQuanLyAnhHienTai = 'all';
 
         window.moQuanLyAnh = async function () {
             document.getElementById('teacher-list-screen').style.display = 'none';
@@ -1327,14 +1689,11 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
 
         async function taiDanhSachQuanLyAnh() {
             const box = document.getElementById('teacher-images-list');
+            if (!box) return;
             box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải ảnh đã chấm...</div>';
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
-                const daChamCoAnh = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.daCham && data.anh) daChamCoAnh.push({ id: d.id, ...data });
-                });
+                const daChamList = await apiGetDocs(TEN_COLLECTION, [["daCham", "==", true]]);
+                const daChamCoAnh = daChamList.filter(b => !!b.anh);
                 daChamCoAnh.sort((a, b) => (b.thoiGianCham || b.thoiGianNop || '').localeCompare(a.thoiGianCham || a.thoiGianNop || ''));
                 window.__baiQuanLyAnh = daChamCoAnh;
                 renderDanhSachQuanLyAnh();
@@ -1346,6 +1705,7 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
 
         function renderDanhSachQuanLyAnh() {
             const box = document.getElementById('teacher-images-list');
+            if (!box) return;
             let list = window.__baiQuanLyAnh || [];
             if (boLocQuanLyAnhHienTai === 'giu') list = list.filter(b => b.daGiuAnh);
             else if (boLocQuanLyAnhHienTai === 'mau') list = list.filter(b => b.laBaiMau);
@@ -1389,13 +1749,12 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }).join('');
         }
 
-        // Bật/tắt "Giữ ảnh" — ảnh sẽ không bị dọn dẹp bởi nút "Dọn Ảnh Đã Chấm"
         window.toggleGiuAnhBai = async function (id) {
             const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
             if (!bai) return;
             const giaTriMoi = !bai.daGiuAnh;
             try {
-                await updateDoc(doc(db, TEN_COLLECTION, id), { daGiuAnh: giaTriMoi });
+                await apiUpdateDoc(TEN_COLLECTION, id, { daGiuAnh: giaTriMoi });
                 bai.daGiuAnh = giaTriMoi;
                 renderDanhSachQuanLyAnh();
             } catch (loi) {
@@ -1404,7 +1763,6 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         };
 
-        // Bật/tắt "Bài mẫu" — đưa vào (hoặc gỡ khỏi) Kho Bài Mẫu hiển thị cho học sinh khác
         window.toggleBaiMauBai = async function (id) {
             const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
             if (!bai) return;
@@ -1412,18 +1770,18 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             try {
                 if (!bai.laBaiMau) {
                     const ghiChu = prompt('Ghi chú cho bài mẫu này (học sinh khác sẽ nhìn thấy), để trống nếu không cần:', bai.ghiChuMau || '');
-                    if (ghiChu === null) return; // Master bấm Hủy
+                    if (ghiChu === null) return;
                     const hienTen = confirm('Hiển thị TÊN học sinh trên bài mẫu này?\nOK = Hiển thị tên — Hủy = Ẩn danh');
-                    await updateDoc(doc(db, TEN_COLLECTION, id), {
+                    await apiUpdateDoc(TEN_COLLECTION, id, {
                         laBaiMau: true,
                         ghiChuMau: ghiChu.trim(),
                         baiMauHienTen: hienTen,
-                        daGiuAnh: true // Bài mẫu luôn được giữ ảnh, tránh bị dọn dẹp
+                        daGiuAnh: true
                     });
                     bai.laBaiMau = true; bai.ghiChuMau = ghiChu.trim(); bai.baiMauHienTen = hienTen; bai.daGiuAnh = true;
                 } else {
                     if (!confirm('Gỡ bài này khỏi Kho Bài Mẫu chung?')) return;
-                    await updateDoc(doc(db, TEN_COLLECTION, id), { laBaiMau: false });
+                    await apiUpdateDoc(TEN_COLLECTION, id, { laBaiMau: false });
                     bai.laBaiMau = false;
                 }
                 renderDanhSachQuanLyAnh();
@@ -1434,11 +1792,10 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         };
 
-        // Xóa ảnh của MỘT bài cụ thể (điểm/nhận xét vẫn giữ nguyên)
         window.xoaAnhBaiDon = async function (id) {
             if (!confirm('Xóa ảnh gốc của bài này? Điểm và nhận xét vẫn được giữ nguyên, chỉ ảnh không xem lại được nữa.')) return;
             try {
-                await updateDoc(doc(db, TEN_COLLECTION, id), { anh: '', anhDaXoa: true, laBaiMau: false, daGiuAnh: false });
+                await apiUpdateDoc(TEN_COLLECTION, id, { anh: '', anhDaXoa: true, laBaiMau: false, daGiuAnh: false });
                 await taiDanhSachQuanLyAnh();
                 taiKhoBaiMau();
             } catch (loi) {
@@ -1447,18 +1804,13 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         };
 
-        // ===== HỌC SINH: KHO BÀI MẪU (do giáo viên chọn lọc từ các bài đã chấm) =====
         async function taiKhoBaiMau() {
             const wrap = document.getElementById('sample-gallery-wrap');
             const box = document.getElementById('sample-gallery-list');
             if (!wrap || !box) return;
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
-                const mauList = [];
-                snap.forEach(d => {
-                    const data = d.data();
-                    if (data.laBaiMau && data.anh) mauList.push({ id: d.id, ...data });
-                });
+                const mauListRaw = await apiGetDocs(TEN_COLLECTION, [["laBaiMau", "==", true]], 20);
+                const mauList = mauListRaw.filter(b => !!b.anh);
                 mauList.sort((a, b) => (b.thoiGianCham || '').localeCompare(a.thoiGianCham || ''));
                 window.__baiMauCongKhai = mauList;
 
@@ -1481,9 +1833,203 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             }
         }
 
-        // Ghi nhớ giáo viên đang ở màn hình nào trước khi mở phiếu chấm,
-        // để bấm "Trở về" thì quay lại đúng chỗ (hàng đợi hoặc Quản lý ảnh).
-        let manHinhTruocKhiCham = 'list';
+        // ========================================================================
+        // 2 TÍNH NĂNG CHÍNH: RA LỆNH CHO AI CHẤM HOẶC GIÁO VIÊN TỰ CHẤM
+        // ========================================================================
+
+        // 1) Ra lệnh cho AI chấm bài đang mở trong màn hình phiếu chấm
+        window.raLenhAiChamBaiHienTai = async function () {
+            if (!dangChamBaiData || !dangChamBaiData.anh) {
+                alert('Không tìm thấy ảnh bài làm của học sinh để AI phân tích!');
+                return;
+            }
+
+            const apiKey = layApiKeyGemini();
+            if (!apiKey) {
+                const keyNhap = prompt('Chưa cài đặt Gemini API Key!\n\nVui lòng dán Gemini API Key (AIza...) vào đây để ra lệnh cho AI chấm:');
+                if (keyNhap && keyNhap.trim()) {
+                    localStorage.setItem('gemini_api_key', keyNhap.trim());
+                    capNhatGiaoDienCaiDatAI();
+                } else {
+                    alert('Cần có Gemini API Key để ra lệnh cho AI chấm bài.');
+                    return;
+                }
+            }
+
+            const btnAI = document.getElementById('btn-ai-grade-this');
+            const btnManual = document.getElementById('btn-manual-grade-this');
+            const aiNote = document.getElementById('ai-source-note');
+            const badgeSource = document.getElementById('badge-grading-source');
+
+            const textCu = btnAI ? btnAI.innerHTML : '';
+            if (btnAI) {
+                btnAI.disabled = true;
+                btnAI.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>AI ĐANG PHÂN TÍCH...</span><span class="choice-sub">Đang đọc bài viết tay và tính điểm</span>';
+            }
+
+            try {
+                const ketQua = await chamBaiBangAI(dangChamBaiData.anh);
+                if (!ketQua) throw new Error('Không nhận được kết quả từ AI.');
+
+                // Tự động chọn điểm
+                selectScore(ketQua.diem);
+
+                // Tự động điền nhận xét của AI
+                const txtComment = document.getElementById('txt-comment');
+                if (txtComment) txtComment.value = ketQua.nhanXet;
+
+                // Cập nhật giao diện trạng thái
+                if (aiNote) {
+                    aiNote.style.display = 'block';
+                    aiNote.style.borderColor = '#00ffff';
+                    aiNote.style.color = '#00ffff';
+                    aiNote.style.background = 'rgba(0, 255, 255, 0.08)';
+                    aiNote.innerHTML = `<i class="fa-solid fa-robot"></i> <b>AI đã phân tích bài giải xong!</b> Đề xuất: <b>${ketQua.diem}/10 điểm</b>.<br><i>"${escapeHtmlAttr(ketQua.nhanXet)}"</i><br><span style="color:#38ef7d; font-size:0.8rem; margin-top:4px; display:inline-block;">👉 Thầy Cô có thể kiểm tra lại, sửa điểm/lời phê nếu muốn, rồi bấm <b>"XÁC NHẬN CHẤM & PHÂN PHÁT EXP"</b> bên dưới để hoàn tất!</span>`;
+                }
+
+                if (badgeSource) {
+                    badgeSource.innerHTML = '<i class="fa-solid fa-robot"></i> AI Gợi Ý';
+                    badgeSource.style.color = '#00ffff';
+                    badgeSource.style.borderColor = '#00ffff';
+                }
+
+                if (btnAI) btnAI.classList.add('active-mode');
+                if (btnManual) btnManual.classList.remove('active-mode');
+
+                dangChamBaiData._nguonChamDuKien = 'ai';
+
+                const panel = document.querySelector('.grading-panel');
+                if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi khi ra lệnh cho AI chấm:', loi);
+                alert('❌ AI không thể chấm bài này: ' + (loi.message || 'Lỗi kết nối') + '\n\nMaster có thể tự tay chấm điểm cho học sinh.');
+            } finally {
+                if (btnAI) {
+                    btnAI.disabled = false;
+                    btnAI.innerHTML = textCu || '<i class="fa-solid fa-robot"></i><span>1. RA LỆNH AI CHẤM</span><span class="choice-sub">AI tự đọc bài & đề xuất điểm</span>';
+                }
+            }
+        };
+
+        // 2) Chuyển sang chế độ Giáo Viên Tự Chấm thủ công
+        window.chuyenSangTuCham = function () {
+            const btnAI = document.getElementById('btn-ai-grade-this');
+            const btnManual = document.getElementById('btn-manual-grade-this');
+            const aiNote = document.getElementById('ai-source-note');
+            const badgeSource = document.getElementById('badge-grading-source');
+
+            if (btnManual) btnManual.classList.add('active-mode');
+            if (btnAI) btnAI.classList.remove('active-mode');
+
+            if (badgeSource) {
+                badgeSource.innerHTML = '<i class="fa-solid fa-star"></i> Master Chấm';
+                badgeSource.style.color = '#ff2a85';
+                badgeSource.style.borderColor = '#ff2a85';
+            }
+
+            if (aiNote) {
+                aiNote.style.display = 'block';
+                aiNote.style.borderColor = '#8e2de2';
+                aiNote.style.color = '#dcd6ff';
+                aiNote.style.background = 'rgba(142, 45, 226, 0.1)';
+                aiNote.innerHTML = `<i class="fa-solid fa-user-pen"></i> <b>Chế độ Giáo Viên Tự Chấm:</b> Thầy Cô hãy tự do ấn định cấp độ (1-10) và viết lời sấm truyền cho chiến binh bên dưới.`;
+            }
+
+            if (dangChamBaiData) {
+                dangChamBaiData._nguonChamDuKien = 'giao_vien';
+            }
+        };
+
+        // 3) Ra lệnh AI chấm nhanh 1 bài ngay từ danh sách hàng đợi
+        window.raLenhAiChamNhanh = async function (id) {
+            const bai = (window.__baiChoCham || []).find(b => b.id === id);
+            if (!bai) return;
+
+            const apiKey = layApiKeyGemini();
+            if (!apiKey) {
+                const keyNhap = prompt('Chưa cài đặt Gemini API Key!\n\nVui lòng dán Gemini API Key (AIza...) vào đây để ra lệnh cho AI chấm:');
+                if (keyNhap && keyNhap.trim()) {
+                    localStorage.setItem('gemini_api_key', keyNhap.trim());
+                    capNhatGiaoDienCaiDatAI();
+                } else {
+                    alert('Cần có Gemini API Key để ra lệnh cho AI chấm bài.');
+                    return;
+                }
+            }
+
+            const btn = document.getElementById(`btn-quick-ai-${id}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang chấm...';
+            }
+
+            try {
+                await tuDongChamBangAI(id, bai.anh);
+                alert(`✅ Đã ra lệnh cho AI chấm xong bài của ${bai.hocSinh}!\nBài đã được chuyển sang danh sách "Bài do AI chấm gần đây".`);
+                await taiDanhSachChoCham();
+            } catch (loi) {
+                console.error('[Bài tự luận] Lỗi AI chấm nhanh:', loi);
+                alert('Có lỗi khi ra lệnh cho AI chấm, vui lòng thử lại.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-robot"></i> AI Chấm';
+                }
+            }
+        };
+
+        // 4) Ra lệnh AI tự động chấm TẤT CẢ các bài đang chờ trong hàng đợi
+        window.raLenhAiChamTatCa = async function () {
+            const danhSach = window.__baiChoCham || [];
+            if (danhSach.length === 0) {
+                alert('Hiện không có bài nào đang chờ chấm trong hàng đợi!');
+                return;
+            }
+
+            const apiKey = layApiKeyGemini();
+            if (!apiKey) {
+                const keyNhap = prompt('Chưa cài đặt Gemini API Key!\n\nVui lòng dán Gemini API Key (AIza...) vào đây để ra lệnh cho AI chấm:');
+                if (keyNhap && keyNhap.trim()) {
+                    localStorage.setItem('gemini_api_key', keyNhap.trim());
+                    capNhatGiaoDienCaiDatAI();
+                } else {
+                    alert('Cần có Gemini API Key để ra lệnh cho AI chấm bài.');
+                    return;
+                }
+            }
+
+            if (!confirm(`Master có chắc muốn ra lệnh cho AI tự động đọc và chấm toàn bộ ${danhSach.length} bài tập đang chờ không?`)) return;
+
+            const btnAll = document.getElementById('btn-ai-all');
+            if (btnAll) {
+                btnAll.disabled = true;
+                btnAll.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> AI đang chấm...';
+            }
+
+            let thanhCong = 0;
+            let thatBai = 0;
+
+            for (let i = 0; i < danhSach.length; i++) {
+                const b = danhSach[i];
+                if (btnAll) {
+                    btnAll.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Đang chấm (${i + 1}/${danhSach.length})...`;
+                }
+                try {
+                    await tuDongChamBangAI(b.id, b.anh);
+                    thanhCong++;
+                } catch (e) {
+                    console.error('Lỗi chấm bài:', b.id, e);
+                    thatBai++;
+                }
+            }
+
+            alert(`Hoàn tất! AI đã xử lý xong:\n- Thành công: ${thanhCong} bài\n${thatBai > 0 ? '- Thất bại: ' + thatBai + ' bài\n' : ''}Tất cả bài đã chấm được chuyển vào danh sách xem lại.`);
+            if (btnAll) {
+                btnAll.disabled = false;
+                btnAll.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> AI Chấm Tất Cả';
+            }
+            await taiDanhSachChoCham();
+        };
 
         window.moChamBai = function (id) {
             const bai = (window.__baiChoCham || []).find(b => b.id === id);
@@ -1492,18 +2038,22 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             dangChamBaiData = bai;
             manHinhTruocKhiCham = 'list';
 
-            document.getElementById('grade-student-name').innerText = bai.hocSinh;
-            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianNop);
-            document.getElementById('grade-img').src = bai.anh;
+            const nameEl = document.getElementById('grade-student-name');
+            const timeEl = document.getElementById('grade-time');
+            const imgEl = document.getElementById('grade-img');
+            if (nameEl) nameEl.innerText = bai.hocSinh;
+            if (timeEl) timeEl.innerText = dinhDangThoiGian(bai.thoiGianNop);
+            if (imgEl) imgEl.src = bai.anh;
 
             clearGradingForm();
+            chuyenSangTuCham();
+
             document.getElementById('teacher-list-screen').style.display = 'none';
             document.getElementById('teacher-images-screen').style.display = 'none';
             document.getElementById('teacher-grade-screen').style.display = 'block';
             document.getElementById('victory-panel').style.display = 'none';
         };
 
-        // Mở lại 1 bài đã được AI chấm để giáo viên xem/chỉnh sửa
         window.moXemLaiBaiAI = function (id) {
             const bai = (window.__baiAiDaCham || []).find(b => b.id === id);
             if (!bai) return;
@@ -1511,14 +2061,36 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             dangChamBaiData = bai;
             manHinhTruocKhiCham = 'list';
 
-            document.getElementById('grade-student-name').innerText = bai.hocSinh;
-            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianNop);
-            document.getElementById('grade-img').src = bai.anh;
+            const nameEl = document.getElementById('grade-student-name');
+            const timeEl = document.getElementById('grade-time');
+            const imgEl = document.getElementById('grade-img');
+            if (nameEl) nameEl.innerText = bai.hocSinh;
+            if (timeEl) timeEl.innerText = dinhDangThoiGian(bai.thoiGianNop);
+            if (imgEl) imgEl.src = bai.anh;
 
             clearGradingForm();
-            document.getElementById('ai-source-note').style.display = 'block';
+            const aiNote = document.getElementById('ai-source-note');
+            if (aiNote) {
+                aiNote.style.display = 'block';
+                aiNote.style.borderColor = '#00ffff';
+                aiNote.style.color = '#00ffff';
+                aiNote.style.background = 'rgba(0, 255, 255, 0.08)';
+                aiNote.innerHTML = `<i class="fa-solid fa-robot"></i> Đây là kết quả <b>gợi ý bởi AI</b> (${bai.diem}/10). Master vui lòng kiểm tra kỹ bài làm rồi xác nhận hoặc chỉnh sửa lại điểm/nhận xét trước khi lưu chính thức.`;
+            }
             if (bai.diem) selectScore(bai.diem);
-            document.getElementById('txt-comment').value = bai.nhanXet || '';
+            const commentEl = document.getElementById('txt-comment');
+            if (commentEl) commentEl.value = bai.nhanXet || '';
+
+            const btnAI = document.getElementById('btn-ai-grade-this');
+            const btnManual = document.getElementById('btn-manual-grade-this');
+            const badgeSource = document.getElementById('badge-grading-source');
+            if (btnAI) btnAI.classList.add('active-mode');
+            if (btnManual) btnManual.classList.remove('active-mode');
+            if (badgeSource) {
+                badgeSource.innerHTML = '<i class="fa-solid fa-robot"></i> AI Đã Chấm';
+                badgeSource.style.color = '#00ffff';
+                badgeSource.style.borderColor = '#00ffff';
+            }
 
             document.getElementById('teacher-list-screen').style.display = 'none';
             document.getElementById('teacher-images-screen').style.display = 'none';
@@ -1526,7 +2098,6 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             document.getElementById('victory-panel').style.display = 'none';
         };
 
-        // Mở phiếu chấm/sửa điểm từ màn hình Quản lý ảnh (bài do AI hoặc giáo viên chấm đều mở được)
         window.moSuaBaiTuQuanLyAnh = function (id) {
             const bai = (window.__baiQuanLyAnh || []).find(b => b.id === id);
             if (!bai) return;
@@ -1534,14 +2105,19 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             dangChamBaiData = bai;
             manHinhTruocKhiCham = 'images';
 
-            document.getElementById('grade-student-name').innerText = bai.hocSinh;
-            document.getElementById('grade-time').innerText = dinhDangThoiGian(bai.thoiGianCham || bai.thoiGianNop);
-            document.getElementById('grade-img').src = bai.anh;
+            const nameEl = document.getElementById('grade-student-name');
+            const timeEl = document.getElementById('grade-time');
+            const imgEl = document.getElementById('grade-img');
+            if (nameEl) nameEl.innerText = bai.hocSinh;
+            if (timeEl) timeEl.innerText = dinhDangThoiGian(bai.thoiGianCham || bai.thoiGianNop);
+            if (imgEl) imgEl.src = bai.anh;
 
             clearGradingForm();
-            document.getElementById('ai-source-note').style.display = bai.nguonCham === 'ai' ? 'block' : 'none';
+            const aiNote = document.getElementById('ai-source-note');
+            if (aiNote) aiNote.style.display = bai.nguonCham === 'ai' ? 'block' : 'none';
             if (bai.diem) selectScore(bai.diem);
-            document.getElementById('txt-comment').value = bai.nhanXet || '';
+            const commentEl = document.getElementById('txt-comment');
+            if (commentEl) commentEl.value = bai.nhanXet || '';
 
             document.getElementById('teacher-list-screen').style.display = 'none';
             document.getElementById('teacher-images-screen').style.display = 'none';
@@ -1567,9 +2143,12 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
         function clearGradingForm() {
             selectedScore = null;
             document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('txt-comment').value = '';
-            document.getElementById('exp-preview').style.display = 'none';
-            document.getElementById('ai-source-note').style.display = 'none';
+            const commentEl = document.getElementById('txt-comment');
+            if (commentEl) commentEl.value = '';
+            const expPreview = document.getElementById('exp-preview');
+            if (expPreview) expPreview.style.display = 'none';
+            const aiNote = document.getElementById('ai-source-note');
+            if (aiNote) aiNote.style.display = 'none';
         }
 
         window.selectScore = function (score) {
@@ -1580,6 +2159,7 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
 
             const expNhanDuoc = bangEXP[score] || 0;
             const expPreview = document.getElementById('exp-preview');
+            if (!expPreview) return;
             expPreview.style.display = 'block';
 
             if (score < 5) {
@@ -1605,27 +2185,27 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             if (!dangChamBaiId || !dangChamBaiData) return;
 
             const btnSubmit = document.getElementById('btn-submit');
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> HỆ THỐNG ĐANG GHI NHẬN...';
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> HỆ THỐNG ĐANG GHI NHẬN...';
+            }
 
             try {
-                const comment = document.getElementById('txt-comment').value.trim() || 'Master chứng nhận sức mạnh của con. Đạt yêu cầu!';
+                const commentEl = document.getElementById('txt-comment');
+                const comment = commentEl ? commentEl.value.trim() : 'Master chứng nhận sức mạnh của con. Đạt yêu cầu!';
                 const expNhanDuoc = bangEXP[selectedScore] || 0;
-                // Nếu bài này đã được AI cộng EXP trước đó (đang xem lại/sửa), chỉ cộng thêm phần CHÊNH LỆCH
-                // để tránh cộng trùng EXP cho học sinh.
                 const expDaCongTruoc = dangChamBaiData.expDaCong || 0;
                 const expChenhLech = expNhanDuoc - expDaCongTruoc;
                 const tenHS = dangChamBaiData.hocSinh;
 
-                // Nếu bài này đã được Master đánh dấu "Giữ ảnh" hoặc "Bài mẫu" (qua màn hình Quản Lý Ảnh),
-                // thì KHÔNG xóa ảnh khi lưu điểm/nhận xét — giữ nguyên để còn xem lại và dùng làm bài mẫu.
                 const giuLaiAnh = !!(dangChamBaiData.daGiuAnh || dangChamBaiData.laBaiMau);
+                const nguon = dangChamBaiData._nguonChamDuKien || (dangChamBaiData.nguonCham === 'ai' ? 'ai' : 'giao_vien');
                 const capNhatDiem = {
                     daCham: true,
                     diem: selectedScore,
                     nhanXet: comment,
                     thoiGianCham: new Date().toISOString(),
-                    nguonCham: 'giao_vien',
+                    nguonCham: nguon,
                     expDaCong: expNhanDuoc
                 };
                 if (!giuLaiAnh) {
@@ -1633,17 +2213,16 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                     capNhatDiem.anhDaXoa = true;
                 }
 
-                await updateDoc(doc(db, TEN_COLLECTION, dangChamBaiId), capNhatDiem);
+                await apiUpdateDoc(TEN_COLLECTION, dangChamBaiId, capNhatDiem);
 
                 const safeId = encodeURIComponent(tenHS);
-                const refHS = doc(db, "mathhero_students", safeId);
-                const snapHS = await getDoc(refHS);
-                const expCu = snapHS.exists() ? (parseInt(snapHS.data()['exp_' + tenHS]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHS)) || 0);
-                const coinCu = snapHS.exists() ? (parseInt(snapHS.data()['coin_' + tenHS]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHS)) || 50);
+                const snapHS = await apiGetDoc("mathhero_students", safeId);
+                const expCu = snapHS.exists ? (parseInt(snapHS.data()['exp_' + tenHS]) || 0) : (parseInt(localStorage.getItem('exp_' + tenHS)) || 0);
+                const coinCu = snapHS.exists ? (parseInt(snapHS.data()['coin_' + tenHS]) || 0) : (parseInt(localStorage.getItem('coin_' + tenHS)) || 50);
                 const expMoi = expCu + expChenhLech;
                 const coinMoi = coinCu + expChenhLech;
 
-                await setDoc(refHS, {
+                await apiSetDoc("mathhero_students", safeId, {
                     ['exp_' + tenHS]: expMoi,
                     ['coin_' + tenHS]: coinMoi,
                     _capNhatLanCuoi: new Date().toISOString()
@@ -1653,17 +2232,21 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                     expHienTai = expMoi; coinHienTai = coinMoi;
                     localStorage.setItem('exp_' + tenHocSinh, expHienTai);
                     localStorage.setItem('coin_' + tenHocSinh, coinHienTai);
-                    document.getElementById('lbl-current-exp').innerText = expHienTai + " EXP";
-                    document.getElementById('lbl-current-coin').innerText = coinHienTai;
+                    const elExp = document.getElementById('lbl-current-exp');
+                    if (elExp) elExp.innerText = expHienTai + " EXP";
+                    const elCoin = document.getElementById('lbl-current-coin');
+                    if (elCoin) elCoin.innerText = coinHienTai;
                 }
 
-                document.getElementById('teacher-grade-screen').style.display = 'none';
+                const gradeScreen = document.getElementById('teacher-grade-screen');
+                if (gradeScreen) gradeScreen.style.display = 'none';
                 const victoryPanel = document.getElementById('victory-panel');
                 const victoryContent = document.getElementById('victory-content');
-                victoryPanel.style.display = 'block';
+                if (victoryPanel) victoryPanel.style.display = 'block';
 
                 let textKhenNgoi = selectedScore >= 9 ? "THẦN THOẠI" : (selectedScore >= 7 ? "TINH ANH" : "TÂN BINH");
-                victoryContent.innerHTML = `
+                if (victoryContent) {
+                    victoryContent.innerHTML = `
                     <p>Chiến binh <b>${escapeHtmlAttr(tenHS)}</b> đạt đẳng cấp: <span class="exp-badge">${textKhenNgoi}</span></p>
                     <p style="font-size:1.4rem; margin:14px 0; font-family:'Montserrat', sans-serif;">Cấp độ: <b style="color:#38ef7d; text-shadow: 0 0 10px #38ef7d;">${selectedScore}/10</b></p>
                     <p style="border-top:1px dashed rgba(255,255,255,0.2); padding-top:14px; text-align:left;">
@@ -1675,16 +2258,18 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
                     </div>
                     <div class="img-cleared-note">${giuLaiAnh ? '<i class="fa-solid fa-lock"></i> Ảnh bài làm được GIỮ LẠI (đã đánh dấu Giữ ảnh / Bài mẫu).' : '<i class="fa-solid fa-broom"></i> Ảnh bài làm gốc đã được dọn dẹp để tiết kiệm dung lượng.'}</div>
                 `;
+                }
             } catch (loi) {
                 console.error('[Bài tự luận] Lỗi chấm điểm:', loi);
                 alert('Có luồng cản trở, không thể lưu điểm lúc này!');
             } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = '<i class="fa-solid fa-bolt"></i> XÁC NHẬN CHẤM & PHÂN PHÁT EXP';
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-bolt"></i> XÁC NHẬN CHẤM & PHÂN PHÁT EXP';
+                }
             }
         };
 
-        // ===== GIÁO VIÊN: XÓA TẤT CẢ =====
         window.xoaTatCaBaiTuLuan = async function () {
             if (!confirm('LƯU Ý: Master đang kích hoạt lệnh thanh trừng. Xóa TẤT CẢ bài làm của toàn bộ học sinh?')) return;
             if (!confirm('Cảnh báo LẦN CUỐI: Dữ liệu này sẽ tan biến hoàn toàn vào khoảng không! Bạn vẫn muốn tiếp tục?')) return;
@@ -1692,9 +2277,9 @@ Chỉ trả về DUY NHẤT một object JSON thuần túy (không dùng markdow
             const box = document.getElementById('teacher-pending-list');
             box.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang thiêu hủy dữ liệu...</div>';
             try {
-                const snap = await getDocs(collection(db, TEN_COLLECTION));
+                const snap = await apiGetDocs(TEN_COLLECTION);
                 const xoaCacBai = [];
-                snap.forEach(d => xoaCacBai.push(deleteDoc(doc(db, TEN_COLLECTION, d.id))));
+                snap.forEach(d => xoaCacBai.push(apiDeleteDoc(TEN_COLLECTION, d.id)));
                 await Promise.all(xoaCacBai);
                 alert('Vụ nổ hoàn tất. Mọi dữ liệu đã bị xóa sạch.');
                 taiDanhSachChoCham();

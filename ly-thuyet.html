@@ -3,11 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cổ Thư Toán Học</title>
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Cinzel:wght@500;600;700;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Thư Viện Toán Học - Hero Math</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script>window.MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] } };</script>
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+  };
+</script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,6 +33,7 @@
     --arcane-3: #ef9f27;   /* Công thức — hổ phách */
     --arcane-4: #d85a30;   /* Ghi chú — đỏ cam */
     --rose: #d4537e;
+    --border-glass: rgba(255, 255, 255, 0.08);
   }
 
   html { scroll-behavior: smooth; }
@@ -28,14 +41,14 @@
   body {
     background-color: var(--ink);
     background-image:
-      radial-gradient(ellipse at 18% 12%, rgba(83,74,183,0.20) 0%, transparent 50%),
-      radial-gradient(ellipse at 85% 75%, rgba(29,158,117,0.14) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 95%, rgba(186,117,23,0.10) 0%, transparent 42%),
-      radial-gradient(ellipse at 95% 5%, rgba(212,83,126,0.08) 0%, transparent 35%);
+      radial-gradient(ellipse at 18% 12%, rgba(83,74,183,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 75%, rgba(29,158,117,0.16) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 95%, rgba(186,117,23,0.12) 0%, transparent 42%),
+      radial-gradient(ellipse at 95% 5%, rgba(212,83,126,0.10) 0%, transparent 35%);
     color: var(--parchment);
     font-family: 'Nunito', sans-serif;
     min-height: 100vh;
-    padding: 22px 16px 80px;
+    padding: 24px 16px 80px;
     position: relative;
   }
 
@@ -67,92 +80,175 @@
     box-shadow: 0 0 8px rgba(212,83,126,0.6);
   }
 
-  .container { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+  .container { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
 
   /* ===== HEADER ===== */
   .site-header {
     display: flex; justify-content: space-between; align-items: center; gap: 14px;
-    background: linear-gradient(135deg, rgba(153,53,86,0.14), rgba(83,74,183,0.10));
-    border: 1px solid rgba(212,83,126,0.3);
+    background: linear-gradient(135deg, rgba(153,53,86,0.16), rgba(83,74,183,0.14));
+    border: 1px solid rgba(212,83,126,0.35);
     border-radius: 18px;
     padding: 18px 24px;
     margin-bottom: 18px;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
     position: relative;
     overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   }
   .site-header::after {
-    content: ''; position: absolute; top: -50%; right: -10%; width: 220px; height: 220px;
-    background: radial-gradient(circle, rgba(212,83,126,0.18) 0%, transparent 70%);
+    content: ''; position: absolute; top: -50%; right: -10%; width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(212,83,126,0.22) 0%, transparent 70%);
     pointer-events: none;
   }
 
   .site-title {
-    font-family: 'UnifrakturMaguntia', cursive;
-    font-size: 1.5rem; font-weight: 400; letter-spacing: 0.02em;
-    color: #ed93b1;
+    font-family: 'Cinzel', serif;
+    font-size: 1.6rem; font-weight: 700; letter-spacing: 0.03em;
+    color: #f7a8c3;
     display: flex; align-items: center; gap: 12px;
     text-shadow: 0 0 22px rgba(212,83,126,0.5), 0 0 6px rgba(212,83,126,0.3);
   }
-  .site-title i { font-size: 1.25rem; color: #ed93b1; }
-  .site-sub { font-size: 0.72rem; color: #a89ec0; margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+  .site-title i { font-size: 1.4rem; color: #ff9fc3; filter: drop-shadow(0 0 8px rgba(255,159,195,0.6)); }
+  .site-sub {
+    font-size: 0.76rem; color: #b7add1; margin-top: 5px;
+    letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+  }
+
+  .header-actions { display: flex; align-items: center; gap: 10px; }
 
   .btn-back {
-    background: rgba(217,58,48,0.15); color: #f09595;
-    border: 1px solid rgba(240,149,149,0.4); border-radius: 9px;
-    padding: 8px 16px; font-size: 0.85rem; font-weight: 700;
+    background: rgba(217,58,48,0.15); color: #f9a3a3;
+    border: 1px solid rgba(240,149,149,0.4); border-radius: 10px;
+    padding: 9px 18px; font-size: 0.86rem; font-weight: 800;
     font-family: 'Nunito', sans-serif; cursor: pointer; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 6px;
-    transition: background 0.2s; white-space: nowrap; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s ease; white-space: nowrap; flex-shrink: 0;
   }
-  .btn-back:hover { background: rgba(217,58,48,0.3); }
+  .btn-back:hover {
+    background: rgba(217,58,48,0.32);
+    border-color: rgba(240,149,149,0.7);
+    color: #fff;
+    transform: translateX(-2px);
+  }
 
-  /* ===== THANH CÔNG CỤ: MỤC LỤC + TÌM KIẾM + MỞ/ĐÓNG ===== */
+  /* ===== BỘ LỌC KHỐI LỚP (GRADE FILTER TABS) ===== */
+  .grade-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--border-glass);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    backdrop-filter: blur(6px);
+  }
+  .grade-filter-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #9fe1cb;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 4px;
+    flex-shrink: 0;
+  }
+  .grade-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #b8b2d8;
+    padding: 7px 15px;
+    border-radius: 9px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.83rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .grade-tab-btn:hover {
+    background: rgba(127, 119, 221, 0.22);
+    border-color: rgba(127, 119, 221, 0.5);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+  .grade-tab-btn.active {
+    background: linear-gradient(135deg, rgba(127, 119, 221, 0.4), rgba(83, 74, 183, 0.5));
+    border-color: #9b94ee;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(127, 119, 221, 0.4);
+  }
+  .grade-badge-count {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    padding: 1px 7px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #cecbf6;
+  }
+
+  /* ===== THANH CÔNG CỤ: TÌM KIẾM + MỞ/ĐÓNG TẤT CẢ ===== */
   .toolbar {
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
     margin-bottom: 16px;
   }
   .search-wrap {
-    flex: 1; min-width: 200px;
+    flex: 1; min-width: 220px;
     display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.045);
+    border: 1px solid var(--border-glass);
     border-radius: 12px;
     padding: 10px 14px;
+    transition: border-color 0.2s;
   }
-  .search-wrap i { color: #7f77dd; font-size: 0.9rem; }
+  .search-wrap:focus-within {
+    border-color: rgba(127, 119, 221, 0.6);
+    box-shadow: 0 0 10px rgba(127, 119, 221, 0.2);
+  }
+  .search-wrap i { color: #8e86eb; font-size: 0.95rem; }
   .search-wrap input {
     flex: 1; background: none; border: none; outline: none;
-    color: var(--parchment); font-family: 'Nunito', sans-serif; font-size: 0.88rem;
+    color: var(--parchment); font-family: 'Nunito', sans-serif; font-size: 0.9rem;
   }
-  .search-wrap input::placeholder { color: #5a5578; }
+  .search-wrap input::placeholder { color: #69628d; }
 
   .btn-toggle-all {
-    background: rgba(127,119,221,0.14);
+    background: rgba(127,119,221,0.15);
     border: 1px solid rgba(127,119,221,0.4);
     color: #cecbf6;
     border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 0.8rem; font-weight: 700;
+    padding: 10px 16px;
+    font-size: 0.82rem; font-weight: 800;
     font-family: 'Nunito', sans-serif;
     cursor: pointer;
     display: inline-flex; align-items: center; gap: 7px;
-    transition: background 0.2s, border-color 0.2s;
+    transition: all 0.2s ease;
     white-space: nowrap;
   }
-  .btn-toggle-all:hover { background: rgba(127,119,221,0.28); border-color: rgba(127,119,221,0.65); }
+  .btn-toggle-all:hover {
+    background: rgba(127,119,221,0.32);
+    border-color: rgba(127,119,221,0.7);
+    color: #fff;
+  }
 
-  /* ===== MỤC LỤC CHƯƠNG (chip nav) ===== */
+  /* ===== MỤC LỤC BÀI HỌC (TOC CHIPS) ===== */
   .toc-wrap {
-    margin-bottom: 22px;
-    padding: 14px 16px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
     background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.07);
+    border: 1px solid var(--border-glass);
     border-radius: 14px;
   }
   .toc-label {
-    font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700;
-    color: #7f77dd; text-transform: uppercase; letter-spacing: 0.12em;
+    font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700;
+    color: #9b94ee; text-transform: uppercase; letter-spacing: 0.12em;
     margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
   }
   .toc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -161,30 +257,36 @@
     border: 1px solid rgba(127,119,221,0.35);
     color: #cecbf6;
     border-radius: 8px;
-    padding: 6px 12px;
-    font-size: 0.78rem; font-weight: 600;
+    padding: 6px 13px;
+    font-size: 0.8rem; font-weight: 700;
     cursor: pointer; text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     display: inline-flex; align-items: center; gap: 6px;
   }
-  .toc-chip:hover { background: rgba(127,119,221,0.3); transform: translateY(-1px); }
+  .toc-chip:hover {
+    background: rgba(127,119,221,0.32);
+    border-color: rgba(127,119,221,0.7);
+    color: #fff;
+    transform: translateY(-1px);
+  }
   .toc-chip .toc-num { color: var(--arcane-3); font-family: 'Cinzel', serif; font-weight: 800; }
 
-  /* ===== LEGEND ===== */
+  /* ===== BẢNG CHÚ GIẢI MÀU SẮC (LEGEND) ===== */
   .legend {
-    display: flex; flex-wrap: wrap; gap: 8px 16px;
-    margin-bottom: 24px;
-    padding: 12px 16px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.07);
+    display: flex; flex-wrap: wrap; gap: 10px 18px;
+    margin-bottom: 22px;
+    padding: 12px 18px;
+    background: rgba(255,255,255,0.028);
+    border: 1px solid var(--border-glass);
     border-radius: 12px;
+    font-size: 0.76rem;
   }
-  .leg-item { display: flex; align-items: center; gap: 6px; font-size: 0.73rem; color: #a89ec0; }
-  .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .leg-item { display: flex; align-items: center; gap: 7px; color: #a89ec0; }
+  .leg-dot { width: 11px; height: 11px; border-radius: 3px; flex-shrink: 0; }
 
   /* ===== CẤP 1: CHƯƠNG — Tím huyền ===== */
   .lvl1 {
-    background: linear-gradient(160deg, rgba(83,74,183,0.13), rgba(83,74,183,0.05));
+    background: linear-gradient(160deg, rgba(83,74,183,0.14), rgba(83,74,183,0.05));
     border: 1px solid rgba(175,169,236,0.35);
     border-radius: 18px;
     margin-bottom: 18px;
@@ -192,52 +294,66 @@
     transition: border-color 0.25s, box-shadow 0.25s;
     scroll-margin-top: 20px;
   }
-  .lvl1:hover { border-color: rgba(175,169,236,0.6); }
-  .lvl1.open { box-shadow: 0 8px 28px rgba(83,74,183,0.18); }
+  .lvl1:hover { border-color: rgba(175,169,236,0.65); }
+  .lvl1.open { box-shadow: 0 8px 30px rgba(83,74,183,0.22); }
 
   .lvl1-head {
     display: flex; align-items: center; gap: 14px;
-    padding: 18px 20px;
+    padding: 18px 22px;
     cursor: pointer; user-select: none;
     position: relative;
   }
   .lvl1-head::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     background: linear-gradient(180deg, var(--arcane-1), var(--rose));
-    opacity: 0.8;
+    opacity: 0.85;
   }
 
   .lvl1-badge {
     background: rgba(83,74,183,0.5);
-    border: 1px solid #7f77dd;
-    color: #cecbf6;
+    border: 1px solid #8f87e8;
+    color: #e5e3fd;
     font-family: 'Cinzel', serif;
-    font-size: 0.72rem; font-weight: 700;
+    font-size: 0.74rem; font-weight: 800;
     border-radius: 8px;
-    padding: 5px 11px;
+    padding: 5px 12px;
     white-space: nowrap;
     flex-shrink: 0;
     letter-spacing: 0.04em;
   }
 
+  .lvl1-grade-badge {
+    background: rgba(29, 158, 117, 0.22);
+    border: 1px solid rgba(93, 202, 165, 0.45);
+    color: #9fe1cb;
+    font-size: 0.72rem;
+    font-weight: 800;
+    border-radius: 6px;
+    padding: 2px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
   .lvl1-title-wrap { flex: 1; min-width: 0; }
   .lvl1-title {
     font-family: 'Cinzel', serif;
-    font-size: 1rem; font-weight: 700;
-    color: #d8d4f9;
+    font-size: 1.05rem; font-weight: 700;
+    color: #eae7ff;
     letter-spacing: 0.02em;
-    line-height: 1.4;
+    line-height: 1.45;
   }
   .lvl1-meta {
-    display: flex; gap: 12px; margin-top: 5px;
-    font-size: 0.72rem; color: #7f77dd;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 6px;
+    font-size: 0.74rem; color: #8e86eb;
   }
-  .lvl1-meta span { display: inline-flex; align-items: center; gap: 4px; }
+  .lvl1-meta span { display: inline-flex; align-items: center; gap: 5px; }
 
-  .chevron { color: #7f77dd; font-size: 0.9rem; transition: transform 0.3s; flex-shrink: 0; }
+  .chevron { color: #8e86eb; font-size: 0.95rem; transition: transform 0.3s ease; flex-shrink: 0; }
   .lvl1.open .chevron { transform: rotate(180deg); }
 
-  .lvl1-body { display: none; padding: 0 18px 18px 22px; }
+  .lvl1-body { display: none; padding: 4px 20px 22px 24px; }
   .lvl1.open .lvl1-body { display: block; animation: fadein 0.35s ease; }
 
   @keyframes fadein { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -245,158 +361,165 @@
   /* ===== CẤP 2: MỤC CON — Xanh ngọc ===== */
   .lvl2 {
     background: rgba(29,158,117,0.09);
-    border: 1px solid rgba(93,202,165,0.3);
+    border: 1px solid rgba(93,202,165,0.32);
     border-left: 3px solid var(--arcane-2);
-    border-radius: 13px;
-    margin-bottom: 11px;
+    border-radius: 14px;
+    margin-bottom: 12px;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s ease;
   }
-  .lvl2:hover { border-color: rgba(93,202,165,0.55); }
+  .lvl2:hover { border-color: rgba(93,202,165,0.6); }
 
   .lvl2-head {
     display: flex; align-items: center; gap: 10px;
-    padding: 12px 15px;
+    padding: 13px 16px;
     cursor: pointer; user-select: none;
   }
 
   .lvl2-icon {
-    width: 24px; height: 24px; border-radius: 50%;
+    width: 26px; height: 26px; border-radius: 50%;
     background: rgba(29,158,117,0.35);
     border: 1px solid #1d9e75;
     display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; font-size: 0.68rem; color: #9fe1cb;
-    font-family: 'Cinzel', serif; font-weight: 700;
+    flex-shrink: 0; font-size: 0.72rem; color: #9fe1cb;
+    font-family: 'Cinzel', serif; font-weight: 800;
   }
 
-  .lvl2-title { font-size: 0.92rem; font-weight: 700; color: #9fe1cb; flex: 1; }
+  .lvl2-title { font-size: 0.95rem; font-weight: 800; color: #a8ebd5; flex: 1; }
   .lvl2-count {
-    font-size: 0.68rem; color: #5dcaa5; background: rgba(29,158,117,0.18);
-    border-radius: 6px; padding: 2px 8px; font-weight: 700; flex-shrink: 0;
+    font-size: 0.7rem; color: #5dcaa5; background: rgba(29,158,117,0.2);
+    border-radius: 6px; padding: 3px 9px; font-weight: 800; flex-shrink: 0;
   }
 
-  .chevron2 { color: #1d9e75; font-size: 0.82rem; transition: transform 0.3s; flex-shrink: 0; }
+  .chevron2 { color: #1d9e75; font-size: 0.85rem; transition: transform 0.3s ease; flex-shrink: 0; }
   .lvl2.open .chevron2 { transform: rotate(180deg); }
 
-  .lvl2-body { display: none; padding: 4px 15px 14px; }
+  .lvl2-body { display: none; padding: 6px 16px 16px; }
   .lvl2.open .lvl2-body { display: block; animation: fadein 0.3s ease; }
 
   /* ===== CẤP 3: NỘI DUNG CÓ NHÃN ===== */
   .lvl3 {
-    border-left: 3px solid rgba(93,202,165,0.4);
-    padding: 9px 13px;
-    margin-bottom: 9px;
-    background: rgba(93,202,165,0.03);
-    border-radius: 0 8px 8px 0;
+    border-left: 3px solid rgba(93,202,165,0.45);
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background: rgba(93,202,165,0.04);
+    border-radius: 0 9px 9px 0;
   }
   .lvl3-label {
-    font-size: 0.72rem; font-weight: 800; color: #5dcaa5;
+    font-size: 0.74rem; font-weight: 800; color: #5dcaa5;
     letter-spacing: 0.07em; text-transform: uppercase;
     margin-bottom: 5px; display: flex; align-items: center; gap: 6px;
   }
-  .lvl3-text { font-size: 0.92rem; color: #c8e8df; line-height: 1.85; }
+  .lvl3-text { font-size: 0.94rem; color: #c8e8df; line-height: 1.85; }
 
   /* ===== CÔNG THỨC — Vàng hổ phách ===== */
   .formula-block {
-    background: linear-gradient(135deg, rgba(186,117,23,0.15), rgba(186,117,23,0.06));
-    border: 1px solid rgba(239,159,39,0.4);
+    background: linear-gradient(135deg, rgba(186,117,23,0.18), rgba(186,117,23,0.08));
+    border: 1px solid rgba(239,159,39,0.45);
     border-radius: 12px;
-    padding: 13px 17px;
-    margin: 10px 0;
-    display: flex; align-items: center; gap: 12px;
-    font-size: 1.02rem; color: #fac775;
+    padding: 14px 18px;
+    margin: 11px 0;
+    display: flex; align-items: center; justify-content: flex-start;
+    font-size: 1.05rem; color: #fac775;
     position: relative;
+    overflow-x: auto;
+  }
+  .formula-block.display-math {
+    justify-content: center;
+    text-align: center;
+    padding: 18px;
   }
   .formula-block::after {
     content: 'CÔNG THỨC'; position: absolute; top: -8px; right: 12px;
-    font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700;
+    font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 800;
     letter-spacing: 0.1em; color: #0a0c1a; background: #ef9f27;
     padding: 2px 8px; border-radius: 5px;
+    pointer-events: none;
   }
 
   /* ===== GHI CHÚ QUAN TRỌNG — Đỏ cam ===== */
   .note-block {
-    background: linear-gradient(135deg, rgba(216,90,48,0.14), rgba(216,90,48,0.05));
-    border: 1px solid rgba(216,90,48,0.4);
+    background: linear-gradient(135deg, rgba(216,90,48,0.16), rgba(216,90,48,0.06));
+    border: 1px solid rgba(216,90,48,0.45);
     border-radius: 12px;
-    padding: 12px 16px;
-    margin: 10px 0;
-    display: flex; gap: 10px; align-items: flex-start;
-    font-size: 0.87rem; color: #f5c4b3; line-height: 1.65;
+    padding: 13px 18px;
+    margin: 11px 0;
+    display: flex; gap: 11px; align-items: flex-start;
+    font-size: 0.9rem; color: #f7cdbe; line-height: 1.65;
     position: relative;
   }
-  .note-block i { color: #d85a30; font-size: 1.05rem; flex-shrink: 0; margin-top: 1px; }
-  .note-block strong { color: #ffcdb8; }
+  .note-block i { color: #e6663c; font-size: 1.15rem; flex-shrink: 0; margin-top: 2px; }
+  .note-block strong { color: #ffe2d6; }
 
-  /* ===== HÌNH ẢNH MINH HỌA (dùng cho bài toán hình) ===== */
+  /* ===== HÌNH ẢNH MINH HỌA ===== */
   .image-block {
-    margin: 12px 0; padding: 12px; text-align: center;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
+    margin: 13px 0; padding: 14px; text-align: center;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-glass);
     border-radius: 14px;
     position: relative;
   }
   .image-block img {
-    max-width: 100%; max-height: 360px; border-radius: 10px;
+    max-width: 100%; max-height: 400px; border-radius: 10px;
     display: block; margin: 0 auto;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
   }
   .image-block .image-caption {
-    margin-top: 8px; font-size: 0.75rem; color: #a89ec0;
+    margin-top: 9px; font-size: 0.78rem; color: #b0a6c9;
     display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .image-block .image-error {
-    padding: 30px 16px; color: #a89ec0; font-size: 0.85rem;
+    padding: 28px 16px; color: #a89ec0; font-size: 0.88rem;
     display: flex; flex-direction: column; align-items: center; gap: 8px;
   }
-  .image-block .image-error i { font-size: 1.8rem; color: #534ab7; }
+  .image-block .image-error i { font-size: 2rem; color: #7f77dd; }
 
-  /* ===== NỘI DUNG TỰ DO (dữ liệu phẳng cũ) ===== */
+  /* ===== NỘI DUNG DẠNG TỰ DO (FLAT) ===== */
   .free-content {
-    font-size: 0.92rem; color: #c8e8df; line-height: 1.85;
-    padding: 10px 0; border-left: 3px solid rgba(93,202,165,0.4); padding-left: 13px;
-    margin-bottom: 6px;
+    font-size: 0.94rem; color: #c8e8df; line-height: 1.85;
+    padding: 12px 0 12px 16px; border-left: 3px solid rgba(93,202,165,0.45);
+    margin-bottom: 8px;
   }
 
-  /* ===== TRẠNG THÁI TRỐNG ===== */
-  .empty-state { text-align: center; padding: 70px 20px; color: #4a4570; }
-  .empty-state i { font-size: 3.2rem; display: block; margin-bottom: 16px; color: #534ab7; }
-  .empty-state p { font-size: 0.95rem; }
-  .empty-state .empty-sub { font-size: 0.8rem; color: #3d3960; margin-top: 6px; }
+  /* ===== TRẠNG THÁI TRỐNG & KHÔNG TÌM THẤY ===== */
+  .empty-state { text-align: center; padding: 75px 20px; color: #6a6493; }
+  .empty-state i { font-size: 3.5rem; display: block; margin-bottom: 18px; color: #7f77dd; }
+  .empty-state p { font-size: 1rem; color: #b7add1; }
+  .empty-state .empty-sub { font-size: 0.85rem; color: #6d6694; margin-top: 8px; }
 
-  /* ===== TRẠNG THÁI KHÔNG TÌM THẤY ===== */
-  .no-result { text-align: center; padding: 40px 20px; color: #5a5578; font-size: 0.9rem; }
-  .no-result i { font-size: 2rem; display: block; margin-bottom: 10px; color: #534ab7; opacity: 0.6; }
+  .no-result { text-align: center; padding: 50px 20px; color: #78729f; font-size: 0.95rem; }
+  .no-result i { font-size: 2.2rem; display: block; margin-bottom: 12px; color: #7f77dd; opacity: 0.7; }
 
-  /* highlight kết quả tìm kiếm */
-  mark.hl { background: rgba(239,159,39,0.4); color: #fff4d8; border-radius: 3px; padding: 0 2px; }
-
-  /* ===== SEPARATOR ===== */
-  .orb { text-align: center; color: #534ab7; font-size: 1rem; letter-spacing: 8px; margin: 8px 0 14px; opacity: 0.5; }
+  /* Dấu phân cách giữa các mục con */
+  .orb { text-align: center; color: #7f77dd; font-size: 1rem; letter-spacing: 8px; margin: 8px 0 14px; opacity: 0.45; }
 
   /* ===== NÚT LÊN ĐẦU TRANG ===== */
   .btn-top {
-    position: fixed; bottom: 22px; right: 22px;
-    width: 44px; height: 44px; border-radius: 50%;
-    background: rgba(127,119,221,0.25);
-    border: 1px solid rgba(127,119,221,0.5);
-    color: #cecbf6; font-size: 1rem;
+    position: fixed; bottom: 24px; right: 24px;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: rgba(127,119,221,0.28);
+    border: 1px solid rgba(127,119,221,0.55);
+    color: #e5e3fd; font-size: 1.05rem;
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; opacity: 0; pointer-events: none;
-    transition: opacity 0.25s, transform 0.2s;
-    backdrop-filter: blur(4px);
+    transition: opacity 0.25s ease, transform 0.2s ease, background 0.2s ease;
+    backdrop-filter: blur(6px);
     z-index: 500;
   }
   .btn-top.show { opacity: 1; pointer-events: auto; }
-  .btn-top:hover { background: rgba(127,119,221,0.45); transform: translateY(-2px); }
+  .btn-top:hover { background: rgba(127,119,221,0.55); transform: translateY(-3px); }
 
   /* ===== RESPONSIVE ===== */
-  @media (max-width: 600px) {
-    .site-title { font-size: 1.1rem; }
-    .lvl1-title { font-size: 0.88rem; }
-    .lvl1-meta { flex-wrap: wrap; gap: 8px; }
+  @media (max-width: 650px) {
+    body { padding: 16px 10px 70px; }
+    .site-header { flex-direction: column; align-items: flex-start; gap: 12px; padding: 15px 18px; }
+    .site-title { font-size: 1.25rem; }
+    .header-actions { width: 100%; justify-content: flex-end; }
     .toolbar { flex-direction: column; align-items: stretch; }
     .btn-toggle-all { justify-content: center; }
+    .lvl1-head { padding: 14px 16px; gap: 10px; }
+    .lvl1-title { font-size: 0.95rem; }
+    .lvl1-meta { gap: 8px; font-size: 0.7rem; }
   }
 </style>
 </head>
@@ -407,36 +530,58 @@
   <!-- HEADER -->
   <header class="site-header">
     <div>
-      <div class="site-title"><i class="fa-solid fa-book-skull"></i> Cổ Thư Toán Học</div>
-      <div class="site-sub">Tri thức được khắc ghi · Lưu giữ vĩnh hằng</div>
+      <div class="site-title"><i class="fa-solid fa-book-open-reader"></i> Thư Viện Toán Học</div>
+      <div class="site-sub">Kho Tàng Tri Thức Toán Học · Khắc Ghi Muôn Đời</div>
     </div>
-    <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Trở về</a>
+    <div class="header-actions">
+      <a href="admin.html" id="btn-to-admin" class="btn-back" style="display:none; background:rgba(142,68,173,0.22); border-color:rgba(155,89,182,0.6); color:#e0b0ff;"><i class="fa-solid fa-screwdriver-wrench"></i> Về Quản Trị</a>
+      <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Trở Về</a>
+    </div>
   </header>
 
-  <!-- TOOLBAR: tìm kiếm + mở/đóng tất cả -->
+  <!-- THANH BỘ LỌC KHỐI LỚP (GRADE FILTER TABS) -->
+  <div class="grade-filter-bar" id="grade-filter-bar">
+    <span class="grade-filter-label"><i class="fa-solid fa-graduation-cap"></i> Khối lớp:</span>
+    <button type="button" class="grade-tab-btn active" data-grade="all" onclick="chonKhoiLop('all', this)">
+      <i class="fa-solid fa-layer-group"></i> Tất Cả <span class="grade-badge-count" id="count-all">0</span>
+    </button>
+    <button type="button" class="grade-tab-btn" data-grade="Khối 6" onclick="chonKhoiLop('Khối 6', this)">
+      Khối 6 <span class="grade-badge-count" id="count-k6">0</span>
+    </button>
+    <button type="button" class="grade-tab-btn" data-grade="Khối 7" onclick="chonKhoiLop('Khối 7', this)">
+      Khối 7 <span class="grade-badge-count" id="count-k7">0</span>
+    </button>
+    <button type="button" class="grade-tab-btn" data-grade="Khối 8" onclick="chonKhoiLop('Khối 8', this)">
+      Khối 8 <span class="grade-badge-count" id="count-k8">0</span>
+    </button>
+    <button type="button" class="grade-tab-btn" data-grade="Khối 9" onclick="chonKhoiLop('Khối 9', this)">
+      Khối 9 <span class="grade-badge-count" id="count-k9">0</span>
+    </button>
+  </div>
+
+  <!-- TOOLBAR: TÌM KIẾM + MỞ/ĐÓNG TẤT CẢ -->
   <div class="toolbar">
     <div class="search-wrap">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input id="search-input" type="text" placeholder="Tìm trong cổ thư... (tên chương, mục, công thức, ghi chú)">
+      <input id="search-input" type="text" placeholder="Tìm kiếm trong thư viện toán học... (tên chương, mục con, công thức, ghi chú)">
     </div>
-    <button class="btn-toggle-all" id="btn-expand-all" onclick="toggleAll(true)"><i class="fa-solid fa-book-open"></i> Mở tất cả</button>
-    <button class="btn-toggle-all" id="btn-collapse-all" onclick="toggleAll(false)"><i class="fa-solid fa-book"></i> Đóng tất cả</button>
+    <button class="btn-toggle-all" id="btn-expand-all" onclick="toggleAll(true)"><i class="fa-solid fa-book-open"></i> Mở Tất Cả</button>
+    <button class="btn-toggle-all" id="btn-collapse-all" onclick="toggleAll(false)"><i class="fa-solid fa-book"></i> Đóng Tất Cả</button>
   </div>
 
-  <!-- MỤC LỤC CHƯƠNG -->
+  <!-- MỤC LỤC BÀI HỌC (TOC CHIPS) -->
   <div class="toc-wrap" id="toc-wrap">
-    <div class="toc-label"><i class="fa-solid fa-compass"></i> Mục lục cổ thư</div>
+    <div class="toc-label"><i class="fa-solid fa-compass"></i> Mục lục bài học thư viện</div>
     <div class="toc-chips" id="toc-chips"></div>
   </div>
 
-  <!-- LEGEND -->
+  <!-- CHÚ GIẢI PHÂN CẤP (LEGEND) -->
   <div class="legend">
     <div class="leg-item"><div class="leg-dot" style="background:#7f77dd"></div> Chương / Đề mục lớn</div>
     <div class="leg-item"><div class="leg-dot" style="background:#1d9e75"></div> Mục con</div>
     <div class="leg-item"><div class="leg-dot" style="background:#5dcaa5"></div> Nội dung chi tiết</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#ef9f27"></div> Công thức</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ef9f27"></div> Công thức toán học</div>
     <div class="leg-item"><div class="leg-dot" style="background:#d85a30"></div> Ghi chú quan trọng</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#7f8a99"></div> Hình minh họa</div>
   </div>
 
   <!-- DANH SÁCH BÀI HỌC -->
@@ -444,237 +589,479 @@
 
 </div>
 
-<button class="btn-top" id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"><i class="fa-solid fa-chevron-up"></i></button>
+<!-- NÚT CUỘN LÊN ĐẦU TRANG -->
+<button class="btn-top" id="btn-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Lên đầu trang">
+  <i class="fa-solid fa-chevron-up"></i>
+</button>
 
-<script type="module">
-    import { taiCauHinhToanCuc } from "./firebase-sync.js";
-    window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
-</script>
+<!-- ============================================================ -->
+<!--  JAVASCRIPT XỬ LÝ CHÍNH (CHẠY 100% ĐỘC LẬP, AN TOÀN FILE://) -->
+<!-- ============================================================ -->
 <script>
-/* ============================================================
-   HÀM BUILD HTML
-   ============================================================ */
-function escAttr(s) { return String(s).replace(/'/g, "&#39;"); }
+let RAW_DATA = [];
+let KHOI_HIEN_TAI = 'all';
 
+/* Không còn dữ liệu mẫu hardcoded — chỉ hiển thị nội dung do Thầy/Cô tạo trong trang Admin */
+const BAI_HOC_MAC_DINH = [];
+
+
+function escAttr(s) {
+  return String(s || '').replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+}
+
+/* Đọc dữ liệu từ mọi nguồn lưu trữ khả dụng trong trình duyệt */
+function layDanhSachLyThuyet() {
+  // 1. Đọc từ localStorage gốc (__originalGetItem nếu có)
+  try {
+    if (window.__originalGetItem) {
+      const rawOrig = window.__originalGetItem('danh_sach_bai_hoc_ly_thuyet');
+      if (rawOrig !== null && rawOrig !== undefined && rawOrig !== '') {
+        const p = JSON.parse(rawOrig);
+        if (Array.isArray(p)) return p;
+      }
+    }
+  } catch (e) {}
+
+  // 2. Đọc từ memory storage
+  try {
+    if (window.heroMemoryStorage && window.heroMemoryStorage['danh_sach_bai_hoc_ly_thuyet'] !== undefined) {
+      const raw = window.heroMemoryStorage['danh_sach_bai_hoc_ly_thuyet'];
+      const p = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      if (Array.isArray(p)) return p;
+    }
+  } catch (e) {}
+
+  // 3. Đọc từ localStorage thông thường
+  try {
+    const rawLs = localStorage.getItem('danh_sach_bai_hoc_ly_thuyet');
+    if (rawLs !== null && rawLs !== undefined && rawLs !== '') {
+      const p = JSON.parse(rawLs);
+      if (Array.isArray(p)) return p;
+    }
+  } catch (e) {}
+
+  return null;
+}
+
+/* Lấy danh sách bài học và tự động làm sạch tombstone cho các bài hợp lệ */
+function layVaKhoiTaoDanhSachLyThuyet() {
+  localStorage.removeItem('hero_da_xoa_ly_thuyet');
+  let ds = layDanhSachLyThuyet();
+
+  // Khi localStorage hoàn toàn trống (chưa nạp bài nào) — trả về mảng rỗng
+  if (!ds || !Array.isArray(ds)) {
+    return [];
+  }
+
+  // Tự động giải phóng (resurrect) các ID bài học đang tồn tại khỏi danh sách đã xóa (tombstone)
+  const activeIds = new Set(ds.map(function(b) { return b && b.id; }).filter(Boolean));
+  try {
+    const rawDaXoa = localStorage.getItem('danh_sach_bai_hoc_ly_thuyet_da_xoa');
+    if (rawDaXoa) {
+      let dsDaXoa = JSON.parse(rawDaXoa);
+      if (Array.isArray(dsDaXoa)) {
+        const dsDaXoaSach = dsDaXoa.filter(function(id) { return !activeIds.has(id); });
+        if (dsDaXoaSach.length !== dsDaXoa.length) {
+          localStorage.setItem('danh_sach_bai_hoc_ly_thuyet_da_xoa', JSON.stringify(dsDaXoaSach));
+        }
+      }
+    }
+  } catch(e) {}
+
+  return ds;
+}
+
+/* Đọc trực tiếp từ IndexedDB (Native API, không phụ thuộc ES module) */
+function docTrucTiepIndexedDB() {
+  if (!window.indexedDB) return;
+  try {
+    const req = indexedDB.open('HeroMathDB', 1);
+    req.onsuccess = function(e) {
+      const db = e.target.result;
+      if (!db || !db.objectStoreNames || !db.objectStoreNames.contains('HeroStore')) return;
+      const tx = db.transaction(['HeroStore'], 'readonly');
+      const store = tx.objectStore('HeroStore');
+      const getReq = store.get('danh_sach_bai_hoc_ly_thuyet');
+      getReq.onsuccess = function() {
+        if (getReq.result !== undefined && getReq.result !== null) {
+          const val = getReq.result;
+          const parsed = typeof val === 'string' ? JSON.parse(val) : val;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            localStorage.removeItem('hero_da_xoa_ly_thuyet');
+            console.log("[Thư Viện] Đồng bộ thành công " + parsed.length + " bài học từ IndexedDB!");
+            capNhatDuLieu(parsed);
+          }
+        }
+      };
+    };
+  } catch (err) {
+    console.warn("[Thư Viện] Lỗi đọc IndexedDB:", err);
+  }
+}
+
+/* Render từng phần tử nội dung con (công thức, hình ảnh, ghi chú, nội dung có nhãn) */
 function buildItems(items) {
-  return items.map(it => {
+  if (!Array.isArray(items)) return '';
+  return items.map(function(it) {
     if (it.type === 'formula') {
-      // Bọc $...$ để MathJax nhận diện và render đúng ký hiệu toán (tránh bọc đôi nếu dữ liệu đã có sẵn $)
       let congThuc = (it.text || '').trim();
       let daCoDauDola = congThuc.startsWith('$') && congThuc.endsWith('$');
-      return `<div class="formula-block"><span>${daCoDauDola ? congThuc : '$' + congThuc + '$'}</span></div>`;
+      let isDisplay = it.display || congThuc.startsWith('$$');
+      let mathHtml = daCoDauDola ? congThuc : (isDisplay ? '$$' + congThuc + '$$' : '$' + congThuc + '$');
+      return `<div class="formula-block ${isDisplay ? 'display-math' : ''}"><span>${mathHtml}</span></div>`;
     }
     if (it.type === 'image') {
       let url = (it.text || '').trim();
       return `<div class="image-block">
-        <img src="${escAttr(url)}" alt="Hình minh họa" loading="lazy"
+        <img src="${escAttr(url)}" alt="Hình minh họa toán học" loading="lazy"
              onerror="this.outerHTML='<div class=&quot;image-error&quot;><i class=&quot;fa-solid fa-image-slash&quot;></i><span>Không tải được hình ảnh minh họa</span></div>'">
-        <div class="image-caption"><i class="fa-solid fa-shapes"></i> Hình minh họa</div>
+        <div class="image-caption"><i class="fa-solid fa-shapes"></i> Hình ảnh minh họa</div>
       </div>`;
     }
     if (it.type === 'note') {
-      return `<div class="note-block"><i class="fa-solid fa-triangle-exclamation"></i><span>${it.text}</span></div>`;
+      return `<div class="note-block"><i class="fa-solid fa-triangle-exclamation"></i><span><strong>Lưu ý:</strong> ${it.text}</span></div>`;
     }
     return `<div class="lvl3">
-      <div class="lvl3-label"><i class="fa-solid fa-circle-dot" style="font-size:0.6rem"></i>${it.label || ''}</div>
+      ${it.label ? `<div class="lvl3-label"><i class="fa-solid fa-circle-dot" style="font-size:0.62rem"></i>${it.label}</div>` : ''}
       <div class="lvl3-text">${(it.text || '').replace(/\n/g, '<br>')}</div>
     </div>`;
   }).join('');
 }
 
+/* Render các mục con cấp 2 */
 function buildChildren(children, pid) {
-  return children.map((ch, ci) => {
+  if (!Array.isArray(children)) return '';
+  return children.map(function(ch, ci) {
     const id = `lvl2-${pid}-${ci}`;
     const count = (ch.items || []).length;
-    return `<div class="lvl2 open" id="${id}">
-      <div class="lvl2-head" onclick="tog('${id}', 2)">
-        <div class="lvl2-icon">${ci + 1}</div>
-        <div class="lvl2-title">${ch.title}</div>
-        <div class="lvl2-count">${count} mục</div>
-        <i class="fa-solid fa-chevron-down chevron2"></i>
+    return `
+      <div class="lvl2 open" id="${id}">
+        <div class="lvl2-head" onclick="tog('${id}', 2)">
+          <div class="lvl2-icon">${ci + 1}</div>
+          <div class="lvl2-title">${ch.title || 'Mục con'}</div>
+          <div class="lvl2-count">${count} nội dung</div>
+          <i class="fa-solid fa-chevron-down chevron2"></i>
+        </div>
+        <div class="lvl2-body">${buildItems(ch.items || [])}</div>
       </div>
-      <div class="lvl2-body">${buildItems(ch.items || [])}</div>
-    </div>`;
+    `;
   }).join('<div class="orb">· · ·</div>');
 }
 
-/* Render từ dữ liệu CÓ CẤU TRÚC (demo / admin nhập structured) */
-function renderStructured(data) {
-  return data.map((ch, i) => {
-    const id = `lvl1-${i}`;
-    const soMuc = Array.isArray(ch.children) ? ch.children.length : 0;
-    let soNoiDung = 0;
-    (ch.children || []).forEach(c => soNoiDung += (c.items || []).length);
-    return `<div class="lvl1 open" id="${id}">
+/* Render 1 bài học (Hỗ trợ linh hoạt cả cấu trúc chuẩn children lẫn dữ liệu phẳng content) */
+function renderSingleLesson(ch, idx) {
+  const isStructured = Array.isArray(ch.children) && ch.children.length > 0;
+  const id = `lvl1-${idx}`;
+  const khoiText = (!ch.grade || ch.grade === 'all') ? 'Tất cả các khối' : ch.grade;
+  const soMuc = isStructured ? ch.children.length : 0;
+  let soNoiDung = 0;
+  if (isStructured) {
+    ch.children.forEach(function(c) { soNoiDung += (c.items || []).length; });
+  }
+
+  return `
+    <div class="lvl1 open" id="${id}">
       <div class="lvl1-head" onclick="tog('${id}', 1)">
-        <span class="lvl1-badge">Ch.${i + 1}</span>
+        <span class="lvl1-badge">Ch.${idx + 1}</span>
         <div class="lvl1-title-wrap">
-          <div class="lvl1-title">${ch.title}</div>
+          <div class="lvl1-title">${ch.title || 'Bài học lý thuyết'}</div>
           <div class="lvl1-meta">
-            <span><i class="fa-solid fa-star"></i> ${soMuc} mục con</span>
-            <span><i class="fa-solid fa-layer-group"></i> ${soNoiDung} nội dung</span>
+            <span class="lvl1-grade-badge"><i class="fa-solid fa-graduation-cap"></i> ${khoiText}</span>
+            ${isStructured ? `<span><i class="fa-solid fa-bookmark"></i> ${soMuc} mục con</span>` : ''}
+            ${isStructured ? `<span><i class="fa-solid fa-layer-group"></i> ${soNoiDung} nội dung</span>` : ''}
             <span><i class="fa-regular fa-calendar"></i> ${ch.date || ''}</span>
+            ${ch.source === 'ai' ? `<span style="color:#b388ff;"><i class="fa-solid fa-robot"></i> Trợ lý AI</span>` : ''}
           </div>
         </div>
         <i class="fa-solid fa-chevron-down chevron"></i>
       </div>
       <div class="lvl1-body">
-        ${buildChildren(ch.children || [], i)}
+        ${isStructured 
+          ? buildChildren(ch.children, idx) 
+          : `<div class="free-content">${(ch.content || '').replace(/\n/g, '<br>')}</div>`}
       </div>
-    </div>`;
+    </div>
+  `;
+}
+
+/* Xây dựng mục lục điều hướng nhanh (chips) */
+function buildToc(data) {
+  if (!Array.isArray(data) || data.length === 0) return '';
+  return data.map(function(ch, i) {
+    const id = `lvl1-${i}`;
+    return `<a class="toc-chip" onclick="jumpTo('${id}')"><span class="toc-num">${i + 1}.</span> ${ch.title || 'Bài ' + (i + 1)}</a>`;
   }).join('');
 }
 
-/* Render từ dữ liệu PHẲNG (localStorage cũ: title + content + date, không có children) */
-function renderFlat(data) {
-  return data.map((item, i) => {
-    const id = `lvl1-flat-${i}`;
-    return `<div class="lvl1 open" id="${id}">
-      <div class="lvl1-head" onclick="tog('${id}', 1)">
-        <span class="lvl1-badge">Bài ${i + 1}</span>
-        <div class="lvl1-title-wrap">
-          <div class="lvl1-title">${item.title || 'Bài học'}</div>
-          <div class="lvl1-meta"><span><i class="fa-regular fa-calendar"></i> ${item.date || ''}</span></div>
-        </div>
-        <i class="fa-solid fa-chevron-down chevron"></i>
-      </div>
-      <div class="lvl1-body">
-        <div class="free-content">${(item.content || '').replace(/\n/g, '<br>')}</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* Xây mục lục chip điều hướng nhanh tới từng Chương */
-function buildToc(data, isStructured) {
-  if (!data.length) return '';
-  return data.map((ch, i) => {
-    const id = isStructured ? `lvl1-${i}` : `lvl1-flat-${i}`;
-    return `<a class="toc-chip" onclick="jumpTo('${id}')"><span class="toc-num">${i + 1}.</span> ${ch.title}</a>`;
-  }).join('');
-}
-
-function jumpTo(id) {
+window.jumpTo = function(id) {
   const el = document.getElementById(id);
   if (!el) return;
   el.classList.add('open');
   const l2s = el.querySelectorAll('.lvl2');
-  l2s.forEach(l2 => l2.classList.add('open'));
+  l2s.forEach(function(l2) { l2.classList.add('open'); });
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+};
 
-/* ============================================================
-   TOGGLE MỞ / ĐÓNG
-   ============================================================ */
-function tog(id, level) {
+/* Đóng / mở từng cấp */
+window.tog = function(id, level) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('open');
+};
+
+window.toggleAll = function(open) {
+  document.querySelectorAll('.lvl1').forEach(function(el) { el.classList.toggle('open', open); });
+  document.querySelectorAll('.lvl2').forEach(function(el) { el.classList.toggle('open', open); });
+};
+
+/* Render danh sách bài học ra giao diện */
+function renderList(list) {
+  const container = document.getElementById('lesson-list');
+  const tocWrap = document.getElementById('toc-wrap');
+  if (!container) return;
+
+  if (!list || list.length === 0) {
+    const khoiText = (KHOI_HIEN_TAI === 'all') ? '' : ` dành cho ${KHOI_HIEN_TAI}`;
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-feather-pointed"></i>
+        <p>Thư viện còn trống — chưa có bài học lý thuyết nào${khoiText}.</p>
+        <p class="empty-sub">Thầy/Cô có thể vào trang Quản Trị (Admin) để nạp bài học mới hoặc tạo bằng Trợ Lý AI.</p>
+      </div>
+    `;
+    if (tocWrap) tocWrap.style.display = 'none';
+    return;
+  }
+
+  if (tocWrap) tocWrap.style.display = '';
+  container.innerHTML = list.map(function(ch, idx) { return renderSingleLesson(ch, idx); }).join('');
+  const tocChipsEl = document.getElementById('toc-chips');
+  if (tocChipsEl) tocChipsEl.innerHTML = buildToc(list);
+
+  afterRender();
 }
 
-function toggleAll(open) {
-  document.querySelectorAll('.lvl1').forEach(el => el.classList.toggle('open', open));
-  document.querySelectorAll('.lvl2').forEach(el => el.classList.toggle('open', open));
-}
-
-/* ============================================================
-   TÌM KIẾM (lọc theo chương / mục con / nội dung / công thức / ghi chú)
-   ============================================================ */
-let RAW_DATA = [];
-let IS_STRUCTURED = true;
-
-function textMatches(haystack, q) {
-  return (haystack || '').toLowerCase().includes(q);
-}
-
-function lessonMatchesStructured(ch, q) {
-  if (textMatches(ch.title, q)) return true;
-  return (ch.children || []).some(c => {
-    if (textMatches(c.title, q)) return true;
-    return (c.items || []).some(it => textMatches(it.label, q) || textMatches(it.text, q));
+/* Lấy danh sách bài học lọc theo khối lớp đã chọn */
+function getFilteredData() {
+  if (KHOI_HIEN_TAI === 'all') {
+    return RAW_DATA;
+  }
+  return RAW_DATA.filter(function(ch) {
+    return !ch.grade || ch.grade === 'all' || ch.grade === KHOI_HIEN_TAI;
   });
 }
 
-function lessonMatchesFlat(item, q) {
-  return textMatches(item.title, q) || textMatches(item.content, q);
+/* Cập nhật số lượng bài học hiển thị trên từng tab khối lớp */
+function updateGradeCounts(allList) {
+  const validList = (allList || []).filter(function(ch) { return !ch.hidden; });
+  const countAll = validList.length;
+  const countK6 = validList.filter(function(ch) { return !ch.grade || ch.grade === 'all' || ch.grade === 'Khối 6'; }).length;
+  const countK7 = validList.filter(function(ch) { return !ch.grade || ch.grade === 'all' || ch.grade === 'Khối 7'; }).length;
+  const countK8 = validList.filter(function(ch) { return !ch.grade || ch.grade === 'all' || ch.grade === 'Khối 8'; }).length;
+  const countK9 = validList.filter(function(ch) { return !ch.grade || ch.grade === 'all' || ch.grade === 'Khối 9'; }).length;
+
+  const elAll = document.getElementById('count-all');
+  const elK6 = document.getElementById('count-k6');
+  const elK7 = document.getElementById('count-k7');
+  const elK8 = document.getElementById('count-k8');
+  const elK9 = document.getElementById('count-k9');
+
+  if (elAll) elAll.innerText = countAll;
+  if (elK6) elK6.innerText = countK6;
+  if (elK7) elK7.innerText = countK7;
+  if (elK8) elK8.innerText = countK8;
+  if (elK9) elK9.innerText = countK9;
 }
 
+/* Chuyển tab khối lớp */
+window.chonKhoiLop = function(khoi, btnEl) {
+  KHOI_HIEN_TAI = khoi;
+  document.querySelectorAll('.grade-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btnEl) btnEl.classList.add('active');
+
+  const sInp = document.getElementById('search-input');
+  if (sInp && sInp.value.trim()) {
+    runSearch(sInp.value);
+  } else {
+    renderList(getFilteredData());
+  }
+};
+
+/* Tìm kiếm thông minh */
 function runSearch(q) {
   const container = document.getElementById('lesson-list');
   const tocWrap = document.getElementById('toc-wrap');
-  q = q.trim().toLowerCase();
+  q = (q || '').trim().toLowerCase();
+
+  const dataToSearch = getFilteredData();
 
   if (!q) {
-    container.innerHTML = IS_STRUCTURED ? renderStructured(RAW_DATA) : renderFlat(RAW_DATA);
-    tocWrap.style.display = '';
-    afterRender();
+    renderList(dataToSearch);
     return;
   }
 
-  tocWrap.style.display = 'none';
-  const filtered = RAW_DATA.filter(item => IS_STRUCTURED ? lessonMatchesStructured(item, q) : lessonMatchesFlat(item, q));
+  if (tocWrap) tocWrap.style.display = 'none';
+
+  const filtered = dataToSearch.filter(function(ch) {
+    if ((ch.title || '').toLowerCase().includes(q)) return true;
+    if (ch.content && ch.content.toLowerCase().includes(q)) return true;
+    if (Array.isArray(ch.children)) {
+      return ch.children.some(function(c) {
+        if ((c.title || '').toLowerCase().includes(q)) return true;
+        return (c.items || []).some(function(it) {
+          return (it.label || '').toLowerCase().includes(q) || 
+                 (it.text || '').toLowerCase().includes(q);
+        });
+      });
+    }
+    return false;
+  });
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div class="no-result"><i class="fa-solid fa-ghost"></i>Không tìm thấy điều gì khớp với "${q}" trong cổ thư.</div>`;
+    container.innerHTML = `
+      <div class="no-result">
+        <i class="fa-solid fa-ghost"></i>
+        Không tìm thấy nội dung nào khớp với "<b>${escAttr(q)}</b>" trong thư viện toán học.
+      </div>
+    `;
     return;
   }
-  container.innerHTML = IS_STRUCTURED ? renderStructured(filtered) : renderFlat(filtered);
+
+  container.innerHTML = filtered.map(function(ch, idx) { return renderSingleLesson(ch, idx); }).join('');
+  document.querySelectorAll('.lvl1, .lvl2').forEach(function(el) { el.classList.add('open'); });
   afterRender();
-  // Mở tất cả cấp khi đang tìm kiếm để dễ thấy kết quả
-  document.querySelectorAll('.lvl1, .lvl2').forEach(el => el.classList.add('open'));
 }
 
-/* ============================================================
-   THANH TIẾN TRÌNH ĐỌC + NÚT LÊN ĐẦU
-   ============================================================ */
+/* Tiến trình cuộn trang */
 function updateProgress() {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('btn-top').classList.toggle('show', scrollTop > 400);
+  const pBar = document.getElementById('progress-bar');
+  const btnTop = document.getElementById('btn-top');
+  if (pBar) pBar.style.width = pct + '%';
+  if (btnTop) btnTop.classList.toggle('show', scrollTop > 400);
 }
 window.addEventListener('scroll', updateProgress, { passive: true });
 
-/* Sau khi render: typeset MathJax */
+/* Kích hoạt render MathJax cho các công thức */
 function afterRender() {
   if (window.MathJax && window.MathJax.typesetPromise) {
-    window.MathJax.typesetPromise().catch(() => {});
+    window.MathJax.typesetPromise().catch(function() {});
   }
 }
 
-/* ============================================================
-   KHỞI ĐỘNG
-   ============================================================ */
-window.addEventListener('DOMContentLoaded', async () => {
-  const container = document.getElementById('lesson-list');
+/* Cập nhật danh sách bài học và vẽ lại giao diện */
+function capNhatDuLieu(danhSach) {
+  if (!Array.isArray(danhSach)) return;
+  RAW_DATA = danhSach.filter(function(ch) { return !ch.hidden; });
+  updateGradeCounts(danhSach);
+  renderList(getFilteredData());
+}
 
-  // FIREBASE SYNC: tải lại danh sách bài học lý thuyết mới nhất từ Firestore (đề phòng
-  // giáo viên vừa nạp bài học từ 1 máy khác) trước khi đọc localStorage để hiển thị.
-  await window.__fbTaiCauHinhToanCuc();
+/* Hàm làm mới toàn diện */
+window.__lamMoiThuVien = function() {
+  const ds = layVaKhoiTaoDanhSachLyThuyet();
+  capNhatDuLieu(ds || []);
+  docTrucTiepIndexedDB();
+};
 
-  let stored = [];
-  try { stored = JSON.parse(localStorage.getItem('danh_sach_bai_hoc_ly_thuyet')) || []; } catch (e) {}
-
-  // Xác định khối lớp của học sinh đang đăng nhập để chỉ hiện đúng Chương phù hợp
-  let khoiHocSinh = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
-
-  // Dữ liệu cũ chưa có "grade" (nạp trước khi có phân khối) được coi là dùng chung mọi khối, không bị ẩn mất
-  RAW_DATA = stored.filter(ch => !ch.grade || ch.grade === 'all' || ch.grade === khoiHocSinh);
-  IS_STRUCTURED = !!(stored[0] && Array.isArray(stored[0].children));
-
-  container.innerHTML = IS_STRUCTURED ? renderStructured(RAW_DATA) : renderFlat(RAW_DATA);
-  document.getElementById('toc-chips').innerHTML = buildToc(RAW_DATA, IS_STRUCTURED);
-
-  if (RAW_DATA.length === 0) {
-    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-feather-pointed"></i><p>Cổ thư còn trống — chưa có tri thức nào dành cho ${khoiHocSinh}.</p><p class="empty-sub">Hãy nạp bài học lý thuyết từ trang quản trị.</p></div>`;
-    document.getElementById('toc-wrap').style.display = 'none';
+/* KHỞI ĐỘNG HỆ THỐNG NGAY KHI TẢI TRANG */
+function khoiDongThuVien() {
+  // 1. Tự động nhận diện khối lớp học sinh nếu đang đăng nhập
+  const studentGrade = sessionStorage.getItem('hoc_school_student_class') || 
+                       localStorage.getItem('hoc_school_student_class');
+  
+  if (studentGrade && ['Khối 6', 'Khối 7', 'Khối 8', 'Khối 9'].includes(studentGrade)) {
+    KHOI_HIEN_TAI = studentGrade;
+    const tabEl = document.querySelector(`.grade-tab-btn[data-grade="${studentGrade}"]`);
+    if (tabEl) {
+      document.querySelectorAll('.grade-tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      tabEl.classList.add('active');
+    }
   }
 
-  afterRender();
+  // 2. Hiển thị nút Về Quản Trị nếu là Admin
+  const isAdmin = sessionStorage.getItem('hero_admin_mode') === 'admin' ||
+                  localStorage.getItem('teacher_authenticated') === 'true';
+  const btnAdmin = document.getElementById('btn-to-admin');
+  if (btnAdmin && isAdmin) {
+    btnAdmin.style.display = 'inline-flex';
+  }
+
+  // 3. Tải ngay dữ liệu từ localStorage
+  window.__lamMoiThuVien();
   updateProgress();
 
-  document.getElementById('search-input').addEventListener('input', (e) => runSearch(e.target.value));
-});
+  // 4. Đọc tiếp từ IndexedDB trực tiếp
+  docTrucTiepIndexedDB();
+
+  // 5. Gắn sự kiện tìm kiếm
+  const sInp = document.getElementById('search-input');
+  if (sInp) {
+    sInp.addEventListener('input', function(e) { runSearch(e.target.value); });
+  }
+
+  // 6. Lắng nghe storage event (khi Admin nạp bài hoặc xóa bài từ tab khác)
+  window.addEventListener('storage', function(e) {
+    if (!e.key || e.key === 'danh_sach_bai_hoc_ly_thuyet' || e.key === 'danh_sach_bai_hoc_ly_thuyet_da_xoa' || e.key === 'hero_da_xoa_ly_thuyet') {
+      window.__lamMoiThuVien();
+    }
+  });
+
+  // 7. Tự động làm mới khi quay lại tab này (focus)
+  window.addEventListener('focus', function() {
+    window.__lamMoiThuVien();
+  });
+}
+
+// Chạy ngay khi DOM sẵn sàng
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', khoiDongThuVien);
+} else {
+  khoiDongThuVien();
+}
+</script>
+
+<!-- ============================================================ -->
+<!--  MODULE ĐỒNG BỘ CLOUD FIREBASE (CHẠY ĐƯỢC CẢ TRÊN FILE:/// VÀ HTTP/HTTPS)-->
+<!-- ============================================================ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="./hero-firebase-compat.js"></script>
+<script>
+  (async function() {
+    try {
+      if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiCauHinhToanCuc === 'function') {
+        await window.HeroFirebaseCompat.taiCauHinhToanCuc();
+        if (typeof window.__lamMoiThuVien === 'function') {
+          window.__lamMoiThuVien();
+        }
+      }
+    } catch(e) {
+      console.warn("[Thư Viện] Lỗi đồng bộ Firebase compat:", e);
+    }
+  })();
+</script>
+<script type="module">
+  try {
+    const { taiCauHinhToanCuc } = await import("./firebase-sync.js");
+    const { kiemTraSessionToken } = await import("./hero-auth.js");
+
+    const isAdmin = sessionStorage.getItem('hero_admin_mode') === 'admin' ||
+                    localStorage.getItem('teacher_authenticated') === 'true';
+    if (!isAdmin && typeof kiemTraSessionToken === 'function') {
+      kiemTraSessionToken(true).catch(() => {});
+    }
+
+    if (typeof taiCauHinhToanCuc === 'function') {
+      await taiCauHinhToanCuc();
+      if (typeof window.__lamMoiThuVien === 'function') {
+        window.__lamMoiThuVien();
+      }
+    }
+  } catch (err) {
+    console.log("[Thư Viện] Chế độ file:// dùng hero-firebase-compat.js");
+  }
 </script>
 </body>
 </html>

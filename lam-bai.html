@@ -15,12 +15,22 @@
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
-    <!-- Đồng bộ dữ liệu Firebase: nạp module firebase-sync.js và gắn vào window
-         để các hàm <script> thường (không phải module) bên dưới có thể gọi được. -->
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Chạy 100% trên cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
+
+    <!-- Đồng bộ dữ liệu Firebase + Bảo mật SessionToken -->
     <script type="module">
-        import * as FirebaseSync from './firebase-sync.js';
-        window.FirebaseSync = FirebaseSync;
-        console.log("[Lam Bai] Đã nạp xong firebase-sync.js");
+        try {
+            const FirebaseSync = await import('./firebase-sync.js');
+            const { kiemTraSessionToken } = await import('./hero-auth.js');
+            window.FirebaseSync = FirebaseSync;
+            if (typeof kiemTraSessionToken === 'function') kiemTraSessionToken(true).catch(() => {});
+            console.log("[Lam Bai] Đã nạp xong firebase-sync.js + hero-auth.js");
+        } catch (e) {
+            console.log("[Lam Bai] Đang dùng hero-firebase-compat.js");
+        }
     </script>
 
     <style>
@@ -850,6 +860,7 @@
             // PHÂN LUỒNG THEO KHỐI LỚP: học sinh khối nào chỉ thấy bộ đề khối đó (hoặc bộ đề dùng chung "Tất cả các khối")
             let khoiCuaEm = trichXuatSoKhoiLop(sessionStorage.getItem('hoc_school_student_class'));
             khoThuMucDe = toanBoDe.filter(bode => {
+                if (bode.hidden) return false;
                 let khoiBoDe = (!bode.grade || bode.grade === 'all') ? null : trichXuatSoKhoiLop(bode.grade);
                 if (!khoiBoDe) return true; // Bộ đề dùng chung cho mọi khối (hoặc bộ đề cũ chưa được gán khối)
                 if (!khoiCuaEm) return true; // Chưa xác định được khối học sinh -> không chặn, tránh khóa nhầm
