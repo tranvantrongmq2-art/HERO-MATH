@@ -6,6 +6,12 @@
     <title>HỆ THỐNG THƯƠNG MẠI CHIẾN BINH - MATH HERO</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Montserrat:wght@700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Nạp Firebase Compat SDK & HeroFirebaseCompat (Hỗ trợ 100% cả file:/// và máy chủ web) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="./hero-firebase-compat.js"></script>
+
     <style>
         /* ===== RESET & NỀN (CYBER-MAGIC THEME) ===== */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -434,16 +440,55 @@
         </div>
     </div>
 
+    <script>
+        // Thiết lập dự phòng an toàn cho Firebase Sync (chạy 100% trên cả file:/// và máy chủ web)
+        window.__fbTaiDuLieuTuMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiDuLieuTuMay === 'function') {
+                try { return await window.HeroFirebaseCompat.taiDuLieuTuMay(ten); } catch(e) {}
+            }
+            return null;
+        };
+        window.__fbDayDuLieuLenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayDuLieuLenMay === 'function') {
+                try { return await window.HeroFirebaseCompat.dayDuLieuLenMay(ten); } catch(e) {}
+            }
+        };
+        window.__fbTaiCauHinhToanCuc = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiCauHinhToanCuc === 'function') {
+                try { return await window.HeroFirebaseCompat.taiCauHinhToanCuc(); } catch(e) {}
+            }
+        };
+        window.__fbDayCauHinhToanCuc = async (key) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.dayCauHinhToanCuc === 'function') {
+                try { return await window.HeroFirebaseCompat.dayCauHinhToanCuc(key); } catch(e) {}
+            }
+        };
+        window.__fbTaiToanBoHocSinhTuMay = async () => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiToanBoHocSinhTuMay === 'function') {
+                try { return await window.HeroFirebaseCompat.taiToanBoHocSinhTuMay(); } catch(e) {}
+            }
+            return [];
+        };
+        window.__fbXoaHocSinhTrenMay = async (ten) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.xoaHocSinhTrenMay === 'function') {
+                try { return await window.HeroFirebaseCompat.xoaHocSinhTrenMay(ten); } catch(e) {}
+            }
+        };
+    </script>
     <script type="module">
-        import { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, taiToanBoHocSinhTuMay, xoaHocSinhTrenMay } from "./firebase-sync.js";
-        import { kiemTraSessionToken } from './hero-auth.js';
-        window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
-        window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
-        window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
-        window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
-        window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
-        window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
-        kiemTraSessionToken(true).catch(() => {});
+        try {
+            const { taiDuLieuTuMay, dayDuLieuLenMay, taiCauHinhToanCuc, dayCauHinhToanCuc, taiToanBoHocSinhTuMay, xoaHocSinhTrenMay } = await import("./firebase-sync.js");
+            const { kiemTraSessionToken } = await import('./hero-auth.js');
+            window.__fbTaiDuLieuTuMay = taiDuLieuTuMay;
+            window.__fbDayDuLieuLenMay = dayDuLieuLenMay;
+            window.__fbTaiCauHinhToanCuc = taiCauHinhToanCuc;
+            window.__fbDayCauHinhToanCuc = dayCauHinhToanCuc;
+            window.__fbTaiToanBoHocSinhTuMay = taiToanBoHocSinhTuMay;
+            window.__fbXoaHocSinhTrenMay = xoaHocSinhTrenMay;
+            if (typeof kiemTraSessionToken === 'function') kiemTraSessionToken(true).catch(() => {});
+        } catch (err) {
+            console.log("[Cửa Hàng] Đang dùng hero-firebase-compat.js");
+        }
     </script>
 
     <script>
@@ -529,33 +574,63 @@
             ...CONSUMABLE_ITEMS
         ];
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            await window.__fbTaiCauHinhToanCuc();
-            danhSachSanPham = JSON.parse(localStorage.getItem('math_hero_shop_items')) || [];
-            
-            // Nếu danh sách rỗng, khởi tạo với DEFAULT_ITEMS
-            if (danhSachSanPham.length === 0) {
-                danhSachSanPham = DEFAULT_ITEMS;
+        function khoiTaoDanhSachVatPham() {
+            try {
+                let saved = localStorage.getItem('math_hero_shop_items');
+                if (saved) {
+                    danhSachSanPham = JSON.parse(saved);
+                }
+            } catch (e) {
+                danhSachSanPham = [];
+            }
+
+            if (!Array.isArray(danhSachSanPham) || danhSachSanPham.length === 0) {
+                danhSachSanPham = [...DEFAULT_ITEMS];
             } else {
-                // Lọc bỏ các vật phẩm đã bị gỡ (ID nằm trong DANH_SACH_ID_BI_GO_BO)
-                danhSachSanPham = danhSachSanPham.filter(sp => !DANH_SACH_ID_BI_GO_BO.includes(sp.id));
-                // Đảm bảo không còn vật phẩm nào có tên chứa "Bùa Phục Hận" hoặc "Linh Đan" (phòng trường hợp cũ)
-                danhSachSanPham = danhSachSanPham.filter(sp => !(sp.name || '').includes('Bùa Phục Hận'));
-                danhSachSanPham = danhSachSanPham.filter(sp => !(sp.name || '').includes('Linh Đan'));
-                
-                // Thêm các vật phẩm mới (tinh thần và consumable) nếu chưa có
-                const tatCaVatPhamMoi = [...SPIRIT_ITEMS, ...CONSUMABLE_ITEMS];
-                tatCaVatPhamMoi.forEach(mau => {
+                // Lọc bỏ các vật phẩm đã bị gỡ theo danh sách ID
+                danhSachSanPham = danhSachSanPham.filter(sp => sp && sp.id && !DANH_SACH_ID_BI_GO_BO.includes(sp.id));
+
+                // Đảm bảo tất cả vật phẩm mặc định (tinh thần, vật lý, tiêu hao) luôn có mặt trong shop
+                DEFAULT_ITEMS.forEach(mau => {
                     if (!danhSachSanPham.some(sp => sp.id === mau.id)) {
                         danhSachSanPham.push({ ...mau });
                     }
                 });
             }
-            
-            // Lưu lại danh sách
-            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
-            window.__fbDayCauHinhToanCuc('math_hero_shop_items');
+
+            // Phòng trường hợp danh sách vẫn rỗng
+            if (danhSachSanPham.length === 0) {
+                danhSachSanPham = [...DEFAULT_ITEMS];
+            }
+
+            // Lưu lại danh sách vào local và gửi lên Cloud nếu có kết nối
+            try {
+                localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+                if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                    window.__fbDayCauHinhToanCuc('math_hero_shop_items').catch(() => {});
+                }
+            } catch (e) {}
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Bước 1: Khởi tạo danh sách vật phẩm từ bộ nhớ cục bộ và hiển thị ngay lập tức (không đợi mạng)
+            khoiTaoDanhSachVatPham();
             await kiemTraVaNapDanhTinh();
+
+            // Bước 2: Đồng bộ cấu hình toàn cục từ Firebase trong nền (nếu có kết nối)
+            try {
+                if (typeof window.__fbTaiCauHinhToanCuc === 'function') {
+                    await window.__fbTaiCauHinhToanCuc();
+                    khoiTaoDanhSachVatPham();
+                    renderOfficialShop();
+                    if (studentName) {
+                        renderInventory();
+                        renderMarketplace();
+                    }
+                }
+            } catch (e) {
+                console.warn("[Cửa Hàng] Không thể đồng bộ từ Firebase:", e);
+            }
         });
 
         function updateGlobalExp() { 
@@ -585,41 +660,58 @@
                 let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
                 if (users[studentName] && typeof users[studentName] === 'object') studentClassroom = users[studentName].classroom || '';
             }
+
+            const statusArea = document.getElementById('user-status-area');
             if (!studentName) {
-                document.getElementById('user-status-area').innerHTML = `
-                    <div style="width:100%;">
-                        <p style="color: #00ffff; font-weight:bold; font-size:0.8rem;"><i class="fa-solid fa-fingerprint"></i> KẾT NỐI DANH TÍNH</p>
-                        <div class="quick-login-form">
-                            <input type="text" id="quick-name-input" placeholder="Họ và Tên chiến binh...">
-                            <button onclick="kichHoatDangNhapNhanh()">LINK</button>
-                        </div>
-                    </div>`;
+                if (statusArea) {
+                    statusArea.innerHTML = `
+                        <div style="width:100%;">
+                            <p style="color: #00ffff; font-weight:bold; font-size:0.8rem;"><i class="fa-solid fa-fingerprint"></i> KẾT NỐI DANH TÍNH</p>
+                            <div class="quick-login-form">
+                                <input type="text" id="quick-name-input" placeholder="Họ và Tên chiến binh...">
+                                <button onclick="kichHoatDangNhapNhanh()">LINK</button>
+                            </div>
+                        </div>`;
+                }
             } else {
-                await window.__fbTaiDuLieuTuMay(studentName);
+                try {
+                    if (typeof window.__fbTaiDuLieuTuMay === 'function') {
+                        await window.__fbTaiDuLieuTuMay(studentName);
+                    }
+                } catch(e) {
+                    console.warn("Lỗi tải dữ liệu học sinh:", e);
+                }
                 const avatarMap = { 'Khối 6': '🐉', 'Khối 7': '⚔️', 'Khối 8': '🔥', 'Khối 9': '🦁' };
                 const avatar = avatarMap[studentClass] || '🛡️';
                 let danhHieuActive = localStorage.getItem('danh_hieu_active_' + studentName) || '';
                 let khungRaw = localStorage.getItem('khung_avatar_active_' + studentName);
                 let khungActive = null; try { khungActive = khungRaw ? JSON.parse(khungRaw) : null; } catch(e) { khungActive = null; }
-                document.getElementById('user-status-area').innerHTML = `
-                    <div class="warrior-card-left">
-                        <div class="warrior-avatar ${khungActive && khungActive.cssClass ? khungActive.cssClass : ''}">${avatar}</div>
-                        <div class="warrior-meta">
-                            <div class="warrior-label"><i class="fa-solid fa-fingerprint"></i> ĐÃ XÁC THỰC</div>
-                            <p class="warrior-name">${studentName}</p>
-                            ${danhHieuActive ? `<div class="warrior-title-badge"><i class="fa-solid fa-award"></i> ${danhHieuActive.replace('Danh Hiệu: ','')}</div>` : ''}
-                            <div class="warrior-class-row">
-                                <span class="warrior-class-tag">${studentClass}</span>
-                                ${studentClassroom ? `<span class="warrior-classroom-tag">${studentClassroom}</span>` : ''}
+                if (statusArea) {
+                    statusArea.innerHTML = `
+                        <div class="warrior-card-left">
+                            <div class="warrior-avatar ${khungActive && khungActive.cssClass ? khungActive.cssClass : ''}">${avatar}</div>
+                            <div class="warrior-meta">
+                                <div class="warrior-label"><i class="fa-solid fa-fingerprint"></i> ĐÃ XÁC THỰC</div>
+                                <p class="warrior-name">${studentName}</p>
+                                ${danhHieuActive ? `<div class="warrior-title-badge"><i class="fa-solid fa-award"></i> ${danhHieuActive.replace('Danh Hiệu: ','')}</div>` : ''}
+                                <div class="warrior-class-row">
+                                    <span class="warrior-class-tag">${studentClass}</span>
+                                    ${studentClassroom ? `<span class="warrior-classroom-tag">${studentClassroom}</span>` : ''}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="warrior-card-right">
-                        <div class="user-exp-badge" id="student-display-exp"></div>
-                        <div class="user-coin-badge" id="student-display-coin"></div>
-                    </div>`;
-                capNhatGiaoDienEXP(); renderOfficialShop(); renderInventory(); renderMarketplace();
+                        <div class="warrior-card-right">
+                            <div class="user-exp-badge" id="student-display-exp"></div>
+                            <div class="user-coin-badge" id="student-display-coin"></div>
+                        </div>`;
+                }
+                capNhatGiaoDienEXP();
+                renderInventory();
+                renderMarketplace();
             }
+
+            // QUAN TRỌNG: Shop luôn luôn được vẽ để học sinh/giáo viên dù đăng nhập hay chưa đều xem được toàn bộ vật phẩm!
+            renderOfficialShop();
         }
 
         async function kichHoatDangNhapNhanh() {
@@ -638,7 +730,11 @@
         function capNhatGiaoDienEXP() { updateGlobalExp(); }
 
         function renderOfficialShop() {
-            const grid = document.getElementById('official-shop-grid'); if(!grid) return; grid.innerHTML = "";
+            const grid = document.getElementById('official-shop-grid'); if(!grid) return;
+            if (!Array.isArray(danhSachSanPham) || danhSachSanPham.length === 0) {
+                khoiTaoDanhSachVatPham();
+            }
+            grid.innerHTML = "";
             const T_SPIRIT = SPIRIT_ITEMS.map(it=>it.id);
             
             let sorted = [...danhSachSanPham].sort((a,b) => {
@@ -961,9 +1057,23 @@
         }
         async function moModalQuanTri() {
             document.getElementById('teacher-modal').style.display = 'flex'; hienThiToast("Đang đồng bộ...");
-            let all = await window.__fbTaiToanBoHocSinhTuMay();
-            all.forEach(hs => { Object.keys(hs.data).forEach(k => { if(k!=='_capNhatLanCuoi' && k!=='_lop' && k!=='_lopCuThe') localStorage.setItem(k, hs.data[k]); }); });
-            let h = ""; danhSachSanPham.forEach((i,x) => { h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;"><span>${i.icon} ${i.name}</span> <input type="number" id="ep-${x}" value="${i.price}" class="modal-input" style="width:70px; padding:4px;"></div>`; });
+            try {
+                if (typeof window.__fbTaiToanBoHocSinhTuMay === 'function') {
+                    let all = await window.__fbTaiToanBoHocSinhTuMay();
+                    if (Array.isArray(all)) {
+                        all.forEach(hs => {
+                            if (hs && hs.data) {
+                                Object.keys(hs.data).forEach(k => {
+                                    if(k!=='_capNhatLanCuoi' && k!=='_lop' && k!=='_lopCuThe') localStorage.setItem(k, hs.data[k]);
+                                });
+                            }
+                        });
+                    }
+                }
+            } catch(e) {
+                console.warn("[Cửa Hàng] Không thể tải danh sách học sinh:", e);
+            }
+            let h = ""; (danhSachSanPham || []).forEach((i,x) => { h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;"><span>${i.icon} ${i.name}</span> <input type="number" id="ep-${x}" value="${i.price}" class="modal-input" style="width:70px; padding:4px;"></div>`; });
             document.getElementById('price-edit-list').innerHTML = h;
             renderTeacherStudentList();
         }
