@@ -310,8 +310,8 @@
             <div class="modal-title"><i class="fa-solid fa-tags"></i> TREO LÊN SÀN GIAO DỊCH</div>
             <p id="sell-modal-text" style="font-size:0.85rem; color:#cbd5e1; margin-bottom: 16px;"></p>
             <div class="form-group">
-                <label>Nhập giá mong muốn (Điểm)</label>
-                <input type="number" id="sell-price-input" class="modal-input" min="1" value="50">
+                <label>Nhập giá mong muốn (Điểm) <span style="color:#f1c40f;font-size:0.75rem;">(Chiến lợi phẩm quý hiếm)</span></label>
+                <input type="number" id="sell-price-input" class="modal-input" min="50" value="500" placeholder="Nhập giá (Điểm)...">
             </div>
             <div class="modal-btn-row">
                 <button class="btn-cancel-modal" onclick="dongModalBan()">HỦY</button>
@@ -361,7 +361,10 @@
                     <button class="btn-action" style="background: #f1c40f; color: #000; padding: 8px;" onclick="themVatPhamMoi()">TẠO MỚI</button>
                 </div>
 
-                <div style="text-align: left; color: #00ffff; font-weight: bold; font-size: 0.8rem; margin-bottom: 6px;"><i class="fa-solid fa-tags"></i> ĐIỀU CHỈNH GIÁ THỊ TRƯỜNG:</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <div style="text-align: left; color: #00ffff; font-weight: bold; font-size: 0.8rem;"><i class="fa-solid fa-tags"></i> ĐIỀU CHỈNH GIÁ THỊ TRƯỜNG:</div>
+                    <button class="btn-small btn-cancel" style="font-size:0.65rem;" onclick="datLaiGiaMacDinh()" title="Khôi phục bảng giá chuẩn theo kinh tế hoạt động"><i class="fa-solid fa-rotate-left"></i> Khôi phục giá chuẩn</button>
+                </div>
                 <div id="price-edit-list" style="max-height: 25vh; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 8px;"></div>
                 <button class="btn-action" style="margin-top: 12px;" onclick="luuBangGiaMoi()">LƯU BẢNG GIÁ</button>
                 <button class="btn-cancel-modal" style="width: 100%; margin-top: 8px;" onclick="dongModalTeacher()">ĐÓNG</button>
@@ -423,18 +426,18 @@
         </div>
 
         <div id="tab-shop" class="tab-content active">
-            <div class="lore-text">Sử dụng <b>Điểm</b> tích lũy được từ các nhiệm vụ để quy đổi lấy Đặc Quyền Trí Tuệ hoặc Vật Phẩm Vật Lý.</div>
+            <div class="lore-text">Sử dụng <b>Điểm</b> tích lũy từ chuỗi ngày rèn luyện (<b>Nhiệm Vụ</b>, <b>Nâng Cấp Tư Duy</b>, <b>Bài Tập Tự Luận (+20 đến +250 Điểm)</b> & <b>Đấu Boss</b>) để quy đổi Danh Hiệu, Vật Phẩm Hỗ Trợ hoặc Chiến Lợi Phẩm Hiện Vật quý giá.</div>
             <div class="shop-grid" id="official-shop-grid"></div>
         </div>
 
         <div id="tab-inventory" class="tab-content">
-            <div class="lore-text">Những Vật Phẩm <b>(Chưa Dùng)</b> có thể mang lên Sàn Giao Dịch để lấy lại Điểm. Thẻ Đặc Quyền sẽ tự động kích hoạt khi vào đúng tính năng.</div>
+            <div class="lore-text">Những Chiến Lợi Phẩm <b>(Chưa Dùng)</b> có thể mang lên Sàn Giao Dịch để lấy lại Điểm. Thẻ Hỗ Trợ sẽ kích hoạt ngay khi bấm Dùng.</div>
             <div class="cyber-list" id="inventory-list-body">
                 </div>
         </div>
 
         <div id="tab-market" class="tab-content">
-            <div class="lore-text">Nơi các chiến binh buôn bán trao đổi chiến lợi phẩm dư thừa. Thỏa thuận và mua bán bằng <b>Điểm</b>!</div>
+            <div class="lore-text">Sàn Giao Dịch Chiến Lợi Phẩm Quý Hiếm: Nơi các chiến binh trao đổi vật phẩm giá trị cao tích lũy từ chuỗi ngày rèn luyện bền bỉ!</div>
             <div class="cyber-list" id="market-list-body">
                 </div>
         </div>
@@ -544,53 +547,64 @@
         ];
         const DANH_SACH_ID_BI_GO_BO = ["sp1", "sp2", "sp3", "sp4", "sp5", "sp6", "sp10", "sp11", "sp12", ...DANH_SACH_ID_DAC_QUYEN_DA_GO_BO];
 
-        // ===== VẬT PHẨM TINH THẦN (danh hiệu + khung avatar) — miễn phí hoặc gần miễn phí =====
+        // ===== VẬT PHẨM TINH THẦN (danh hiệu + khung avatar) — miễn phí hoặc tượng trưng =====
         const SPIRIT_ITEMS = [
+            { id: "th_ongvang", icon: "🐝", name: "Danh Hiệu: Ong Vàng Chăm Chỉ", desc: "Tặng thưởng vinh danh cho chiến binh kiên trì, cần cù làm bài mỗi ngày.", price: 0, type: "spirit", sub: "danhhieu" },
             { id: "th_kienTri", icon: "🎖️", name: "Danh Hiệu: Kiên Trì Bất Bại", desc: "Chứng nhận tinh thần cho chiến binh chưa từng bỏ cuộc, dù có sai bao nhiêu lần.", price: 0, type: "spirit", sub: "danhhieu" },
             { id: "th_khoiDau", icon: "🌱", name: "Danh Hiệu: Tân Binh Nhiệt Huyết", desc: "Dành tặng ngay cho chiến binh mới gia nhập hàng ngũ.", price: 0, type: "spirit", sub: "danhhieu" },
-            { id: "th_hocgianhi", icon: "📚", name: "Danh Hiệu: Học Giả Nhí", desc: "Danh hiệu cho chiến binh ham học hỏi, luôn xem kỹ lời giải sau mỗi câu.", price: 20, type: "spirit", sub: "danhhieu" },
-            { id: "th_dungsi", icon: "⚔️", name: "Danh Hiệu: Dũng Sĩ Số Học", desc: "Dành cho chiến binh dám đương đầu với mọi bài toán khó.", price: 30, type: "spirit", sub: "danhhieu" },
+            { id: "th_hocgianhi", icon: "📚", name: "Danh Hiệu: Học Giả Nhí", desc: "Danh hiệu cho chiến binh ham học hỏi, luôn xem kỹ lời giải sau mỗi câu.", price: 50, type: "spirit", sub: "danhhieu" },
+            { id: "th_dungsi", icon: "⚔️", name: "Danh Hiệu: Dũng Sĩ Số Học", desc: "Dành cho chiến binh dám đương đầu với mọi bài toán khó.", price: 100, type: "spirit", sub: "danhhieu" },
             { id: "kh_la", icon: "🍃", name: "Khung Avatar: Lá Phong Bình Yên", desc: "Khung viền nhẹ nhàng, món quà chào mừng miễn phí.", price: 0, type: "spirit", sub: "khung", cssClass: "khung-la" },
-            { id: "kh_lua", icon: "🔥", name: "Khung Avatar: Ngọn Lửa Quyết Tâm", desc: "Khung viền rực lửa cho chiến binh không ngại thử thách.", price: 20, type: "spirit", sub: "khung", cssClass: "khung-lua" },
-            { id: "kh_bang", icon: "❄️", name: "Khung Avatar: Băng Giá Bình Tĩnh", desc: "Giữ vững tinh thần dù có sai câu nào đi nữa.", price: 20, type: "spirit", sub: "khung", cssClass: "khung-bang" },
-            { id: "kh_vang", icon: "👑", name: "Khung Avatar: Hào Quang Vàng", desc: "Khung viền vàng danh giá cho nhà vô địch của lớp.", price: 50, type: "spirit", sub: "khung", cssClass: "khung-vang" }
+            { id: "kh_lua", icon: "🔥", name: "Khung Avatar: Ngọn Lửa Quyết Tâm", desc: "Khung viền rực lửa cho chiến binh không ngại thử thách.", price: 100, type: "spirit", sub: "khung", cssClass: "khung-lua" },
+            { id: "kh_bang", icon: "❄️", name: "Khung Avatar: Băng Giá Bình Tĩnh", desc: "Giữ vững tinh thần dù có sai câu nào đi nữa.", price: 100, type: "spirit", sub: "khung", cssClass: "khung-bang" },
+            { id: "kh_vang", icon: "👑", name: "Khung Avatar: Hào Quang Vàng", desc: "Khung viền vàng danh giá cho học sinh nỗ lực vươn lên.", price: 300, type: "spirit", sub: "khung", cssClass: "khung-vang" }
         ];
 
-        // ===== VẬT PHẨM TIÊU HAO (TĂNG LƯỢT LÀM BÀI & TƯ DUY) =====
+        // ===== VẬT PHẨM HỖ TRỢ (TIÊU HAO - TĂNG LƯỢT LÀM BÀI & TƯ DUY) =====
+        // Mức giá thiết kế: Học sinh phải tham gia tích cực đầy đủ các nhiệm vụ trong ngày (~300-450 Điểm/ngày) mới đủ mua!
         const CONSUMABLE_ITEMS = [
             // Dành cho Nhiệm Vụ (lam-bai)
-            { id: "buaphuc", icon: "💀", name: "Bùa Phục Hận", desc: "Cộng thêm 1 lượt làm bài ngay lập tức.", price: 150, type: "consumable" },
-            { id: "linhdan", icon: "🧪", name: "Linh Đan Đầy Năng Lượng", desc: "Làm đầy toàn bộ số lượt làm bài còn lại (tối đa 3 lượt).", price: 400, type: "consumable" },
+            { id: "buaphuc", icon: "💀", name: "Bùa Phục Hận", desc: "Cộng thêm 1 lượt làm bài. Cần hoàn thành tích cực toàn bộ nhiệm vụ trong ngày.", price: 350, type: "consumable" },
+            { id: "linhdan", icon: "🧪", name: "Linh Đan Đầy Năng Lượng", desc: "Làm đầy toàn bộ 3 lượt làm bài. Đòi hỏi nỗ lực tích cực kiên trì khoảng 3 ngày.", price: 950, type: "consumable" },
             // Dành cho Nâng Cấp Tư Duy (vuot_ai)
-            { id: "buaphuc_tuduy", icon: "💀", name: "Bùa Phục Hận Tư Duy", desc: "Cộng thêm 2 lượt Nâng Cấp Tư Duy ngay lập tức.", price: 250, type: "consumable" },
-            { id: "linhdan_tuduy", icon: "🧪", name: "Linh Đan Tư Duy", desc: "Làm đầy toàn bộ số lượt Nâng Cấp Tư Duy còn lại (tối đa 3 lượt).", price: 500, type: "consumable" }
+            { id: "buaphuc_tuduy", icon: "💀", name: "Bùa Phục Hận Tư Duy", desc: "Cộng thêm 2 lượt Nâng Cấp Tư Duy. Cần tích lũy Điểm qua chuỗi bài tập tư duy.", price: 450, type: "consumable" },
+            { id: "linhdan_tuduy", icon: "🧪", name: "Linh Đan Tư Duy", desc: "Làm đầy toàn bộ 3 lượt Nâng Cấp Tư Duy. Cần 3-4 ngày chuyên cần toàn diện.", price: 1200, type: "consumable" }
         ];
 
+        // ===== VẬT PHẨM HIỆN VẬT & CHIẾN LỢI PHẨM GIAO DỊCH ĐƯỢC (GIÁ RẤT CAO - CẦN NỖ LỰC DÀI HẠN) =====
         const DEFAULT_ITEMS = [
             ...SPIRIT_ITEMS,
-            { id: "sp7", icon: "🍬", name: "Kẹo Mút Trí Tuệ", desc: "Bổ sung đường Glucozo lập tức cho các pha tính nhẩm.", price: 300, type: "real" },
-            { id: "sp8", icon: "✏️", name: "Bút Bi Thần Tốc", desc: "Bút chuyên vẽ sơ đồ tư duy và hình học chuẩn xác.", price: 400, type: "real" },
-            { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học", desc: "Sổ mini ghi chép toàn bộ công thức cốt lõi.", price: 500, type: "real" },
+            { id: "sp7", icon: "🍬", name: "Kẹo Mút Trí Tuệ", desc: "Phần thưởng hiện vật ngọt ngào. Đòi hỏi ít nhất 1 tuần nỗ lực làm bài chăm chỉ đầy đủ.", price: 1500, type: "real" },
+            { id: "sp8", icon: "✏️", name: "Bút Bi Chiến Binh", desc: "Vũ khí sắc bén chuyên vẽ sơ đồ & hình học. Cần 2-3 tuần tích cực bền bỉ.", price: 4500, type: "real" },
+            { id: "sp9", icon: "📘", name: "Sổ Tay Toán Học Tối Thượng", desc: "Bảo vật tri thức ghi chép trọn vẹn công thức cốt lõi. Đòi hỏi 1 tháng nỗ lực đỉnh cao.", price: 9900, type: "real" },
+            { id: "sp_cup", icon: "🏆", name: "Cúp Vinh Quang Math Hero", desc: "Chiến lợi phẩm hiện vật tối cao. Dành riêng cho chiến binh phấn đấu suốt cả học kỳ.", price: 25000, type: "real" },
             ...CONSUMABLE_ITEMS
         ];
 
+        const SHOP_ECONOMY_VERSION = "v3_balanced_longterm";
+
         function khoiTaoDanhSachVatPham() {
+            let lastVer = localStorage.getItem('math_hero_shop_economy_version');
+            let saved = null;
             try {
-                let saved = localStorage.getItem('math_hero_shop_items');
-                if (saved) {
-                    danhSachSanPham = JSON.parse(saved);
-                }
+                saved = localStorage.getItem('math_hero_shop_items');
+                if (saved) danhSachSanPham = JSON.parse(saved);
             } catch (e) {
                 danhSachSanPham = [];
             }
 
-            if (!Array.isArray(danhSachSanPham) || danhSachSanPham.length === 0) {
-                danhSachSanPham = [...DEFAULT_ITEMS];
+            if (!Array.isArray(danhSachSanPham) || danhSachSanPham.length === 0 || lastVer !== SHOP_ECONOMY_VERSION) {
+                // Giữ lại các vật phẩm custom do giáo viên tự tạo (nếu có)
+                let customItems = Array.isArray(danhSachSanPham) ? danhSachSanPham.filter(i => i && i.id && i.id.startsWith('sp_custom_')) : [];
+                
+                // Áp dụng bảng giá chuẩn cân bằng theo tiến độ hoạt động
+                danhSachSanPham = [...DEFAULT_ITEMS, ...customItems];
+                localStorage.setItem('math_hero_shop_economy_version', SHOP_ECONOMY_VERSION);
             } else {
                 // Lọc bỏ các vật phẩm đã bị gỡ theo danh sách ID
                 danhSachSanPham = danhSachSanPham.filter(sp => sp && sp.id && !DANH_SACH_ID_BI_GO_BO.includes(sp.id));
 
-                // Đảm bảo tất cả vật phẩm mặc định (tinh thần, vật lý, tiêu hao) luôn có mặt trong shop
+                // Đảm bảo tất cả vật phẩm mặc định luôn có mặt
                 DEFAULT_ITEMS.forEach(mau => {
                     if (!danhSachSanPham.some(sp => sp.id === mau.id)) {
                         danhSachSanPham.push({ ...mau });
@@ -644,17 +658,22 @@
         }
 
         async function kiemTraVaNapDanhTinh() {
-            studentName = sessionStorage.getItem('hoc_school_student_name');
-            studentClass = sessionStorage.getItem('hoc_school_student_class') || 'Khối 7';
-            studentClassroom = sessionStorage.getItem('hoc_school_student_classroom') || '';
+            studentName = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name');
+            studentClass = sessionStorage.getItem('hoc_school_student_class') || localStorage.getItem('hoc_school_student_class') || 'Khối 7';
+            studentClassroom = sessionStorage.getItem('hoc_school_student_classroom') || localStorage.getItem('hoc_school_student_classroom') || '';
             if (!studentName) {
                 let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
                 if (nhatKy.length > 0) {
-                    let lastUser = nhatKy[nhatKy.length - 1]; studentName = lastUser.name;
-                    studentClass = lastUser.className || 'Khối 7'; studentClassroom = lastUser.classroom || '';
-                    sessionStorage.setItem('hoc_school_student_name', studentName);
-                    sessionStorage.setItem('hoc_school_student_class', studentClass);
+                    let lastUser = nhatKy[nhatKy.length - 1]; 
+                    studentName = lastUser.name;
+                    studentClass = lastUser.className || 'Khối 7'; 
+                    studentClassroom = lastUser.classroom || '';
                 }
+            }
+            if (studentName) {
+                sessionStorage.setItem('hoc_school_student_name', studentName);
+                sessionStorage.setItem('hoc_school_student_class', studentClass);
+                if (studentClassroom) sessionStorage.setItem('hoc_school_student_classroom', studentClassroom);
             }
             if (studentName && !studentClassroom) {
                 let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
@@ -784,35 +803,55 @@
                         </div>
                         <div>
                             ${priceHtml}
-                            <button class="btn-action" onclick="muaHangTuShop('${item.name}', ${item.price}, '${item.icon || '🎁'}', '${item.type}')">${btnLabel}</button>
+                            <button class="btn-action" onclick="muaHangTuShop('${item.id}')">${btnLabel}</button>
                         </div>
                     </div>`;
             });
         }
 
-        function muaHangTuShop(tenSp, gia, icon, type) {
-            if(!studentName) return hienThiToast("Lỗi định danh!", "error");
+        function muaHangTuShop(idOrName, gia, icon, type) {
+            if (!studentName) {
+                studentName = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name');
+            }
+            if(!studentName) return hienThiToast("Vui lòng kết nối danh tính trước khi nhận/mua đồ!", "error");
+
+            let sp = (danhSachSanPham || []).find(i => i.id === idOrName);
+            let tenSp = sp ? sp.name : idOrName;
+            let finalPrice = sp ? (sp.price !== undefined ? sp.price : 0) : (gia !== undefined ? gia : 0);
+            let finalIcon = sp ? (sp.icon || '🎁') : (icon || '🎁');
+            let finalType = sp ? sp.type : (type || 'real');
+
             // Vật phẩm tinh thần (danh hiệu/khung avatar): nếu đã sở hữu rồi thì không cho nhận trùng.
-            if (type === 'spirit') {
+            if (finalType === 'spirit') {
                 let rExist = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
                 if (rExist.some(i => i.name === tenSp)) return hienThiToast("Em đã sở hữu vật phẩm này rồi!", "error");
             }
-            let currentCoin = parseInt(localStorage.getItem('coin_' + studentName)) || 50;
-            if (currentCoin < gia) return hienThiToast(`Thiếu năng lượng! Cần thêm ${gia - currentCoin} Điểm.`, 'error');
+            let currentCoin = parseInt(localStorage.getItem('coin_' + studentName));
+            if (isNaN(currentCoin)) currentCoin = 50;
+
+            if (currentCoin < finalPrice) return hienThiToast(`Thiếu năng lượng! Cần thêm ${finalPrice - currentCoin} Điểm.`, 'error');
 
             const lamGiaoDich = () => {
-                localStorage.setItem('coin_' + studentName, currentCoin - gia);
+                localStorage.setItem('coin_' + studentName, currentCoin - finalPrice);
                 let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
-                r.push({ id_trans: "TR"+Date.now()+Math.floor(Math.random()*100), name: tenSp, icon: icon, type: type, date: new Date().toLocaleDateString('vi-VN'), status: 'cho_nhan' });
+                r.push({ 
+                    id_trans: "TR" + Date.now() + Math.floor(Math.random() * 1000), 
+                    name: tenSp, 
+                    icon: finalIcon, 
+                    type: finalType, 
+                    date: new Date().toLocaleDateString('vi-VN'), 
+                    status: 'cho_nhan' 
+                });
                 localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
                 window.__fbDayDuLieuLenMay(studentName);
-                hienThiToast(gia === 0 ? `Đã nhận [${tenSp}] miễn phí!` : `Đã lưu [${tenSp}] vào Túi Đồ!`);
-                capNhatGiaoDienEXP(); renderInventory();
+                hienThiToast(finalPrice === 0 ? `Đã nhận [${tenSp}] miễn phí!` : `Đã lưu [${tenSp}] vào Túi Đồ!`);
+                capNhatGiaoDienEXP(); 
+                renderInventory();
             };
 
             // Vật phẩm miễn phí (0 Điểm): nhận ngay, không cần xác nhận, giảm ma sát khi lấy quà tinh thần.
-            if (gia === 0) return lamGiaoDich();
-            if(confirm(`Dùng ${gia} Điểm để chế tạo [${tenSp}]?`)) lamGiaoDich();
+            if (finalPrice === 0) return lamGiaoDich();
+            if(confirm(`Dùng ${finalPrice} Điểm để mua [${tenSp}]?`)) lamGiaoDich();
         }
 
         /* --- UI RƯƠNG ĐỒ --- */
@@ -833,10 +872,10 @@
                     }
                 } else if(item.status === 'cho_nhan') {
                     badge = `<span class="status-badge status-waiting">Sẵn sàng</span>`;
-                    // Chỉ cho bán nếu là vật phẩm vật lý (real)
-                    let btnTreo = (item.type === 'real') ? `<button class="btn-small btn-sell" onclick="moModalBan(${index})">Bán</button>` : '';
-                    // Với consumable, không hiện nút bán, chỉ có nút Dùng
-                    btn = `${btnTreo} <button class="btn-small btn-use" onclick="suDungHoacNhanQua(${index})">Dùng</button>`;
+                    // Cho phép bán trên sàn P2P nếu không phải là danh hiệu / khung avatar cá nhân
+                    let btnTreo = (item.type !== 'spirit') ? `<button class="btn-small btn-sell" onclick="moModalBan(${index})">Bán</button>` : '';
+                    let btnDung = `<button class="btn-small btn-use" onclick="suDungHoacNhanQua(${index})">Dùng</button>`;
+                    btn = `${btnTreo} ${btnDung}`;
                 } else if (item.status === 'da_nhan') {
                     badge = `<span class="status-badge status-done">Đã dùng</span>`;
                     btn = `<span style="font-size:0.6rem; color:#4a5568;">Đã tiêu hủy</span>`;
@@ -977,36 +1016,73 @@
 
         /* --- CHỢ --- */
         function moModalBan(idx) {
+            if (!studentName) {
+                studentName = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name');
+            }
             let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
-            if(r[idx].type !== 'real') return hienThiToast("Vật phẩm đặc quyền bị cấm giao dịch!", "error");
-            indexItemBan = idx; document.getElementById('sell-modal-text').innerHTML = `Vật phẩm: <b style="color:#00ffff;">${r[idx].name}</b>`;
+            if (!r[idx]) return;
+            if (r[idx].type === 'spirit') return hienThiToast("Danh hiệu và Khung avatar là phần thưởng cá nhân, không thể giao dịch!", "error");
+            indexItemBan = idx; 
+            document.getElementById('sell-modal-text').innerHTML = `Vật phẩm: <b style="color:#00ffff;">${r[idx].name}</b>`;
             document.getElementById('sell-modal').style.display = 'flex';
         }
         function dongModalBan() { document.getElementById('sell-modal').style.display = 'none'; }
         function xacNhanTreoBan() {
-            let gia = parseInt(document.getElementById('sell-price-input').value) || 0; if(gia<=0) return alert("Giá trị sai!");
+            let gia = parseInt(document.getElementById('sell-price-input').value) || 0; 
+            if(gia <= 0) return hienThiToast("Giá bán phải lớn hơn 0 Điểm!", "error");
             let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
-            r[indexItemBan].status = 'dang_ban'; localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
+            if (indexItemBan === null || !r[indexItemBan]) return;
+            r[indexItemBan].status = 'dang_ban'; 
+            localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
             let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
-            m.push({ id_market: "MK"+Date.now(), id_trans_goc: r[indexItemBan].id_trans, seller: studentName, seller_class: studentClass, name: r[indexItemBan].name, icon: r[indexItemBan].icon, type: r[indexItemBan].type, price: gia });
+            m.push({ 
+                id_market: "MK" + Date.now() + Math.floor(Math.random() * 100), 
+                id_trans_goc: r[indexItemBan].id_trans, 
+                seller: studentName, 
+                seller_class: studentClass || 'Khối 7', 
+                name: r[indexItemBan].name, 
+                icon: r[indexItemBan].icon || '🎁', 
+                type: r[indexItemBan].type, 
+                price: gia 
+            });
             localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
-            window.__fbDayDuLieuLenMay(studentName); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
-            dongModalBan(); renderInventory(); renderMarketplace(); hienThiToast("Treo lên sàn thành công!");
+            window.__fbDayDuLieuLenMay(studentName); 
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+            }
+            dongModalBan(); 
+            renderInventory(); 
+            renderMarketplace(); 
+            hienThiToast("Treo lên sàn thành công!");
         }
         function huyTreoBanChao(idx) {
-            let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || []; let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
-            m = m.filter(i => i.id_trans_goc !== r[idx].id_trans); localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
-            r[idx].status = 'cho_nhan'; localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
-            window.__fbDayDuLieuLenMay(studentName); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
-            renderInventory(); renderMarketplace(); hienThiToast("Đã thu hồi!");
+            let r = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || []; 
+            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
+            let itemHuy = r[idx];
+            if (!itemHuy) return;
+            m = m.filter(i => i.id_trans_goc !== itemHuy.id_trans); 
+            localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
+            r[idx].status = 'cho_nhan'; 
+            localStorage.setItem('ruong_do_' + studentName, JSON.stringify(r));
+            window.__fbDayDuLieuLenMay(studentName); 
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+            }
+            renderInventory(); 
+            renderMarketplace(); 
+            hienThiToast("Đã thu hồi vật phẩm về túi đồ!");
         }
         function renderMarketplace() {
             const list = document.getElementById('market-list-body'); if(!list) return; list.innerHTML = "";
             let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || [];
-            if(m.length === 0) { list.innerHTML = `<div class="lore-text" style="text-align:center;">Sàn giao dịch trống.</div>`; return; }
+            if(m.length === 0) { list.innerHTML = `<div class="lore-text" style="text-align:center;">Sàn giao dịch trống. Chưa có chiến binh nào đăng bán.</div>`; return; }
             m.forEach(item => {
-                let btn = item.seller === studentName ? `<span style="font-size:0.6rem; color:#a3c2db;">Của bạn</span>` : 
-                    (!item.type==='real' ? `<i class="fa-solid fa-ban"></i>` : `<button class="btn-small btn-buy" onclick="muaDoChoP2P('${item.id_market}')">MUA NGAY</button>`);
+                let btn = '';
+                if (item.seller === studentName) {
+                    btn = `<span style="font-size:0.65rem; color:#a3c2db; font-weight:bold;"><i class="fa-solid fa-user"></i> Của bạn</span>`;
+                } else {
+                    btn = `<button class="btn-small btn-buy" onclick="muaDoChoP2P('${item.id_market}')"><i class="fa-solid fa-cart-shopping"></i> MUA NGAY</button>`;
+                }
                 list.innerHTML += `
                     <div class="list-item">
                         <div class="list-row">
@@ -1014,34 +1090,85 @@
                             <span class="price-tag">${item.price} ĐIỂM</span>
                         </div>
                         <div class="list-row">
-                            <span style="font-size:0.7rem; color:#a3c2db;">Bán bởi: <span class="seller-name">${item.seller}</span> (${item.seller_class})</span>
+                            <span style="font-size:0.7rem; color:#a3c2db;">Người bán: <span class="seller-name">${item.seller}</span> (${item.seller_class || 'Chiến binh'})</span>
                             ${btn}
                         </div>
                     </div>`;
             });
         }
         async function muaDoChoP2P(id) {
-            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || []; let it = m.find(i=>i.id_market===id);
-            if(it.type!=='real') return;
-            let mC = parseInt(localStorage.getItem('coin_'+studentName))||50;
-            if(mC < it.price) return hienThiToast("Không đủ Điểm!", "error");
-            if(confirm(`Trả ${it.price} Điểm mua [${it.name}]?`)) {
-                await window.__fbTaiDuLieuTuMay(it.seller);
-                localStorage.setItem('coin_'+studentName, mC - it.price);
-                localStorage.setItem('coin_'+it.seller, (parseInt(localStorage.getItem('coin_'+it.seller))||0) + it.price);
-                let rS = JSON.parse(localStorage.getItem('ruong_do_'+it.seller)) || [];
-                rS = rS.filter(i=>i.id_trans!==it.id_trans_goc); localStorage.setItem('ruong_do_'+it.seller, JSON.stringify(rS));
-                let rB = JSON.parse(localStorage.getItem('ruong_do_'+studentName)) || [];
-                rB.push({ id_trans: it.id_trans_goc, name: it.name, icon: it.icon, type: it.type, date: new Date().toLocaleDateString('vi-VN'), status: 'cho_nhan' });
-                localStorage.setItem('ruong_do_'+studentName, JSON.stringify(rB));
-                m = m.filter(i=>i.id_market!==id); localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
-                window.__fbDayDuLieuLenMay(studentName); window.__fbDayDuLieuLenMay(it.seller); window.__fbDayCauHinhToanCuc('math_hero_marketplace');
-                capNhatGiaoDienEXP(); renderInventory(); renderMarketplace(); hienThiToast("Giao dịch hoàn tất!");
+            if (!studentName) {
+                studentName = sessionStorage.getItem('hoc_school_student_name') || localStorage.getItem('hoc_school_student_name');
+            }
+            if (!studentName) return hienThiToast("Vui lòng kết nối danh tính trước khi mua hàng!", "error");
+            let m = JSON.parse(localStorage.getItem('math_hero_marketplace')) || []; 
+            let it = m.find(i => i.id_market === id);
+            if (!it) return hienThiToast("Vật phẩm không còn tồn tại trên sàn hoặc đã bán!", "error");
+            if (it.seller === studentName) return hienThiToast("Bạn không thể tự mua vật phẩm của chính mình!", "error");
+
+            let mC = parseInt(localStorage.getItem('coin_' + studentName)) || 0;
+            if (mC < it.price) return hienThiToast(`Không đủ Điểm! Cần thêm ${it.price - mC} Điểm.`, "error");
+
+            if (confirm(`Xác nhận dùng ${it.price} Điểm để mua [${it.name}] từ [${it.seller}]?`)) {
+                try {
+                    if (typeof window.__fbTaiDuLieuTuMay === 'function') {
+                        await window.__fbTaiDuLieuTuMay(it.seller);
+                    }
+                } catch(e) {}
+
+                let sellerCoin = parseInt(localStorage.getItem('coin_' + it.seller)) || 0;
+                localStorage.setItem('coin_' + studentName, mC - it.price);
+                localStorage.setItem('coin_' + it.seller, sellerCoin + it.price);
+
+                let rS = JSON.parse(localStorage.getItem('ruong_do_' + it.seller)) || [];
+                rS = rS.filter(i => i.id_trans !== it.id_trans_goc); 
+                localStorage.setItem('ruong_do_' + it.seller, JSON.stringify(rS));
+
+                let rB = JSON.parse(localStorage.getItem('ruong_do_' + studentName)) || [];
+                rB.push({ 
+                    id_trans: it.id_trans_goc || ("TR" + Date.now()), 
+                    name: it.name, 
+                    icon: it.icon || '🎁', 
+                    type: it.type || 'real', 
+                    date: new Date().toLocaleDateString('vi-VN'), 
+                    status: 'cho_nhan' 
+                });
+                localStorage.setItem('ruong_do_' + studentName, JSON.stringify(rB));
+
+                m = m.filter(i => i.id_market !== id); 
+                localStorage.setItem('math_hero_marketplace', JSON.stringify(m));
+
+                try {
+                    window.__fbDayDuLieuLenMay(studentName); 
+                    window.__fbDayDuLieuLenMay(it.seller); 
+                    if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                        window.__fbDayCauHinhToanCuc('math_hero_marketplace');
+                    }
+                } catch(e) {}
+
+                capNhatGiaoDienEXP(); 
+                renderInventory(); 
+                renderMarketplace(); 
+                hienThiToast(`Giao dịch thành công! Đã nhận [${it.name}] vào Túi Đồ.`);
             }
         }
 
         /* --- QUẢN TRỊ GV --- */
-        function xacThucGiaoVien() { document.getElementById('teacher-password-input').value = ""; document.getElementById('teacher-login-modal').style.display = 'flex'; }
+        function xacThucGiaoVien() { 
+            let pInput = document.getElementById('teacher-password-input');
+            if (pInput) { pInput.value = ""; }
+            let modal = document.getElementById('teacher-login-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => { if (pInput) pInput.focus(); }, 100);
+            }
+        }
+
+        function dongModalDangNhapGiaoVien() {
+            let m = document.getElementById('teacher-login-modal');
+            if (m) m.style.display = 'none';
+        }
+
         function xacNhanMatKhauGiaoVien() { 
             let val = (document.getElementById('teacher-password-input').value || '').trim();
             if(val === "thaytrongmath" || val === "123456") { 
@@ -1052,11 +1179,34 @@
                 dongModalDangNhapGiaoVien(); 
                 moModalQuanTri(); 
             } else {
-                hienThiToast("Sai mật mã!", "error"); 
+                hienThiToast("Sai mật mã hệ thống!", "error"); 
             }
         }
+
+        function renderPriceEditList() {
+            const listEl = document.getElementById('price-edit-list');
+            if (!listEl) return;
+            let h = "";
+            (danhSachSanPham || []).forEach((i, x) => {
+                let isCustom = i.id && i.id.startsWith('sp_custom_');
+                let delBtn = isCustom 
+                    ? `<button class="btn-danger-small" style="margin-left:6px; cursor:pointer;" onclick="xoaVatPham('${i.id}')" title="Xóa vật phẩm này"><i class="fa-solid fa-trash"></i></button>`
+                    : '';
+                h += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; align-items:center; background:rgba(255,255,255,0.03); padding:4px 8px; border-radius:6px;">
+                        <span style="font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60%;">${i.icon || '🎁'} ${i.name}</span>
+                        <div style="display:flex; align-items:center;">
+                            <input type="number" id="ep-${x}" value="${i.price}" min="0" class="modal-input" style="width:70px; padding:4px; text-align:right;">
+                            ${delBtn}
+                        </div>
+                    </div>`;
+            });
+            listEl.innerHTML = h;
+        }
+
         async function moModalQuanTri() {
-            document.getElementById('teacher-modal').style.display = 'flex'; hienThiToast("Đang đồng bộ...");
+            document.getElementById('teacher-modal').style.display = 'flex'; 
+            hienThiToast("Đang đồng bộ dữ liệu quản trị...");
             try {
                 if (typeof window.__fbTaiToanBoHocSinhTuMay === 'function') {
                     let all = await window.__fbTaiToanBoHocSinhTuMay();
@@ -1073,16 +1223,21 @@
             } catch(e) {
                 console.warn("[Cửa Hàng] Không thể tải danh sách học sinh:", e);
             }
-            let h = ""; (danhSachSanPham || []).forEach((i,x) => { h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; align-items:center;"><span>${i.icon} ${i.name}</span> <input type="number" id="ep-${x}" value="${i.price}" class="modal-input" style="width:70px; padding:4px;"></div>`; });
-            document.getElementById('price-edit-list').innerHTML = h;
+            renderPriceEditList();
             renderTeacherStudentList();
         }
-        function dongModalTeacher() { document.getElementById('teacher-modal').style.display = 'none'; }
+
+        function dongModalTeacher() { 
+            let m = document.getElementById('teacher-modal');
+            if (m) m.style.display = 'none'; 
+        }
+
         function switchTeacherTab(id, btn) {
             document.querySelectorAll('.teacher-modal .tab-content').forEach(e=>e.style.display='none');
             document.querySelectorAll('.tab-btn-teacher').forEach(e=>e.classList.remove('active'));
             document.getElementById(id).style.display = 'block'; btn.classList.add('active');
         }
+
         function renderTeacherStudentList() {
             let s = [];
             for(let i=0; i<localStorage.length; i++) { let k = localStorage.key(i); if(k.startsWith('exp_')) { let t=k.replace('exp_',''); s.push({ten:t, exp:parseInt(localStorage.getItem(k))||0, coin:parseInt(localStorage.getItem('coin_'+t))||0, luotLB:getLuot(t,'lam_bai'), luotBs:getLuot(t,'boss'), luotVQ:getLuot(t,'vong_quay'), luotVA:getLuot(t,'vuot_ai')}); } }
@@ -1092,20 +1247,116 @@
                 bd.innerHTML += `<tr><td>${i+1}</td><td>${x.ten}</td><td>-</td><td><span class="editable-cell" onclick="editF('${x.ten}','exp',this)">${x.exp}</span></td><td><span class="editable-cell" onclick="editF('${x.ten}','coin',this)">${x.coin}</span></td><td>-</td><td>${x.luotLB}</td><td>${x.luotBs}</td><td>${x.luotVQ}</td><td>${x.luotVA}</td><td><button class="btn-danger-small" onclick="delS('${x.ten}')">Xóa</button></td></tr>`;
             });
         }
+
         function getLuot(t,l) { let d=JSON.parse(localStorage.getItem('luot_'+l+'_'+t)); return (d && d.date===new Date().toLocaleDateString('vi-VN')) ? d.soLuotConLai : 0; }
         function editF(t,f,el) { let v=prompt(`Điểm/EXP mới:`, el.innerText); if(v && !isNaN(v)) { localStorage.setItem(f==='exp'?'exp_'+t:'coin_'+t, parseInt(v)); el.innerText=v; window.__fbDayDuLieuLenMay(t); capNhatGiaoDienEXP(); } }
-        function delS(t) { if(confirm("XÓA?")) { window.__fbXoaHocSinhTrenMay(t); renderTeacherStudentList(); } }
+        function delS(t) { 
+            if(confirm(`Bạn có chắc muốn XÓA học sinh [${t}] khỏi hệ thống?`)) { 
+                localStorage.removeItem('exp_' + t);
+                localStorage.removeItem('coin_' + t);
+                localStorage.removeItem('ruong_do_' + t);
+                localStorage.removeItem('danh_hieu_active_' + t);
+                localStorage.removeItem('khung_avatar_active_' + t);
+                localStorage.removeItem('luot_lam_bai_' + t);
+                localStorage.removeItem('luot_boss_' + t);
+                localStorage.removeItem('luot_vong_quay_' + t);
+                localStorage.removeItem('luot_vuot_ai_' + t);
+                if (typeof window.__fbXoaHocSinhTrenMay === 'function') {
+                    window.__fbXoaHocSinhTrenMay(t); 
+                }
+                renderTeacherStudentList(); 
+                hienThiToast(`Đã xóa học sinh [${t}]!`);
+            } 
+        }
+
         function resetAllLuot(l) { 
             let max = parseInt(localStorage.getItem('so_luot_'+l+'_toi_da'))||3; let s=getAllStudents(); let d=new Date().toLocaleDateString('vi-VN');
             s.forEach(x=>{ localStorage.setItem('luot_'+l+'_'+x.ten, JSON.stringify({date:d, soLuotConLai:max})); window.__fbDayDuLieuLenMay(x.ten); });
             renderTeacherStudentList(); hienThiToast("Reset lượt OK!");
         }
+
         function getAllStudents() { let s=[]; for(let i=0;i<localStorage.length;i++){ let k=localStorage.key(i); if(k.startsWith('exp_')) s.push({ten:k.replace('exp_','')}); } return s; }
         function saveMaxLuot(l) { let v = parseInt(document.getElementById('max-luot-'+l).value); if(v>0) { localStorage.setItem('so_luot_'+l+'_toi_da',v); window.__fbDayCauHinhToanCuc('so_luot_'+l+'_toi_da'); hienThiToast("Lưu max lượt!"); } }
-        function luuBangGiaMoi() { danhSachSanPham.forEach((i,x)=>{ let v=parseInt(document.getElementById('ep-'+x).value); if(v>0) i.price=v; }); localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); window.__fbDayCauHinhToanCuc('math_hero_shop_items'); renderOfficialShop(); hienThiToast("Đã lưu giá!"); }
+
+        function luuBangGiaMoi() { 
+            (danhSachSanPham || []).forEach((i, x) => { 
+                let el = document.getElementById('ep-' + x); 
+                if (el) {
+                    let v = parseInt(el.value); 
+                    if (!isNaN(v) && v >= 0) i.price = v; 
+                }
+            }); 
+            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); 
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items').catch(() => {});
+            }
+            renderOfficialShop(); 
+            renderPriceEditList();
+            hienThiToast("Đã lưu bảng giá thị trường thành công!"); 
+        }
+
         function themVatPhamMoi() { 
-            let n=document.getElementById('new-item-name').value; let p=parseInt(document.getElementById('new-item-price').value);
-            if(n&&p>0) { danhSachSanPham.push({ id:"sp_custom_"+Date.now(), icon:document.getElementById('new-item-icon').value||"🎁", name:n, desc:document.getElementById('new-item-desc').value, price:p, type:document.getElementById('new-item-type').value }); localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); window.__fbDayCauHinhToanCuc('math_hero_shop_items'); renderOfficialShop(); hienThiToast("Tạo OK!"); }
+            let nameInput = document.getElementById('new-item-name');
+            let descInput = document.getElementById('new-item-desc');
+            let priceInput = document.getElementById('new-item-price');
+            let iconInput = document.getElementById('new-item-icon');
+            let typeInput = document.getElementById('new-item-type');
+
+            let n = (nameInput ? nameInput.value : '').trim(); 
+            let p = priceInput ? parseInt(priceInput.value) : NaN;
+            if (!n) return hienThiToast("Vui lòng nhập tên vật phẩm!", "error");
+            if (isNaN(p) || p < 0) return hienThiToast("Giá vật phẩm phải từ 0 Điểm trở lên!", "error");
+
+            let newItem = { 
+                id: "sp_custom_" + Date.now(), 
+                icon: (iconInput && iconInput.value.trim()) ? iconInput.value.trim() : "🎁", 
+                name: n, 
+                desc: (descInput && descInput.value.trim()) ? descInput.value.trim() : "Vật phẩm chế tạo từ Giáo viên.", 
+                price: p, 
+                type: typeInput ? typeInput.value : "real" 
+            };
+            danhSachSanPham.push(newItem); 
+            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham)); 
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items').catch(() => {});
+            }
+            // Xóa form sau khi tạo
+            if (nameInput) nameInput.value = "";
+            if (descInput) descInput.value = "";
+            if (priceInput) priceInput.value = "100";
+            if (iconInput) iconInput.value = "";
+
+            renderOfficialShop(); 
+            renderPriceEditList();
+            hienThiToast(`Đã chế tạo thành công: [${n}]!`); 
+        }
+
+        function xoaVatPham(id) {
+            let item = (danhSachSanPham || []).find(i => i.id === id);
+            let name = item ? item.name : "vật phẩm này";
+            if (!confirm(`Bạn có chắc chắn muốn xóa [${name}] khỏi Cửa Hàng không?`)) return;
+            danhSachSanPham = danhSachSanPham.filter(i => i.id !== id);
+            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items').catch(() => {});
+            }
+            renderOfficialShop();
+            renderPriceEditList();
+            hienThiToast(`Đã xóa [${name}] thành công!`);
+        }
+
+        function datLaiGiaMacDinh() {
+            if (!confirm("Khôi phục bảng giá chuẩn theo kinh tế hoạt động (Hỗ trợ: cần tham gia tích cực đầy đủ; Vật phẩm giao dịch/hiện vật: giá rất cao cần nỗ lực dài hạn)?")) return;
+            let customItems = (danhSachSanPham || []).filter(i => i && i.id && i.id.startsWith('sp_custom_'));
+            danhSachSanPham = [...DEFAULT_ITEMS, ...customItems];
+            localStorage.setItem('math_hero_shop_items', JSON.stringify(danhSachSanPham));
+            localStorage.setItem('math_hero_shop_economy_version', SHOP_ECONOMY_VERSION);
+            if (typeof window.__fbDayCauHinhToanCuc === 'function') {
+                window.__fbDayCauHinhToanCuc('math_hero_shop_items').catch(() => {});
+            }
+            renderOfficialShop();
+            renderPriceEditList();
+            hienThiToast("Đã khôi phục bảng giá chuẩn cân bằng thành công!");
         }
 
         /* --- TABS --- */

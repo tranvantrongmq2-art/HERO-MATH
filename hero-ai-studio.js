@@ -1,0 +1,1495 @@
+﻿// ========================================================================
+// HERO AI STUDIO - MODULE NÂNG CẤP TRỢ LÝ SOẠN BÀI & NHẬN DIỆN ẢNH SGK
+// Math Hero Base - Tự động đọc tên bài học, Soạn bài siêu tốc SGK, Gemini 3.6 Flash
+// ========================================================================
+
+(function(window) {
+    'use strict';
+
+    console.log("[Hero AI Studio] Đang khởi tạo mô-đun AI Studio nâng cao...");
+
+    // Đánh dấu đã nạp thành công
+    window.heroAiStudioLoaded = true;
+
+    // Cấu hình mô hình Gemini chính thức cho Admin Studio
+    window.GEMINI_MODEL_ADMIN = "gemini-2.0-flash";
+
+    // 1. Khởi tạo danh sách ảnh SGK toàn cục
+    if (!window.danhSachAnhSgk) {
+        window.danhSachAnhSgk = [];
+    }
+
+    // ========================================================================
+    // TỪ ĐIỂN MỤC LỤC SGK TOÁN THCS - BỘ SÁCH KẾT NỐI TRI THỨC VỚI CUỘC SỐNG (GDPT 2018)
+    // Chuẩn xác 100% từng chương và bài học cho Lớp 6, 7, 8, 9
+    // Giúp giáo viên soạn bài siêu tốc chỉ cần 1 click, không cần cắt dán ảnh
+    // ========================================================================
+    const MUC_LUC_SGK_TOAN = {
+        "Lớp 6": {
+            "Chương I: Tập hợp các số tự nhiên": [
+                "Bài 1: Tập hợp",
+                "Bài 2: Cách ghi số tự nhiên",
+                "Bài 3: Thứ tự trong tập hợp các số tự nhiên",
+                "Bài 4: Phép cộng và phép trừ số tự nhiên",
+                "Bài 5: Phép nhân và phép chia số tự nhiên",
+                "Bài 6: Lũy thừa với số mũ tự nhiên",
+                "Bài 7: Thứ tự thực hiện các phép tính",
+                "Bài 8: Quan hệ chia hết và tính chất chia hết",
+                "Bài 9: Dấu hiệu chia hết cho 2, 5, 3, 9",
+                "Bài 10: Số nguyên tố. Hợp số",
+                "Bài 11: Ước chung. Ước chung lớn nhất",
+                "Bài 12: Bội chung. Bội chung nhỏ nhất",
+                "Luyện tập chung & Bài tập cuối chương I"
+            ],
+            "Chương II: Số nguyên": [
+                "Bài 13: Tập hợp các số nguyên",
+                "Bài 14: Phép cộng và phép trừ số nguyên",
+                "Bài 15: Quy tắc dấu ngoặc",
+                "Bài 16: Phép nhân số nguyên",
+                "Bài 17: Phép chia hết. Ước và bội của một số nguyên",
+                "Luyện tập chung & Bài tập cuối chương II"
+            ],
+            "Chương III: Hình học trực quan": [
+                "Bài 18: Hình tam giác đều. Hình vuông. Hình lục giác đều",
+                "Bài 19: Hình chữ nhật. Hình thoi. Hình bình hành. Hình thang cân",
+                "Bài 20: Chu vi và diện tích của một số tứ giác đã học",
+                "Luyện tập chung & Bài tập cuối chương III"
+            ],
+            "Chương IV: Một số yếu tố thống kê": [
+                "Bài 21: Thu thập và phân loại dữ liệu",
+                "Bài 22: Bảng số liệu và biểu đồ tranh",
+                "Bài 23: Biểu đồ cột kép",
+                "Luyện tập chung & Bài tập cuối chương IV"
+            ],
+            "Chương V: Tính đối xứng của hình phẳng trong tự nhiên": [
+                "Bài 24: Hình có trục đối xứng",
+                "Bài 25: Hình có tâm đối xứng",
+                "Luyện tập chung & Bài tập cuối chương V"
+            ],
+            "Chương VI: Phân số": [
+                "Bài 26: Mở rộng phân số. Phân số bằng nhau",
+                "Bài 27: Tính chất cơ bản của phân số. Rút gọn phân số",
+                "Bài 28: So sánh phân số",
+                "Bài 29: Phép cộng và phép trừ phân số",
+                "Bài 30: Phép nhân và phép chia phân số",
+                "Bài 31: Hỗn số và số thập phân",
+                "Luyện tập chung & Bài tập cuối chương VI"
+            ],
+            "Chương VII: Số thập phân": [
+                "Bài 32: Số thập phân và các phép tính với số thập phân",
+                "Bài 33: Làm tròn số và ước lượng kết quả",
+                "Bài 34: Tỉ số và tỉ số phần trăm",
+                "Bài 35: Một số bài toán về tỉ số và tỉ số phần trăm",
+                "Luyện tập chung & Bài tập cuối chương VII"
+            ],
+            "Chương VIII: Những hình hình học cơ bản": [
+                "Bài 36: Điểm và đường thẳng",
+                "Bài 37: Điểm nằm giữa hai điểm. Tia",
+                "Bài 38: Đoạn thẳng. Độ dài đoạn thẳng",
+                "Bài 39: Trung điểm của đoạn thẳng",
+                "Bài 40: Góc và số đo góc",
+                "Luyện tập chung & Bài tập cuối chương VIII"
+            ],
+            "Chương IX: Dữ liệu và xác suất thực nghiệm": [
+                "Bài 41: Thu thập và phân tích dữ liệu",
+                "Bài 42: Kết quả có thể và sự kiện trong trò chơi, thí nghiệm",
+                "Bài 43: Xác suất thực nghiệm",
+                "Luyện tập chung & Bài tập cuối chương IX"
+            ]
+        },
+        "Lớp 7": {
+            "Chương I: Số hữu tỉ": [
+                "Bài 1: Tập hợp các số hữu tỉ",
+                "Bài 2: Cộng, trừ, nhân, chia số hữu tỉ",
+                "Bài 3: Lũy thừa với số mũ tự nhiên của một số hữu tỉ",
+                "Bài 4: Thứ tự thực hiện các phép tính. Quy tắc chuyển vế",
+                "Luyện tập chung & Bài tập cuối chương I"
+            ],
+            "Chương II: Số thực": [
+                "Bài 5: Làm quen với số thập phân vô hạn tuần hoàn",
+                "Bài 6: Số vô tỉ. Căn bậc hai số học",
+                "Bài 7: Tập hợp các số thực",
+                "Luyện tập chung & Bài tập cuối chương II"
+            ],
+            "Chương III: Góc và đường thẳng song song": [
+                "Bài 8: Góc ở vị trí đặc biệt. Tia phân giác của một góc",
+                "Bài 9: Hai đường thẳng song song và dấu hiệu nhận biết",
+                "Bài 10: Tiên đề Euclid. Tính chất của hai đường thẳng song song",
+                "Bài 11: Định lí và chứng minh định lí",
+                "Luyện tập chung & Bài tập cuối chương III"
+            ],
+            "Chương IV: Tam giác bằng nhau": [
+                "Bài 12: Tổng các góc trong một tam giác",
+                "Bài 13: Hai tam giác bằng nhau. Trường hợp bằng nhau thứ nhất (c.c.c)",
+                "Bài 14: Trường hợp bằng nhau thứ hai và thứ ba (c.g.c, g.c.g)",
+                "Bài 15: Các trường hợp bằng nhau của tam giác vuông",
+                "Bài 16: Tam giác cân. Đường trung trực của đoạn thẳng",
+                "Luyện tập chung & Bài tập cuối chương IV"
+            ],
+            "Chương V: Thu thập và biểu diễn dữ liệu": [
+                "Bài 17: Thu thập và phân loại dữ liệu",
+                "Bài 18: Biểu đồ hình quạt tròn",
+                "Bài 19: Biểu đồ đoạn thẳng",
+                "Luyện tập chung & Bài tập cuối chương V"
+            ],
+            "Chương VI: Tỉ lệ thức và đại lượng tỉ lệ": [
+                "Bài 20: Tỉ lệ thức",
+                "Bài 21: Tính chất của dãy tỉ số bằng nhau",
+                "Bài 22: Đại lượng tỉ lệ thuận",
+                "Bài 23: Đại lượng tỉ lệ nghịch",
+                "Luyện tập chung & Bài tập cuối chương VI"
+            ],
+            "Chương VII: Biểu thức đại số và đa thức một biến": [
+                "Bài 24: Biểu thức đại số",
+                "Bài 25: Đa thức một biến",
+                "Bài 26: Phép cộng và phép trừ đa thức một biến",
+                "Bài 27: Phép nhân đa thức một biến",
+                "Bài 28: Phép chia đa thức một biến",
+                "Luyện tập chung & Bài tập cuối chương VII"
+            ],
+            "Chương VIII: Làm quen với biến cố và xác suất": [
+                "Bài 29: Làm quen với biến cố",
+                "Bài 30: Xác suất của biến cố",
+                "Luyện tập chung & Bài tập cuối chương VIII"
+            ],
+            "Chương IX: Quan hệ giữa các yếu tố trong một tam giác": [
+                "Bài 31: Quan hệ giữa góc và cạnh đối diện trong một tam giác",
+                "Bài 32: Quan hệ giữa đường vuông góc và đường xiên",
+                "Bài 33: Quan hệ giữa ba cạnh của một tam giác",
+                "Bài 34: Sự đồng quy của ba đường trung tuyến, ba đường phân giác trong tam giác",
+                "Bài 35: Sự đồng quy của ba đường trung trực, ba đường cao trong tam giác",
+                "Luyện tập chung & Bài tập cuối chương IX"
+            ],
+            "Chương X: Một số hình khối trong thực tiễn": [
+                "Bài 36: Hình hộp chữ nhật và hình lập phương",
+                "Bài 37: Hình lăng trụ đứng tam giác và hình lăng trụ đứng tứ giác",
+                "Luyện tập chung & Bài tập cuối chương X"
+            ]
+        },
+        "Lớp 8": {
+            "Chương I: Đa thức": [
+                "Bài 1: Đơn thức",
+                "Bài 2: Đa thức",
+                "Bài 3: Phép cộng và phép trừ đa thức",
+                "Bài 4: Phép nhân đa thức",
+                "Bài 5: Phép chia đa thức cho đơn thức",
+                "Luyện tập chung & Bài tập cuối chương I"
+            ],
+            "Chương II: Hằng đẳng thức đáng nhớ và ứng dụng": [
+                "Bài 6: Hiệu hai bình phương. Bình phương của một tổng hay một hiệu",
+                "Bài 7: Lập phương của một tổng hay một hiệu",
+                "Bài 8: Tổng và hiệu hai lập phương",
+                "Bài 9: Phân tích đa thức thành nhân tử",
+                "Luyện tập chung & Bài tập cuối chương II"
+            ],
+            "Chương III: Tứ giác": [
+                "Bài 10: Tứ giác",
+                "Bài 11: Hình thang cân",
+                "Bài 12: Hình bình hành",
+                "Bài 13: Hình chữ nhật",
+                "Bài 14: Hình thoi và hình vuông",
+                "Luyện tập chung & Bài tập cuối chương III"
+            ],
+            "Chương IV: Định lí Thalès": [
+                "Bài 15: Định lí Thalès trong tam giác",
+                "Bài 16: Đường trung bình của tam giác",
+                "Bài 17: Tính chất đường phân giác của tam giác",
+                "Luyện tập chung & Bài tập cuối chương IV"
+            ],
+            "Chương V: Dữ liệu và biểu đồ": [
+                "Bài 18: Thu thập và phân loại dữ liệu",
+                "Bài 19: Biểu diễn dữ liệu bằng bảng, biểu đồ",
+                "Bài 20: Phân tích số liệu thống kê dựa vào biểu đồ",
+                "Luyện tập chung & Bài tập cuối chương V"
+            ],
+            "Chương VI: Phân thức đại số": [
+                "Bài 21: Phân thức đại số",
+                "Bài 22: Tính chất cơ bản của phân thức đại số",
+                "Bài 23: Phép cộng và phép trừ phân thức đại số",
+                "Bài 24: Phép nhân và phép chia phân thức đại số",
+                "Luyện tập chung & Bài tập cuối chương VI"
+            ],
+            "Chương VII: Phương trình bậc nhất và hàm số bậc nhất": [
+                "Bài 25: Phương trình bậc nhất một ẩn",
+                "Bài 26: Giải bài toán bằng cách lập phương trình",
+                "Bài 27: Khái niệm hàm số và đồ thị của hàm số",
+                "Bài 28: Hàm số bậc nhất y = ax + b (a ≠ 0)",
+                "Bài 29: Hệ số góc của đường thẳng",
+                "Luyện tập chung & Bài tập cuối chương VII"
+            ],
+            "Chương VIII: Mở đầu về tính xác suất của biến cố": [
+                "Bài 30: Kết quả có thể và kết quả thuận lợi",
+                "Bài 31: Cách tính xác suất của biến cố bằng tỉ số",
+                "Bài 32: Mối liên hệ giữa xác suất thực nghiệm và xác suất lí thuyết",
+                "Luyện tập chung & Bài tập cuối chương VIII"
+            ],
+            "Chương IX: Tam giác đồng dạng": [
+                "Bài 33: Hai tam giác đồng dạng",
+                "Bài 34: Ba trường hợp đồng dạng của hai tam giác",
+                "Bài 35: Định lí Pythagore và ứng dụng",
+                "Bài 36: Các trường hợp đồng dạng của hai tam giác vuông",
+                "Bài 37: Hình đồng dạng",
+                "Luyện tập chung & Bài tập cuối chương IX"
+            ],
+            "Chương X: Một số hình khối trong thực tiễn": [
+                "Bài 38: Hình chóp tam giác đều",
+                "Bài 39: Hình chóp tứ giác đều",
+                "Luyện tập chung & Bài tập cuối chương X"
+            ]
+        },
+        "Lớp 9": {
+            "Chương I: Phương trình và hệ hai phương trình bậc nhất hai ẩn": [
+                "Bài 1: Khái niệm phương trình và hệ hai phương trình bậc nhất hai ẩn",
+                "Bài 2: Giải hệ hai phương trình bậc nhất hai ẩn",
+                "Bài 3: Giải bài toán bằng cách lập hệ phương trình",
+                "Luyện tập chung & Bài tập cuối chương I"
+            ],
+            "Chương II: Phương trình và bất phương trình bậc nhất một ẩn": [
+                "Bài 4: Phương trình quy về phương trình bậc nhất một ẩn",
+                "Bài 5: Bất đẳng thức và tính chất",
+                "Bài 6: Bất phương trình bậc nhất một ẩn",
+                "Luyện tập chung & Bài tập cuối chương II"
+            ],
+            "Chương III: Căn bậc hai và căn bậc ba": [
+                "Bài 7: Căn bậc hai và căn thức bậc hai",
+                "Bài 8: Khai căn bậc hai với phép nhân và phép chia",
+                "Bài 9: Biến đổi đơn giản và rút gọn biểu thức chứa căn bậc hai",
+                "Bài 10: Căn bậc ba và căn thức bậc ba",
+                "Luyện tập chung & Bài tập cuối chương III"
+            ],
+            "Chương IV: Hệ thức lượng trong tam giác vuông": [
+                "Bài 11: Tỉ số lượng giác của góc nhọn",
+                "Bài 12: Một số hệ thức giữa cạnh, góc trong tam giác vuông và ứng dụng",
+                "Luyện tập chung & Bài tập cuối chương IV"
+            ],
+            "Chương V: Đường tròn": [
+                "Bài 13: Mở đầu về đường tròn",
+                "Bài 14: Cung và dây của một đường tròn",
+                "Bài 15: Độ dài của cung tròn. Diện tích hình quạt tròn và hình vành khuyên",
+                "Bài 16: Vị trí tương đối của đường thẳng và đường tròn",
+                "Bài 17: Vị trí tương đối của hai đường tròn",
+                "Luyện tập chung & Bài tập cuối chương V"
+            ],
+            "Chương VI: Hàm số y = ax² (a ≠ 0). Phương trình bậc hai một biến": [
+                "Bài 18: Hàm số y = ax² (a ≠ 0)",
+                "Bài 19: Phương trình bậc hai một biến",
+                "Bài 20: Định lí Viète và ứng dụng",
+                "Bài 21: Giải bài toán bằng cách lập phương trình bậc hai",
+                "Luyện tập chung & Bài tập cuối chương VI"
+            ],
+            "Chương VII: Tần số và tần số tương đối": [
+                "Bài 22: Bảng tần số và biểu đồ tần số",
+                "Bài 23: Bảng tần số tương đối và biểu đồ tần số tương đối",
+                "Bài 24: Bảng tần số, tần số tương đối ghép nhóm và biểu đồ",
+                "Luyện tập chung & Bài tập cuối chương VII"
+            ],
+            "Chương VIII: Xác suất của biến cố trong một số mô hình xác suất đơn giản": [
+                "Bài 25: Phép thử ngẫu nhiên và không gian mẫu",
+                "Bài 26: Xác suất của biến cố liên quan tới phép thử",
+                "Luyện tập chung & Bài tập cuối chương VIII"
+            ],
+            "Chương IX: Đường tròn ngoại tiếp và đường tròn nội tiếp": [
+                "Bài 27: Góc nội tiếp",
+                "Bài 28: Đường tròn ngoại tiếp và đường tròn nội tiếp của một tam giác",
+                "Bài 29: Tứ giác nội tiếp",
+                "Bài 30: Đa giác đều",
+                "Luyện tập chung & Bài tập cuối chương IX"
+            ],
+            "Chương X: Một số hình khối trong thực tiễn": [
+                "Bài 31: Hình trụ và hình nón",
+                "Bài 32: Hình cầu",
+                "Luyện tập chung & Bài tập cuối chương X"
+            ]
+        }
+    };
+
+    // Lấy API Key Gemini Admin an toàn
+    function layApiKeyAdmin() {
+        if (typeof window.layApiKeyGeminiAdmin === 'function') {
+            const k = window.layApiKeyGeminiAdmin();
+            if (k) return k;
+        }
+        const inpKey = document.getElementById('input-admin-gemini-key');
+        if (inpKey && inpKey.value.trim()) return inpKey.value.trim();
+        return (localStorage.getItem('admin_gemini_key') || localStorage.getItem('gemini_api_key') || localStorage.getItem('hero_gemini_api_key') || '').trim();
+    }
+
+    // Hiển thị Toast thông báo ngắn gọn
+    function thongBaoToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        } else {
+            console.log(`[Toast ${type}]:`, message);
+        }
+    }
+
+    // ========================================================================
+    // BƯỚC 1: QUẢN LÝ & KIỂM TRA API KEY TINH GỌN (CHỈ HIỆN 1 THÔNG BÁO DUY NHẤT)
+    // ========================================================================
+    window.capNhatHopThongBaoApiKey = function(trangThai = null, loi = null) {
+        const btnTest = document.getElementById('btn-test-key-admin');
+        const inpKey = document.getElementById('input-admin-gemini-key');
+        if (!btnTest) return;
+
+        // Xóa sạch hộp thông báo to cồng kềnh nếu có từ trước
+        const oldBox = document.getElementById('box-thong-bao-api-key-admin');
+        if (oldBox) oldBox.remove();
+
+        // Tạo badge trạng thái nhỏ gọn ngay cạnh nút kiểm tra
+        let badge = document.getElementById('badge-api-key-admin-status');
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.id = 'badge-api-key-admin-status';
+            badge.style.cssText = 'margin-left: 10px; font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; vertical-align: middle;';
+            btnTest.parentNode.insertBefore(badge, btnTest.nextSibling);
+        }
+
+        const currentKey = (inpKey?.value || '').trim() || layApiKeyAdmin();
+
+        if (trangThai === 'loading') {
+            badge.innerHTML = '<span style="color: #3498db;"><i class="fa-solid fa-circle-notch fa-spin"></i> Đang kiểm tra...</span>';
+            return;
+        }
+
+        if (trangThai === 'success') {
+            badge.innerHTML = '<span style="color: #2ecc71;"><i class="fa-solid fa-circle-check"></i> Đã kết nối Gemini API</span>';
+            return;
+        }
+
+        if (trangThai === 'error') {
+            badge.innerHTML = `<span style="color: #e74c3c;" title="${loi || 'Lỗi xác thực'}"><i class="fa-solid fa-circle-xmark"></i> Kết nối thất bại</span>`;
+            return;
+        }
+
+        // Trạng thái bình thường
+        if (currentKey) {
+            badge.innerHTML = '<span style="color: #2ecc71;"><i class="fa-solid fa-circle-check"></i> Đã lưu Key</span>';
+        } else {
+            badge.innerHTML = '<span style="color: #f39c12;"><i class="fa-solid fa-circle-info"></i> Chưa nhập Key</span>';
+        }
+    };
+
+    window.kiemTraApiKeyGeminiAdmin = async function() {
+        const inpKey = document.getElementById('input-admin-gemini-key');
+        const btnTest = document.getElementById('btn-test-key-admin');
+        const key = (inpKey?.value || '').trim() || layApiKeyAdmin();
+
+        if (!key) {
+            window.capNhatHopThongBaoApiKey('error', 'Chưa nhập API Key');
+            thongBaoToast('Thầy chưa nhập API Key để kiểm tra!', 'warning');
+            alert('⚠️ Vui lòng dán mã Gemini API Key vào ô trước khi bấm Kiểm Tra!');
+            if (inpKey) inpKey.focus();
+            return;
+        }
+
+        const originalBtnHtml = btnTest ? btnTest.innerHTML : '';
+        if (btnTest) {
+            btnTest.disabled = true;
+            btnTest.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang test...';
+        }
+
+        window.capNhatHopThongBaoApiKey('loading');
+
+        try {
+            // Kiểm tra API Key với endpoint chính thức của Google
+            const url = `https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=${encodeURIComponent(key)}`;
+            const res = await fetch(url);
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok || data.error) {
+                const msg = data.error?.message || `HTTP ${res.status}: Không thể kết nối Google Gemini API`;
+                throw new Error(msg);
+            }
+
+            // Lưu key tự động vào các kho lưu trữ
+            localStorage.setItem('admin_gemini_key', key);
+            localStorage.setItem('gemini_api_key', key);
+            localStorage.setItem('hero_gemini_api_key', key);
+            if (inpKey) inpKey.value = key;
+
+            window.capNhatHopThongBaoApiKey('success');
+            thongBaoToast('✅ Kết nối Gemini API Key thành công!', 'success');
+            // Đúng 1 thông báo ngắn gọn duy nhất theo đúng yêu cầu người dùng
+            alert('✅ Kết nối Gemini API Key thành công!');
+
+        } catch (err) {
+            console.error('[Admin] Lỗi kiểm tra API Key:', err);
+            window.capNhatHopThongBaoApiKey('error', err.message);
+            thongBaoToast(`❌ Kết nối thất bại: ${err.message}`, 'error');
+            alert(`❌ Kết nối Gemini API Key thất bại!\n\nChi tiết: ${err.message}\nThầy/Cô vui lòng kiểm tra lại mã Key hoặc kết nối mạng.`);
+        } finally {
+            if (btnTest) {
+                btnTest.disabled = false;
+                btnTest.innerHTML = originalBtnHtml;
+            }
+        }
+    };
+
+    // Bọc hàm Lưu API Key
+    const _origLuuApiKey = window.luuApiKeyGeminiAdmin;
+    window.luuApiKeyGeminiAdmin = function() {
+        const inpKey = document.getElementById('input-admin-gemini-key');
+        const key = (inpKey ? inpKey.value : '').trim();
+        if (!key) {
+            thongBaoToast('Thầy chưa nhập API Key. Vui lòng dán Key trước khi lưu!', 'warning');
+            alert('⚠️ Vui lòng dán mã API Key vào ô trước khi bấm Lưu!');
+            if (inpKey) inpKey.focus();
+            return;
+        }
+        localStorage.setItem('admin_gemini_key', key);
+        localStorage.setItem('gemini_api_key', key);
+        localStorage.setItem('hero_gemini_api_key', key);
+        if (typeof _origLuuApiKey === 'function') {
+            try { _origLuuApiKey(); } catch(e) {}
+        }
+        window.capNhatHopThongBaoApiKey('success');
+        thongBaoToast('✅ Đã lưu API Key Gemini thành công!', 'success');
+        alert('✅ Đã lưu Gemini API Key thành công!');
+    };
+
+    // Bọc hàm Xóa API Key
+    const _origXoaApiKey = window.xoaApiKeyGeminiAdmin;
+    window.xoaApiKeyGeminiAdmin = function() {
+        if (!confirm('Thầy/Cô có chắc chắn muốn xóa Gemini API Key đã lưu không?')) return;
+        localStorage.removeItem('admin_gemini_key');
+        localStorage.removeItem('gemini_api_key');
+        localStorage.removeItem('hero_gemini_api_key');
+        const inpKey = document.getElementById('input-admin-gemini-key');
+        if (inpKey) inpKey.value = '';
+        if (typeof _origXoaApiKey === 'function') {
+            try { _origXoaApiKey(); } catch(e) {}
+        }
+        window.capNhatHopThongBaoApiKey();
+        thongBaoToast('Đã xóa API Key khỏi hệ thống!', 'warning');
+    };
+
+    // Đọc file thành chuỗi base64
+    function docFileThanhBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const res = e.target.result;
+                const base64 = res.split(',')[1] || res;
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Lưu danh sách ảnh vào bộ nhớ tạm
+    async function luuDanhSachAnhVaoBoNho() {
+        try {
+            if (window.__heroStorage && typeof window.__heroStorage.luuDuLieu === 'function') {
+                await window.__heroStorage.luuDuLieu('tam_anh_sgk_ai', window.danhSachAnhSgk);
+            } else {
+                localStorage.setItem('tam_anh_sgk_ai', JSON.stringify(window.danhSachAnhSgk));
+            }
+        } catch(e) {
+            console.warn("[Hero AI Studio] Lưu danh sách ảnh tạm lỗi:", e);
+        }
+    }
+
+    // ========================================================================
+    // BƯỚC 1.2: SỬA TRIỆT ĐỂ LỖI BẤM CTRL + V CHƯA HIỆN ẢNH VÀO DROPZONE
+    // ========================================================================
+
+    // 1. Trích xuất ảnh ĐỒNG BỘ 100% từ ClipboardEvent (không dùng async/await để tránh bị clear)
+    function trichXuatAnhDongBoTuClipboard(e) {
+        const cd = e.clipboardData || window.clipboardData;
+        if (!cd) return [];
+        const files = [];
+
+        // Quét cd.items (Snipping Tool Win + Shift + S, Screenshot, Zalo)
+        if (cd.items && cd.items.length > 0) {
+            for (let i = 0; i < cd.items.length; i++) {
+                const item = cd.items[i];
+                if (item && item.type && item.type.indexOf('image') !== -1) {
+                    const f = item.getAsFile();
+                    if (f) files.push(f);
+                }
+            }
+        }
+
+        // Quét cd.files nếu items chưa có (Copy file ảnh từ Desktop, Folder)
+        if (files.length === 0 && cd.files && cd.files.length > 0) {
+            for (let i = 0; i < cd.files.length; i++) {
+                const f = cd.files[i];
+                if (f && (f.type.startsWith('image/') || f.name.match(/\.(jpg|jpeg|png|webp|gif|bmp)$/i))) {
+                    files.push(f);
+                }
+            }
+        }
+
+        return files;
+    }
+
+    // 2. Thêm ảnh vào gallery an toàn, lưu đúng mime type
+    window.themAnhVaoGallery = async function(file, customName) {
+        try {
+            if (!file) return;
+            const isImage = (file.type && file.type.startsWith('image/')) || 
+                            (file.name && file.name.match(/\.(jpg|jpeg|png|webp|gif|bmp)$/i)) ||
+                            (typeof file.size === 'number' && file.size > 0);
+            if (!isImage) {
+                thongBaoToast('Vui lòng chỉ chọn hoặc dán file hình ảnh!', 'warning');
+                return;
+            }
+            const base64 = await docFileThanhBase64(file);
+            const mime = file.type || 'image/png';
+            window.danhSachAnhSgk.push({
+                name: customName || file.name || `Ảnh SGK ${window.danhSachAnhSgk.length + 1}`,
+                base64: base64,
+                mime: mime,
+                size: file.size || 0
+            });
+            await luuDanhSachAnhVaoBoNho();
+            window.renderGalleryAnh();
+
+            // Tự động kích hoạt AI đọc tên bài học từ ảnh với debounce 300ms
+            const inp = document.getElementById('ai-studio-ten-chude');
+            if (inp && (!inp.value.trim() || inp.dataset.aiAutoFilled === 'true')) {
+                if (window._aiDocTenTimer) clearTimeout(window._aiDocTenTimer);
+                window._aiDocTenTimer = setTimeout(() => {
+                    if (typeof window.tuDongDocTenBaiTuAnh === 'function') {
+                        window.tuDongDocTenBaiTuAnh(true);
+                    }
+                }, 300);
+            }
+        } catch(err) {
+            console.error("[Hero AI Studio] Lỗi xử lý ảnh:", err);
+            thongBaoToast("Lỗi khi xử lý ảnh: " + err.message, "error");
+        }
+    };
+
+    // 3. Render giao diện Khung Dán Ảnh Dropzone & Thumbnail Gallery (LUÔN CÓ CHIỀU CAO VÀ NÚT BẤM RÕ RÀNG)
+    window.renderGalleryAnh = function() {
+        const dropzone = document.getElementById('admin-ai-dropzone');
+        if (!dropzone) return;
+
+        // Đảm bảo khung dropzone luôn có chiều cao tối thiểu và giao diện đẹp mắt
+        dropzone.style.minHeight = '180px';
+        dropzone.style.padding = '18px 20px';
+        dropzone.style.borderRadius = '12px';
+        dropzone.style.background = 'rgba(15, 23, 42, 0.75)';
+        dropzone.style.border = '2px dashed #2ecc71';
+        dropzone.style.display = 'flex';
+        dropzone.style.flexDirection = 'column';
+        dropzone.style.alignItems = 'center';
+        dropzone.style.justifyContent = 'center';
+        dropzone.style.gap = '14px';
+        dropzone.style.boxSizing = 'border-box';
+        dropzone.style.position = 'relative';
+
+        const dsAnh = window.danhSachAnhSgk || [];
+
+        // Phần Header hướng dẫn & Nút dán ảnh luôn hiển thị
+        let headerHtml = `
+            <div style="text-align: center; width: 100%;">
+                <div style="font-size: 1.1rem; font-weight: 700; color: #2ecc71; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 6px;">
+                    <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.3rem;"></i>
+                    <span>KHUNG DÁN ẢNH BÀI HỌC SGK (CTRL + V)</span>
+                </div>
+                <div style="font-size: 0.88rem; color: #94a3b8; margin-bottom: 12px;">
+                    Chụp nhanh bằng <b>Win + Shift + S</b> ➔ Nhấn <b>Ctrl + V</b> hoặc bấm nút xanh bên dưới để dán ảnh vào đây!
+                </div>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                    <button type="button" onclick="window.danAnhTuClipboardNhanh()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; padding: 9px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(46, 204, 113, 0.45); font-size: 0.95rem;">
+                        <i class="fa-solid fa-paste"></i> 📋 BẤM VÀO ĐÂY ĐỂ DÁN ẢNH VỪA CHỤP
+                    </button>
+                    <button type="button" onclick="window.kichHoatChonNhieuFile()" style="background: rgba(255,255,255,0.08); color: #e2e8f0; padding: 9px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-folder-open"></i> Hoặc chọn file từ máy
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Phần Gallery hình ảnh (nếu có ảnh)
+        let galleryHtml = '';
+        if (dsAnh.length > 0) {
+            galleryHtml = `
+                <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; margin-top: 6px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                        <span style="color: #2ecc71; font-weight: 700; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 6px;">
+                            <i class="fa-solid fa-images"></i> Đã nạp <b>${dsAnh.length}</b> trang ảnh SGK
+                        </span>
+                        <button type="button" onclick="window.xoaTatCaAnhGallery()" style="background: rgba(231,76,60,0.2); color: #ff7675; border: 1px solid #e74c3c; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 600;">
+                            <i class="fa-solid fa-trash-can"></i> Xóa tất cả ảnh
+                        </button>
+                    </div>
+                    <div class="gallery-thumbnails-grid" id="gallery-thumbnails-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; width: 100%;">
+                        ${dsAnh.map((item, idx) => {
+                            const mime = item.mime || 'image/png';
+                            const imgSrc = item.base64.startsWith('data:') ? item.base64 : `data:${mime};base64,${item.base64}`;
+                            return `
+                                <div class="thumb-card" style="background: #1e293b; border: 1px solid #475569; border-radius: 8px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; padding: 6px;" title="${item.name || ('Trang ' + (idx + 1))}">
+                                    <div style="position: absolute; top: 4px; left: 4px; background: rgba(0,0,0,0.7); color: #2ecc71; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Trang ${idx + 1}</div>
+                                    <img src="${imgSrc}" alt="${item.name}" onclick="window.xemThuAnhPhongTo('${item.base64}', '${mime}')" style="width: 100%; height: 110px; object-fit: cover; border-radius: 4px; cursor: pointer; margin-top: 18px;" title="Bấm để xem phóng to">
+                                    <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center;">${item.name || ('Ảnh ' + (idx + 1))}</div>
+                                    <button type="button" onclick="window.xoaAnhKhoiGallery(${idx})" style="position: absolute; top: 4px; right: 4px; background: rgba(231,76,60,0.8); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;" title="Xóa ảnh này">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            galleryHtml = `
+                <div id="gallery-thumbnails-grid" style="display: none;"></div>
+                <div style="font-size: 0.82rem; color: #64748b; text-align: center; margin-top: -4px;">
+                    <i>(Chưa có ảnh nào được dán. Khung đang sẵn sàng chờ lệnh dán...)</i>
+                </div>
+            `;
+        }
+
+        dropzone.innerHTML = headerHtml + galleryHtml;
+    };
+
+    window.xuLyChonNhieuFile = async function(e) {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+        thongBaoToast(`Đang nạp ${files.length} ảnh SGK...`, 'info');
+        for (let i = 0; i < files.length; i++) {
+            await window.themAnhVaoGallery(files[i], files[i].name);
+        }
+        e.target.value = '';
+    };
+
+    window.xoaAnhKhoiGallery = async function(idx) {
+        if (idx >= 0 && idx < window.danhSachAnhSgk.length) {
+            window.danhSachAnhSgk.splice(idx, 1);
+            await luuDanhSachAnhVaoBoNho();
+            window.renderGalleryAnh();
+            thongBaoToast("Đã xóa ảnh khỏi danh sách!", "info");
+        }
+    };
+
+    window.xoaTatCaAnhGallery = async function(silent = false) {
+        if (!window.danhSachAnhSgk || window.danhSachAnhSgk.length === 0) return;
+        if (!silent) {
+            if (!confirm(`Thầy/Cô có chắc chắn muốn xóa toàn bộ ${window.danhSachAnhSgk.length} ảnh SGK đã dán để giải phóng bộ nhớ không?`)) {
+                return;
+            }
+        }
+        window.danhSachAnhSgk = [];
+        await luuDanhSachAnhVaoBoNho();
+        window.renderGalleryAnh();
+        if (!silent) thongBaoToast("Đã xóa toàn bộ ảnh SGK đã nạp!", "info");
+    };
+
+    window.kichHoatChonNhieuFile = function() {
+        document.getElementById('inp-admin-ai-files')?.click();
+    };
+
+    window.xemThuAnhPhongTo = function(base64, mime = 'image/png') {
+        const modal = document.getElementById('modal-lightbox-anh');
+        const img = document.getElementById('lightbox-img-full');
+        if (modal && img) {
+            img.src = base64.startsWith('data:') ? base64 : `data:${mime};base64,${base64}`;
+            modal.style.display = 'flex';
+        }
+    };
+
+    window.dongLightboxAnh = function() {
+        const modal = document.getElementById('modal-lightbox-anh');
+        if (modal) modal.style.display = 'none';
+    };
+
+    // 4. Tính năng bấm nút "Dán ảnh từ Clipboard" tiện lợi 1 click
+    window.danAnhTuClipboardNhanh = async function() {
+        try {
+            if (!navigator.clipboard || !navigator.clipboard.read) {
+                thongBaoToast('Thầy/Cô vui lòng nhấn tổ hợp phím Ctrl + V trên bàn phím để dán ảnh nhé!', 'info');
+                const dropzone = document.getElementById('admin-ai-dropzone');
+                if (dropzone) dropzone.focus();
+                return;
+            }
+            thongBaoToast('Đang đọc ảnh từ Clipboard...', 'info');
+            const items = await navigator.clipboard.read();
+            let coAnh = false;
+            for (const item of items) {
+                for (const type of item.types) {
+                    if (type.startsWith('image/')) {
+                        const blob = await item.getType(type);
+                        await window.themAnhVaoGallery(blob, `Ảnh Dán Clipboard (${new Date().toLocaleTimeString('vi-VN')})`);
+                        coAnh = true;
+                    }
+                }
+            }
+            if (coAnh) {
+                thongBaoToast('✅ Đã nạp ảnh từ Clipboard thành công!', 'success');
+            } else {
+                thongBaoToast('Không tìm thấy ảnh trong Clipboard! Thầy/Cô hãy chụp ảnh bằng Win + Shift + S trước nhé.', 'warning');
+            }
+        } catch (err) {
+            console.warn('[Clipboard Read Error]:', err);
+            thongBaoToast('Thầy/Cô vui lòng bấm phím Ctrl + V trực tiếp trên bàn phím để dán ảnh nhé!', 'info');
+            const dropzone = document.getElementById('admin-ai-dropzone');
+            if (dropzone) dropzone.focus();
+        }
+    };
+
+    // 5. Khởi tạo sự kiện Kéo thả Dropzone và Clipboard Paste (Ctrl + V)
+    window.khoiTaoSuKienDropzoneVaPaste = function() {
+        const dropzone = document.getElementById('admin-ai-dropzone');
+        if (dropzone) {
+            dropzone.setAttribute('tabindex', '0');
+            dropzone.style.outline = 'none';
+
+            // Xóa triệt để thuộc tính onclick cũ gây bật hộp thoại file của Windows
+            dropzone.removeAttribute('onclick');
+            dropzone.onclick = null;
+
+            // Xử lý Click trên Dropzone: Click vào vùng trống chỉ để focus sẵn sàng bấm Ctrl + V
+            dropzone.addEventListener('click', function(e) {
+                if (e.target.closest('#btn-chon-file-sgk') || e.target.closest('.btn-browse-file') || e.target.closest('button')) {
+                    return;
+                }
+                e.preventDefault();
+                dropzone.focus();
+                dropzone.style.boxShadow = '0 0 20px rgba(46, 204, 113, 0.6)';
+                thongBaoToast('🟢 Khung dán ảnh đã sẵn sàng! Thầy/Cô hãy bấm Ctrl + V để dán ảnh.', 'info');
+            }, true);
+
+            dropzone.onblur = function() {
+                dropzone.style.boxShadow = 'none';
+            };
+
+            // Kéo thả file ảnh
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('dragover');
+                    dropzone.style.borderColor = '#00d2ff';
+                }, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('dragover');
+                    dropzone.style.borderColor = '#2ecc71';
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', async (e) => {
+                const dt = e.dataTransfer;
+                const files = dt ? Array.from(dt.files) : [];
+                const imageFiles = files.filter(f => f.type.startsWith('image/') || f.name.match(/\.(jpg|jpeg|png|webp|gif|bmp)$/i));
+                if (imageFiles.length === 0) {
+                    thongBaoToast('Không tìm thấy file hình ảnh nào trong các file kéo thả!', 'warning');
+                    return;
+                }
+                thongBaoToast(`Đang nạp ${imageFiles.length} ảnh SGK...`, 'info');
+                for (let i = 0; i < imageFiles.length; i++) {
+                    await window.themAnhVaoGallery(imageFiles[i], `Ảnh SGK ${window.danhSachAnhSgk.length + 1}`);
+                }
+            });
+        }
+
+        // LẮNG NGHE SỰ KIỆN PASTE TOÀN CỤC VỚI CAPTURING PHASE (TRUE) & ĐỒNG BỘ 100%
+        window.addEventListener('paste', function(e) {
+            // 1. Trích xuất ảnh ĐỒNG BỘ NGAY TỨC THÌ
+            const imageFiles = trichXuatAnhDongBoTuClipboard(e);
+            if (!imageFiles || imageFiles.length === 0) {
+                return; // Không phải ảnh, để mặc định cho việc dán văn bản bình thường
+            }
+
+            // 2. Chặn hành vi mặc định NGAY LẬP TỨC (ĐỒNG BỘ)
+            e.preventDefault();
+            e.stopPropagation();
+
+            thongBaoToast(`📋 Đã phát hiện ${imageFiles.length} ảnh trong Clipboard! Đang nạp...`, 'info');
+
+            // 3. Xử lý lưu ảnh bất đồng bộ sau đó
+            (async () => {
+                for (let i = 0; i < imageFiles.length; i++) {
+                    await window.themAnhVaoGallery(imageFiles[i], `Ảnh Dán ${window.danhSachAnhSgk.length + 1} (${new Date().toLocaleTimeString('vi-VN')})`);
+                }
+                const dropzone = document.getElementById('admin-ai-dropzone');
+                if (dropzone) {
+                    dropzone.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            })();
+        }, true); // useCapture = true đảm bảo bắt ngay trước mọi phần tử con!
+
+        // Đánh dấu khi người dùng tự tay gõ sửa tên bài học
+        const inpTen = document.getElementById('ai-studio-ten-chude');
+        if (inpTen) {
+            inpTen.addEventListener('input', () => {
+                inpTen.dataset.aiAutoFilled = 'false';
+            });
+        }
+
+        // Khi giáo viên thay đổi Khối lớp và đang có ảnh SGK, tự động cập nhật lại tên bài học
+        const selKhoi = document.getElementById('ai-studio-khoi');
+        if (selKhoi) {
+            selKhoi.addEventListener('change', () => {
+                if (window.danhSachAnhSgk && window.danhSachAnhSgk.length > 0) {
+                    const inp = document.getElementById('ai-studio-ten-chude');
+                    if (inp && (!inp.value.trim() || inp.dataset.aiAutoFilled === 'true')) {
+                        thongBaoToast(`Đã chọn ${selKhoi.value}. AI đang cập nhật lại tên bài học...`, 'info');
+                        window.tuDongDocTenBaiTuAnh(true);
+                    }
+                }
+            });
+        }
+
+        // Đảm bảo nút đọc tên bài có ID
+        const btnDoc = document.querySelector('button[onclick*="tuDongDocTenBaiTuAnh"]');
+        if (btnDoc && !btnDoc.id) {
+            btnDoc.id = 'btn-ai-doc-ten-bai';
+        }
+    };
+
+    // ========================================================================
+    // TÍNH NĂNG: AI TỰ ĐỘNG ĐỌC TÊN BÀI HỌC TỪ ẢNH SGK (DÙNG GEMINI 3.6 FLASH)
+    // ========================================================================
+    window.tuDongDocTenBaiTuAnh = async function(isAuto = false) {
+        const inp = document.getElementById('ai-studio-ten-chude');
+        const btn = document.getElementById('btn-ai-doc-ten-bai') || document.querySelector('button[onclick*="tuDongDocTenBaiTuAnh"]');
+        const khoiSelect = document.getElementById('ai-studio-khoi');
+        const khoi = khoiSelect ? khoiSelect.value : 'THCS';
+
+        if (!window.danhSachAnhSgk || window.danhSachAnhSgk.length === 0) {
+            if (!isAuto) {
+                thongBaoToast('Thầy/Cô vui lòng dán (Ctrl+V) hoặc chọn ảnh sách giáo khoa có tên bài trước!', 'warning');
+            }
+            return null;
+        }
+
+        const apiKey = layApiKeyAdmin();
+        if (!apiKey) {
+            if (!isAuto) {
+                thongBaoToast('Thầy vui lòng nhập Gemini API Key ở ô bên trên trước khi dùng AI!', 'warning');
+                const inpKey = document.getElementById('input-admin-gemini-key');
+                if (inpKey) inpKey.focus();
+            }
+            return null;
+        }
+
+        // Nếu người dùng đã tự tay gõ và đây là chế độ tự động, không ghi đè
+        if (isAuto && inp && inp.value.trim() && inp.dataset.aiAutoFilled !== 'true') {
+            return inp.value.trim();
+        }
+
+        const originalBtnHtml = btn ? btn.innerHTML : '';
+        const originalPlaceholder = inp ? inp.placeholder : '';
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI đang đọc tên...';
+        }
+        if (inp) {
+            inp.placeholder = `🤖 Đang phân tích tên bài học từ ảnh SGK (${khoi})...`;
+            if (!inp.value.trim() || inp.dataset.aiAutoFilled === 'true') {
+                inp.style.borderColor = '#3498db';
+                inp.style.boxShadow = '0 0 10px rgba(52, 152, 219, 0.4)';
+            }
+        }
+
+        try {
+            // Lấy tối đa 2 trang ảnh đầu tiên (thường chứa bìa / tiêu đề bài học)
+            const anhKiemTra = window.danhSachAnhSgk.slice(0, 2);
+            const parts = [
+                {
+                    text: `Bạn là chuyên gia sư phạm môn Toán học Việt Nam.
+Nhiệm vụ của bạn: Hãy đọc kỹ hình ảnh trang sách giáo khoa Toán đính kèm (chương trình GDPT mới dành cho đối tượng ${khoi}) và trích xuất CHÍNH XÁC "TÊN BÀI HỌC / TÊN CHỦ ĐỀ".
+
+Quy tắc xuất kết quả:
+1. CHỈ TRẢ VỀ DUY NHẤT một dòng ngắn gọn chứa Tên bài học.
+2. Định dạng chuẩn: "Bài [Số thứ tự]: [Tên bài học]" (Ví dụ: "Bài 1: Tập hợp các số hữu tỉ", "Bài 3: Định lý Pythagoras", "Bài 2: Hình chóp tam giác đều"). Nếu là bài ôn tập/hoạt động thực hành thì ghi đúng như SGK (Ví dụ: "Bài tập cuối chương 2", "Hoạt động thực hành và trải nghiệm").
+3. KHÔNG thêm bất kỳ lời dẫn, giải thích, định dạng markdown (\`\`\`), dấu ngoặc kép hay ký tự thừa nào khác.`
+                }
+            ];
+
+            for (const img of anhKiemTra) {
+                let cleanBase64 = img.base64;
+                if (cleanBase64.includes(',')) cleanBase64 = cleanBase64.split(',')[1];
+                const mime = img.mime || "image/jpeg";
+                parts.push({
+                    inline_data: {
+                        mime_type: mime,
+                        data: cleanBase64
+                    }
+                });
+            }
+
+            // Gọi Gemini API với cơ chế tự động thử model dự phòng (gemini-2.0-flash, gemini-1.5-flash)
+            const candidateModels = [
+                window.GEMINI_MODEL_ADMIN || "gemini-2.0-flash",
+                "gemini-2.0-flash",
+                "gemini-1.5-flash"
+            ];
+            const uniqueModels = [...new Set(candidateModels)];
+            let resData = null;
+            let lastErrorMsg = null;
+
+            for (const modelName of uniqueModels) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: parts }],
+                            generationConfig: {
+                                temperature: 0.1,
+                                maxOutputTokens: 120
+                            }
+                        })
+                    });
+
+                    if (response.ok) {
+                        resData = await response.json();
+                        break;
+                    } else {
+                        const errJson = await response.json().catch(() => ({}));
+                        lastErrorMsg = errJson.error?.message || `HTTP ${response.status}`;
+                        console.warn(`[tuDongDocTenBaiTuAnh] Model ${modelName} lỗi: ${lastErrorMsg}. Thử model tiếp theo...`);
+                    }
+                } catch(e) {
+                    lastErrorMsg = e.message;
+                }
+            }
+
+            if (!resData) {
+                throw new Error(lastErrorMsg || "Không thể đọc tên bài từ ảnh");
+            }
+            let tenTrichXuat = resData.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+
+            // Làm sạch markdown và ký tự thừa
+            tenTrichXuat = tenTrichXuat.replace(/^["'`*#]+|["'`*#]+$/g, '').trim();
+            tenTrichXuat = tenTrichXuat.replace(/^(Tên bài học|Chủ đề|Tên bài|Bài học):\s*/i, '').trim();
+
+            if (tenTrichXuat && inp) {
+                inp.value = tenTrichXuat;
+                inp.dataset.aiAutoFilled = 'true';
+                inp.style.borderColor = '#2ecc71';
+                inp.style.boxShadow = '0 0 12px rgba(46, 204, 113, 0.6)';
+                setTimeout(() => {
+                    if (inp) {
+                        inp.style.borderColor = '#2c3a57';
+                        inp.style.boxShadow = 'none';
+                    }
+                }, 3000);
+                thongBaoToast(`🎯 AI đã nhận diện bài học: "${tenTrichXuat}" (${khoi})`, 'success');
+                return tenTrichXuat;
+            } else {
+                if (!isAuto) {
+                    thongBaoToast('AI chưa nhận diện rõ tên bài học từ ảnh này. Thầy/Cô có thể tự gõ vào ô nhé!', 'warning');
+                }
+                return null;
+            }
+        } catch (err) {
+            console.warn("[Hero AI Studio] Lỗi đọc tên bài từ ảnh:", err);
+            if (!isAuto) {
+                thongBaoToast(`Không thể đọc tên bài từ ảnh: ${err.message}`, 'error');
+            }
+            return null;
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+            }
+            if (inp) {
+                inp.placeholder = originalPlaceholder;
+            }
+        }
+    };
+
+    // ========================================================================
+    // BƯỚC 2: GIAO DIỆN & LOGIC SOẠN BÀI SIÊU TỐC THEO CHƯƠNG TRÌNH SGK
+    // ========================================================================
+    window.khoiTaoPanelSoanNhanhSGK = function() {
+        const khuAi = document.getElementById('khu-ai-studio');
+        if (!khuAi) return;
+
+        if (document.getElementById('panel-soan-nhanh-sgk')) return;
+
+        // Chèn CSS cho Panel Soạn Siêu Tốc
+        if (!document.getElementById('css-soan-nhanh-sgk')) {
+            const style = document.createElement('style');
+            style.id = 'css-soan-nhanh-sgk';
+            style.innerHTML = `
+                .panel-sgk-box {
+                    background: linear-gradient(135deg, rgba(20, 29, 47, 0.95), rgba(15, 23, 42, 0.95));
+                    border: 1px solid rgba(52, 152, 219, 0.35);
+                    border-radius: 12px;
+                    padding: 16px 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+                    position: relative;
+                }
+                .panel-sgk-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-bottom: 14px;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                    padding-bottom: 10px;
+                }
+                .panel-sgk-title {
+                    font-size: 1.05rem;
+                    font-weight: 700;
+                    color: #00d2ff;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .panel-sgk-badge-speed {
+                    background: rgba(46, 204, 113, 0.2);
+                    color: #2ecc71;
+                    border: 1px solid #2ecc71;
+                    font-size: 0.78rem;
+                    padding: 3px 10px;
+                    border-radius: 20px;
+                    font-weight: 600;
+                }
+                .sgk-grade-pills {
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 12px;
+                    flex-wrap: wrap;
+                }
+                .sgk-grade-btn {
+                    background: rgba(255, 255, 255, 0.07);
+                    border: 1px solid rgba(255, 255, 255, 0.15);
+                    color: #cbd5e1;
+                    padding: 6px 16px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }
+                .sgk-grade-btn:hover {
+                    background: rgba(52, 152, 219, 0.25);
+                    color: #fff;
+                    border-color: #3498db;
+                }
+                .sgk-grade-btn.active {
+                    background: linear-gradient(135deg, #3498db, #2980b9);
+                    color: #fff;
+                    border-color: #5dade2;
+                    box-shadow: 0 0 12px rgba(52, 152, 219, 0.5);
+                }
+                .sgk-select-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                    margin-bottom: 14px;
+                }
+                @media (max-width: 768px) {
+                    .sgk-select-grid { grid-template-columns: 1fr; }
+                }
+                .sgk-select-group label {
+                    display: block;
+                    font-size: 0.85rem;
+                    color: #94a3b8;
+                    margin-bottom: 5px;
+                    font-weight: 500;
+                }
+                .sgk-select {
+                    width: 100%;
+                    background: #0f172a;
+                    border: 1px solid #334155;
+                    color: #f8fafc;
+                    padding: 9px 12px;
+                    border-radius: 8px;
+                    font-size: 0.92rem;
+                    outline: none;
+                    transition: border-color 0.2s;
+                }
+                .sgk-select:focus {
+                    border-color: #38bdf8;
+                }
+                .notebooklm-toggle-area {
+                    margin-bottom: 14px;
+                }
+                .btn-toggle-notebooklm {
+                    background: none;
+                    border: none;
+                    color: #a78bfa;
+                    font-size: 0.85rem;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                    padding: 4px 0;
+                    font-weight: 500;
+                }
+                .btn-toggle-notebooklm:hover {
+                    color: #c4b5fd;
+                    text-decoration: underline;
+                }
+                .notebooklm-content-box {
+                    display: none;
+                    margin-top: 8px;
+                }
+                .notebooklm-textarea {
+                    width: 100%;
+                    background: #0f172a;
+                    border: 1px solid #475569;
+                    color: #f1f5f9;
+                    border-radius: 8px;
+                    padding: 10px;
+                    font-size: 0.88rem;
+                    font-family: inherit;
+                    min-height: 80px;
+                    resize: vertical;
+                    box-sizing: border-box;
+                }
+                .notebooklm-textarea:focus {
+                    border-color: #a78bfa;
+                    outline: none;
+                }
+                .btn-soan-nhanh-action {
+                    background: linear-gradient(135deg, #8e44ad, #2980b9);
+                    border: none;
+                    color: #fff;
+                    padding: 11px 22px;
+                    border-radius: 8px;
+                    font-weight: 700;
+                    font-size: 0.95rem;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.25s ease;
+                    box-shadow: 0 4px 15px rgba(142, 68, 173, 0.4);
+                }
+                .btn-soan-nhanh-action:hover {
+                    background: linear-gradient(135deg, #9b59b6, #3498db);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(142, 68, 173, 0.6);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const panel = document.createElement('div');
+        panel.id = 'panel-soan-nhanh-sgk';
+        panel.className = 'panel-sgk-box';
+
+        panel.innerHTML = `
+            <div class="panel-sgk-header">
+                <div class="panel-sgk-title">
+                    <i class="fa-solid fa-bolt" style="color: #f1c40f;"></i>
+                    <span>PHƯƠNG ÁN 2: SOẠN BÀI SIÊU TỐC THEO CHƯƠNG TRÌNH SGK (KHÔNG CẦN CẮT ẢNH)</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    <span style="display:inline-flex; align-items:center; gap:5px; background:rgba(230, 126, 34, 0.18); border:1px solid #e67e22; color:#f39c12; font-size:0.8rem; padding:3px 10px; border-radius:20px; font-weight:700;">
+                        <i class="fa-solid fa-book-bookmark"></i> SÁCH KẾT NỐI TRI THỨC
+                    </span>
+                    <span class="panel-sgk-badge-speed">
+                        <i class="fa-solid fa-gauge-high"></i> Tốc độ 2-3 giây | Tiết kiệm 100% dung lượng
+                    </span>
+                </div>
+            </div>
+
+            <div style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 10px;">
+                Thầy/Cô chỉ cần chọn <b>Khối lớp ➔ Chương ➔ Bài học</b> (Chuẩn bộ sách <b>Kết nối tri thức với cuộc sống</b>). AI Gemini 3.6 Flash sẽ tự động biên soạn toàn diện Lý thuyết & Đề thi trắc nghiệm - tự luận mà không cần cắt dán bất kỳ ảnh nào!
+            </div>
+
+            <!-- Nút chọn Khối Lớp -->
+            <div class="sgk-grade-pills">
+                <button type="button" class="sgk-grade-btn active" data-grade="Lớp 6" onclick="window.chonKhoiSGKNhanh('Lớp 6')">Lớp 6</button>
+                <button type="button" class="sgk-grade-btn" data-grade="Lớp 7" onclick="window.chonKhoiSGKNhanh('Lớp 7')">Lớp 7</button>
+                <button type="button" class="sgk-grade-btn" data-grade="Lớp 8" onclick="window.chonKhoiSGKNhanh('Lớp 8')">Lớp 8</button>
+                <button type="button" class="sgk-grade-btn" data-grade="Lớp 9" onclick="window.chonKhoiSGKNhanh('Lớp 9')">Lớp 9</button>
+            </div>
+
+            <!-- Dropdown chọn Chương và Bài -->
+            <div class="sgk-select-grid">
+                <div class="sgk-select-group">
+                    <label for="sel-sgk-chuong"><i class="fa-solid fa-book"></i> Chọn Chương / Chuyên đề SGK:</label>
+                    <select id="sel-sgk-chuong" class="sgk-select" onchange="window.capNhatDanhSachBaiSGK()"></select>
+                </div>
+                <div class="sgk-select-group">
+                    <label for="sel-sgk-bai"><i class="fa-solid fa-list-check"></i> Chọn Bài học:</label>
+                    <select id="sel-sgk-bai" class="sgk-select" onchange="window.dongBoTenBaiDaChon()"></select>
+                </div>
+            </div>
+
+            <!-- Khu vực tùy chọn dán nội dung từ NotebookLM -->
+            <div class="notebooklm-toggle-area">
+                <button type="button" class="btn-toggle-notebooklm" onclick="window.toggleNotebookLMBox()">
+                    <i class="fa-solid fa-paperclip"></i>
+                    <span>Tùy chọn: Dán thêm tóm tắt / câu hỏi từ NotebookLM (nếu có)</span>
+                    <i class="fa-solid fa-chevron-down" id="icon-chevron-notebooklm" style="font-size:0.75rem;"></i>
+                </button>
+                <div id="box-notebooklm-input" class="notebooklm-content-box">
+                    <textarea id="txt-notebooklm-content" class="notebooklm-textarea" placeholder="Nếu Thầy/Cô đã có văn bản tóm tắt hoặc câu hỏi từ NotebookLM cho bài học này, hãy dán vào đây để Gemini biên soạn bám sát nhất theo tài liệu đó..."></textarea>
+                </div>
+            </div>
+
+            <!-- Nút bấm Biên Soạn Siêu Tốc -->
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <button type="button" id="btn-thuc-thi-soan-nhanh" class="btn-soan-nhanh-action" onclick="window.thucThiSoanNhanhSGK()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>⚡ SOẠN SIÊU TỐC BÀI NÀY (GEMINI 3.6 FLASH)</span>
+                </button>
+                <div style="font-size: 0.8rem; color: #64748b;">
+                    <i class="fa-solid fa-shield-halved"></i> Chuẩn chương trình GDPT mới 2018
+                </div>
+            </div>
+        `;
+
+        // Chèn vào vị trí trước dropzone hoặc đầu khu AI studio
+        const dropzone = document.getElementById('admin-ai-dropzone');
+        if (dropzone && dropzone.parentNode) {
+            dropzone.parentNode.insertBefore(panel, dropzone);
+        } else {
+            khuAi.insertBefore(panel, khuAi.firstChild);
+        }
+
+        // Khởi tạo dữ liệu lớp 6 mặc định
+        window.chonKhoiSGKNhanh('Lớp 6');
+    };
+
+    // Chọn khối lớp và render danh sách chương
+    window.chonKhoiSGKNhanh = function(khoi) {
+        document.querySelectorAll('.sgk-grade-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.grade === khoi);
+        });
+
+        const num = String(khoi).match(/\d+/)?.[0] || '6';
+        const khoiChuan = 'Khối ' + num;
+
+        // Đồng bộ với select khối lớp gốc của Studio nếu có
+        const selKhoiGoc = document.getElementById('ai-studio-khoi');
+        if (selKhoiGoc) {
+            selKhoiGoc.value = khoiChuan;
+        }
+
+        // Tự động chuyển bộ lọc ở các khu quản trị sang đúng khối này luôn
+        if (typeof window.chuyenBoLocTatCaCacKhu === 'function') {
+            window.chuyenBoLocTatCaCacKhu(khoiChuan);
+            if (typeof window.taiDuLieuHeThongAdmin === 'function') {
+                window.taiDuLieuHeThongAdmin();
+            }
+        }
+
+        const selChuong = document.getElementById('sel-sgk-chuong');
+        if (!selChuong) return;
+
+        selChuong.innerHTML = '';
+        const chuongData = MUC_LUC_SGK_TOAN[khoi] || {};
+        for (const tenChuong of Object.keys(chuongData)) {
+            const opt = document.createElement('option');
+            opt.value = tenChuong;
+            opt.textContent = tenChuong;
+            selChuong.appendChild(opt);
+        }
+
+        window.capNhatDanhSachBaiSGK();
+    };
+
+    // Cập nhật danh sách bài học theo chương đã chọn
+    window.capNhatDanhSachBaiSGK = function() {
+        const activeBtn = document.querySelector('.sgk-grade-btn.active');
+        const khoi = activeBtn ? activeBtn.dataset.grade : 'Lớp 6';
+        const selChuong = document.getElementById('sel-sgk-chuong');
+        const selBai = document.getElementById('sel-sgk-bai');
+        if (!selChuong || !selBai) return;
+
+        const chuongDuocChon = selChuong.value;
+        const dsBai = (MUC_LUC_SGK_TOAN[khoi] && MUC_LUC_SGK_TOAN[khoi][chuongDuocChon]) || [];
+
+        selBai.innerHTML = '';
+        dsBai.forEach(bai => {
+            const opt = document.createElement('option');
+            opt.value = bai;
+            opt.textContent = bai;
+            selBai.appendChild(opt);
+        });
+
+        window.dongBoTenBaiDaChon();
+    };
+
+    // Tự động điền tên bài đã chọn vào ô Tên Chủ Đề / Bài Học SGK
+    window.dongBoTenBaiDaChon = function() {
+        const selBai = document.getElementById('sel-sgk-bai');
+        const inpTen = document.getElementById('ai-studio-ten-chude');
+        if (selBai && inpTen && selBai.value) {
+            inpTen.value = selBai.value;
+            inpTen.dataset.aiAutoFilled = 'true';
+        }
+    };
+
+    // Mở / Đóng ô nhập NotebookLM
+    window.toggleNotebookLMBox = function() {
+        const box = document.getElementById('box-notebooklm-input');
+        const icon = document.getElementById('icon-chevron-notebooklm');
+        if (!box) return;
+        if (box.style.display === 'block') {
+            box.style.display = 'none';
+            if (icon) icon.className = 'fa-solid fa-chevron-down';
+        } else {
+            box.style.display = 'block';
+            if (icon) icon.className = 'fa-solid fa-chevron-up';
+            const txt = document.getElementById('txt-notebooklm-content');
+            if (txt) txt.focus();
+        }
+    };
+
+    // Thực thi Soạn Nhanh theo bài đã chọn
+    window.thucThiSoanNhanhSGK = async function() {
+        const selBai = document.getElementById('sel-sgk-bai');
+        const selChuong = document.getElementById('sel-sgk-chuong');
+        const activeBtn = document.querySelector('.sgk-grade-btn.active');
+        const khoiRaw = activeBtn ? activeBtn.dataset.grade : 'Lớp 6';
+        const numKhoi = String(khoiRaw).match(/\d+/)?.[0] || '6';
+        const khoi = 'Khối ' + numKhoi;
+        const tenBai = selBai?.value || '';
+        const tenChuong = selChuong?.value || '';
+
+        if (!tenBai) {
+            thongBaoToast('Vui lòng chọn một bài học từ danh sách!', 'warning');
+            return;
+        }
+
+        const apiKey = layApiKeyAdmin();
+        if (!apiKey) {
+            thongBaoToast('⚠️ Thầy/Cô chưa nhập Gemini API Key! Vui lòng dán Key vào ô bên dưới để bắt đầu.', 'warning');
+            const inpKey = document.getElementById('input-admin-gemini-key');
+            if (inpKey) {
+                inpKey.focus();
+                inpKey.style.borderColor = '#e74c3c';
+                inpKey.style.boxShadow = '0 0 15px rgba(231, 76, 60, 0.7)';
+                inpKey.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            alert('⚠️ Thầy/Cô chưa lưu Gemini API Key!\n\nVui lòng dán mã Gemini API Key vào ô "Nhập Gemini API Key" phía trên và bấm "Lưu Key" để kích hoạt tính năng AI.');
+            return;
+        }
+
+        // 1. Đồng bộ vào form gốc của Admin Studio
+        const inpTen = document.getElementById('ai-studio-ten-chude');
+        if (inpTen) {
+            inpTen.value = tenBai;
+            inpTen.dataset.aiAutoFilled = 'true';
+        }
+
+        const selKhoiGoc = document.getElementById('ai-studio-khoi');
+        if (selKhoiGoc) {
+            selKhoiGoc.value = khoi;
+        }
+
+        // 2. Lấy nội dung dán thêm từ NotebookLM (nếu có)
+        const txtNotebook = document.getElementById('txt-notebooklm-content');
+        const noiDungNotebook = txtNotebook ? txtNotebook.value.trim() : '';
+
+        const inpMoTa = document.getElementById('ai-studio-mota');
+        if (inpMoTa) {
+            let moTaTongHop = `[ĐỊNH HƯỚNG SƯ PHẠM]: Bài học thuộc ${tenChuong} (Môn Toán ${khoi} - BỘ SÁCH KẾT NỐI TRI THỨC VỚI CUỘC SỐNG - GDPT 2018).
+YÊU CẦU ĐỐI VỚI AI GEMINI 3.6 FLASH:
+1. Mọi định nghĩa, thuật ngữ, ký hiệu toán học và quy ước trình bày phải tuân thủ nghiêm ngặt theo chuẩn sách giáo khoa "KẾT NỐI TRI THỨC VỚI CUỘC SỐNG".
+2. Tóm tắt Lý thuyết đầy đủ, mạch lạc, chia thành các mục rõ ràng (1. Khái niệm/Định nghĩa, 2. Tính chất/Quy tắc, 3. Ví dụ minh họa có giải chi tiết, 4. Chú ý sai lầm thường gặp).
+3. Biên soạn câu hỏi trắc nghiệm 4 lựa chọn (A, B, C, D) chia đủ 4 cấp độ: Nhận biết, Thông hiểu, Vận dụng, Vận dụng cao bám sát dạng bài SGK/SBT Kết nối tri thức.
+4. Bài tập tự luận có kèm lời giải chi tiết từng bước.`;
+            if (noiDungNotebook) {
+                moTaTongHop += `\n\n[DỮ LIỆU BỔ SUNG TỪ NOTEBOOKLM / TÀI LIỆU CỦA GIÁO VIÊN]:\n${noiDungNotebook}`;
+            }
+            inpMoTa.value = moTaTongHop;
+        }
+
+        thongBaoToast(`⚡ Đang soạn siêu tốc bài: "${tenBai}" (${khoi}) bằng Gemini 3.6 Flash...`, 'info');
+
+        // 3. Kích hoạt hàm tạo nội dung AI gốc của Admin Studio
+        if (typeof window.thucThiTaoNoiDungAI === 'function') {
+            await window.thucThiTaoNoiDungAI();
+        } else {
+            const btnTrigger = document.getElementById('btn-trigger-ai');
+            if (btnTrigger) {
+                btnTrigger.click();
+            } else {
+                thongBaoToast('Không tìm thấy nút kích hoạt AI trên trang!', 'error');
+            }
+        }
+    };
+
+    // ========================================================================
+    // TỰ ĐỘNG CHUẨN HÓA REQUEST GEMINI VÀ BỔ SUNG TÊN BÀI HỌC KHI TẠO NỘI DUNG
+    // ========================================================================
+    let _rawThucThi = window.thucThiTaoNoiDungAI;
+    Object.defineProperty(window, 'thucThiTaoNoiDungAI', {
+        configurable: true,
+        enumerable: true,
+        get() {
+            return async function(...args) {
+                const inp = document.getElementById('ai-studio-ten-chude');
+                // Nếu ô tên bài còn trống và đang có ảnh SGK dán vào, tự động nhận diện trước
+                if (inp && !inp.value.trim() && window.danhSachAnhSgk && window.danhSachAnhSgk.length > 0) {
+                    thongBaoToast('Đang tự động nhận diện tên bài học từ ảnh SGK trước khi biên soạn...', 'info');
+                    await window.tuDongDocTenBaiTuAnh(true);
+                }
+                if (typeof _rawThucThi === 'function') {
+                    return _rawThucThi.apply(this, args);
+                }
+            };
+        },
+        set(fn) {
+            _rawThucThi = fn;
+        }
+    });
+
+    // ========================================================================
+    // TỰ ĐỘNG CHẠY KHI TẢI TRANG
+    // ========================================================================
+    function khoiChayKhiTrangSanSang() {
+        // Nạp lại danh sách ảnh tạm từ IndexedDB hoặc localStorage
+        try {
+            const luu = localStorage.getItem('tam_anh_sgk_ai');
+            if (luu && (!window.danhSachAnhSgk || window.danhSachAnhSgk.length === 0)) {
+                const parsed = JSON.parse(luu);
+                if (Array.isArray(parsed)) {
+                    // Lọc bỏ các phần tử rác không có dữ liệu base64
+                    window.danhSachAnhSgk = parsed.filter(item => item && item.base64 && typeof item.base64 === 'string' && item.base64.length > 20);
+                }
+            }
+        } catch(e) {}
+
+        window.renderGalleryAnh();
+        window.khoiTaoSuKienDropzoneVaPaste();
+        window.khoiTaoPanelSoanNhanhSGK();
+
+        // Cập nhật trạng thái API Key trên trang Admin (dạng badge gọn gàng)
+        if (typeof window.capNhatHopThongBaoApiKey === 'function') {
+            window.capNhatHopThongBaoApiKey();
+        }
+
+        const inpAdminKey = document.getElementById('input-admin-gemini-key');
+        if (inpAdminKey) {
+            inpAdminKey.addEventListener('input', () => {
+                if (typeof window.capNhatHopThongBaoApiKey === 'function') {
+                    window.capNhatHopThongBaoApiKey();
+                }
+            });
+        }
+
+        const btnTestKey = document.getElementById('btn-test-key-admin');
+        if (btnTestKey) {
+            btnTestKey.onclick = (e) => {
+                e.preventDefault();
+                if (typeof window.kiemTraApiKeyGeminiAdmin === 'function') {
+                    window.kiemTraApiKeyGeminiAdmin();
+                }
+            };
+        }
+
+        console.log("[Hero AI Studio] Đã kích hoạt tính năng Soạn Siêu Tốc SGK & Sửa lỗi Ctrl + V thành công!");
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', khoiChayKhiTrangSanSang);
+    } else {
+        khoiChayKhiTrangSanSang();
+    }
+
+})(window);

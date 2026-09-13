@@ -35,7 +35,17 @@
 
     <style>
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-        body { background-color: #0b0f19; color: #ffffff; margin: 0; padding: 12px; min-height: 100vh; }
+        body { 
+            background-color: #0b0f19; 
+            color: #ffffff; 
+            margin: 0; 
+            padding: 12px; 
+            min-height: 100vh; 
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
         .container { width: 100%; max-width: 850px; margin: 0 auto; text-align: center; }
         
         /* Thu gọn bớt header thanh điều hướng */
@@ -336,7 +346,10 @@
             <p style="color: #bdc3c7; max-width: 500px; margin: 0 auto 25px auto; font-size: 0.95rem;">
                 Chúc mừng em đã hoàn thành thử thách Nâng Cấp Tư Duy! Điểm số đã được lưu vào hệ thống.
             </p>
-            <a href="index.html" class="btn-nav" style="background-color: #2ecc71; color: #000;" onclick="phatAmThanh('click')"><i class="fa-solid fa-house"></i> Trở về Trang Chủ</a>
+            <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <button onclick="batDauLuotMoi()" class="btn-nav" id="btn-lam-luot-moi" style="background-color: #3498db; color: #fff; display: inline-flex;"><i class="fa-solid fa-rotate-right"></i> Làm Lượt Tiếp Theo</button>
+                <a href="index.html" class="btn-nav" style="background-color: #2ecc71; color: #000; display: inline-flex;" onclick="phatAmThanh('click')"><i class="fa-solid fa-house"></i> Trở về Trang Chủ</a>
+            </div>
         </div>
     </div>
 
@@ -841,6 +854,7 @@
             napDanhSachThuMucDeTuAdmin();
             capNhatGiaoDienLuotLamBai();
             hienThiDacQuyenDangChoApDung();
+            tuDongKhoiChayNhiemVu10Cau();
         }
 
         // Vẫn giữ thêm 'pageshow' để đảm bảo cập nhật lại đúng trạng thái lượt làm bài trong trường hợp
@@ -890,6 +904,118 @@
             });
             selectBox.innerHTML = htmlOptions;
         }
+
+        // Tự động rút ngẫu nhiên 10 câu từ kho câu hỏi Nâng Cấp Tư Duy của khối lớp và bắt đầu làm bài ngay
+        function tuDongKhoiChayNhiemVu10Cau() {
+            let duLieu = layDuLieuLuotLamBai();
+            if (!duLieu || duLieu.soLuotConLai <= 0) {
+                return;
+            }
+
+            let tatCaCauHoiKhoi = [];
+            khoThuMucDe.forEach(bode => {
+                if (Array.isArray(bode.questions)) {
+                    tatCaCauHoiKhoi = tatCaCauHoiKhoi.concat(bode.questions);
+                }
+            });
+
+            if (tatCaCauHoiKhoi.length === 0) {
+                return;
+            }
+
+            // Reset trạng thái các thẻ đặc quyền
+            x2ExpKichHoat = false;
+            troGiup5050KichHoat = false;
+            coHoiThuHaiKichHoat = false;
+            daDungCoHoiThuHai = false;
+            soCauHoiMoiLuotHienTai = SO_CAU_HOI_MOI_LUOT;
+
+            hienThiDacQuyenDangChoApDung();
+
+            danhSachCauHoiHienTai = layNgauNhienCauHoi(tatCaCauHoiKhoi, soCauHoiMoiLuotHienTai);
+            indexCauHoiHienTai = 0;
+            soCauDung = 0;
+            soCauDaTraLoi = 0;
+            dangTrongMotLuotLamBaiChuaXong = true;
+
+            let folderCard = document.querySelector('.folder-select-card');
+            if (folderCard) folderCard.style.display = 'none';
+
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'block';
+
+            renderKhayTheDacQuyen();
+            hienThiCauHoiHienTai();
+        }
+
+        function batDauLuotMoi() {
+            phatAmThanh('click');
+            let duLieu = layDuLieuLuotLamBai();
+            if (!duLieu || duLieu.soLuotConLai <= 0) {
+                hienThiCanhBaoHetLuot();
+                return;
+            }
+            tuDongKhoiChayNhiemVu10Cau();
+        }
+
+        // ========================== HỆ THỐNG CHỐNG GIAN LẬN AI & RỜI MÀN HÌNH ==========================
+        let soLanRoiManHinh = 0;
+        let thoiGianCanhBaoCuoi = 0;
+
+        document.addEventListener('contextmenu', function(e) {
+            if (dangTrongMotLuotLamBaiChuaXong) {
+                e.preventDefault();
+                hienThongBaoNho('⚠️ Thao tác chuột phải bị khóa để chống tra cứu gian lận!', 'warn');
+                return false;
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!dangTrongMotLuotLamBaiChuaXong) return;
+            if (e.ctrlKey || e.metaKey) {
+                let k = e.key ? e.key.toLowerCase() : '';
+                if (['c', 'v', 'u', 's', 'p', 'a'].includes(k)) {
+                    e.preventDefault();
+                    hienThongBaoNho('⚠️ Phím tắt bị khóa để bảo đảm trung thực thi đua!', 'warn');
+                    return false;
+                }
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        function xuLyPhatHienRoiManHinh() {
+            if (!dangTrongMotLuotLamBaiChuaXong) return;
+            let bayGio = Date.now();
+            if (bayGio - thoiGianCanhBaoCuoi < 3000) return;
+            thoiGianCanhBaoCuoi = bayGio;
+
+            soLanRoiManHinh++;
+            phatAmThanh('wrong');
+
+            if (soLanRoiManHinh === 1) {
+                alert("⚠️ CẢNH BÁO GIAN LẬN (Lần 1/3):\n\nEm vừa chuyển tab hoặc rời khỏi màn hình làm bài!\nHãy tự lực hoàn thành bài thi. Nếu vi phạm quá 3 lần, hệ thống sẽ tự động thu bài và nộp ngay lập tức!");
+            } else if (soLanRoiManHinh === 2) {
+                alert("🚨 CẢNH BÁO NGHIÊM TRỌNG (Lần 2/3):\n\nTuyệt đối không chuyển sang ứng dụng khác để tra cứu đáp án/AI!\nChỉ còn DUY NHẤT 1 lần vi phạm, bài thi sẽ bị kết thúc ngay!");
+            } else if (soLanRoiManHinh >= 3) {
+                alert("⛔ VI PHẠM QUY CHẾ THI (Lần 3/3)!\n\nEm đã rời màn hình 3 lần. Hệ thống tự động thu nộp bài ngay bây giờ!");
+                HienThiBangTongKetCuoiCung();
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && dangTrongMotLuotLamBaiChuaXong) {
+                xuLyPhatHienRoiManHinh();
+            }
+        });
+
+        window.addEventListener('blur', function() {
+            if (dangTrongMotLuotLamBaiChuaXong) {
+                xuLyPhatHienRoiManHinh();
+            }
+        });
 
         function hocSinhChonBoDe(idBoDe) {
             phatAmThanh('click');

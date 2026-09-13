@@ -389,6 +389,42 @@
       } catch (loi) {
         console.warn("[Hero Firebase Compat] Lỗi khi ghi nhật ký hoạt động:", loi);
       }
+    },
+
+    taiNhatKyHoatDong: async function(tuNgayISO, denNgayISO) {
+      const firestore = getDb();
+      if (!firestore) return [];
+      try {
+        const snap = await firestore.collection("mathhero_activity_log")
+          .where("ngay", ">=", tuNgayISO)
+          .where("ngay", "<=", denNgayISO)
+          .get();
+        const ketQua = [];
+        snap.forEach(docSnap => ketQua.push(docSnap.data()));
+        return ketQua;
+      } catch (loi) {
+        console.warn("[Hero Firebase Compat] Lỗi khi tải nhật ký hoạt động:", loi);
+        return [];
+      }
+    },
+
+    taiBaiTuLuanTrongKhoang: async function(tuNgayISO, denNgayISO) {
+      const firestore = getDb();
+      if (!firestore) return [];
+      try {
+        const tuISOFull = tuNgayISO + 'T00:00:00.000Z';
+        const denISOFull = denNgayISO + 'T23:59:59.999Z';
+        const snap = await firestore.collection("bai_tap_tu_luan")
+          .where("thoiGianNop", ">=", tuISOFull)
+          .where("thoiGianNop", "<=", denISOFull)
+          .get();
+        const ketQua = [];
+        snap.forEach(docSnap => ketQua.push(docSnap.data()));
+        return ketQua;
+      } catch (loi) {
+        console.warn("[Hero Firebase Compat] Lỗi khi tải bài tập tự luận:", loi);
+        return [];
+      }
     }
   };
 
@@ -397,5 +433,24 @@
   if (!window.FirebaseSync) {
     window.FirebaseSync = CompatSync;
     window.firebaseSyncSan = true;
+  }
+
+  // Tự động nạp mô-đun AI Studio nâng cao cho trang Quản Trị (admin.html)
+  if (typeof document !== 'undefined') {
+    const href = (window.location && window.location.href) ? window.location.href.toLowerCase() : '';
+    const isTrangAdmin = href.includes('admin') || 
+                         (typeof document.title === 'string' && document.title.toLowerCase().includes('quản trị')) ||
+                         !!document.getElementById('khu-ai-studio');
+    if (isTrangAdmin) {
+      if (document.readyState === 'loading') {
+        // Dùng document.write để script nạp ĐỒNG BỘ ngay trong <head>, đảm bảo toàn bộ hàm AI Studio sẵn sàng trước khi body tải xong
+        document.write('<script id="hero-ai-studio-script" src="./hero-ai-studio.js"><\/script>');
+      } else if (!document.getElementById('hero-ai-studio-script')) {
+        const sc = document.createElement('script');
+        sc.id = 'hero-ai-studio-script';
+        sc.src = './hero-ai-studio.js';
+        (document.head || document.documentElement).appendChild(sc);
+      }
+    }
   }
 })(window);

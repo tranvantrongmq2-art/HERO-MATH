@@ -29,6 +29,10 @@
             align-items: center; 
             position: relative; 
             overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         
         /* HIỆU ỨNG VIỀN NĂNG LƯỢNG ĐỘNG VIÊN — nhẹ nhàng, mang cảm giác "được tiếp sức" hơn là báo động */
@@ -721,8 +725,8 @@
         let soCauDungBoss = 0;
         let soCauSaiBoss = 0;
 
-        const DAMAGE_BASE = 20;
-        const BOSS_DAMAGE_BASE = 15;
+        let DAMAGE_BASE = 34;
+        let BOSS_DAMAGE_BASE = 34;
 
         let daBamChonChua = false;
         let cauTraLoiHienTaiDaSai = false;
@@ -1081,18 +1085,20 @@
                 selSwitch.value = 'Khối ' + soKhoiHs;
             }
 
-            // Lọc bộ đề phù hợp: không bị ẩn VÀ (không gán khối / all / trùng khối với học sinh)
+            // Lọc bộ đề phù hợp: không bị ẩn VÀ đúng khối của học sinh (học sinh khối nào chỉ hiện đề khối đó)
             let cacBoDePhuHop = khoDeBoss.filter(b => {
                 if (b.hidden) return false;
-                if (!b.grade || b.grade === 'all') return true;
                 let soKhoiDe = trichXuatSoKhoiLop(b.grade);
                 if (soKhoiDe && soKhoiHs) return soKhoiDe === soKhoiHs;
                 return b.grade === khoiHocSinh;
             });
 
-            // Nếu không tìm thấy đề đúng khối, kiểm tra xem có bất kỳ đề nào chưa ẩn không để fallback
             if (cacBoDePhuHop.length === 0) {
-                cacBoDePhuHop = khoDeBoss.filter(b => !b.hidden);
+                if (msgEl) {
+                    msgEl.innerHTML = `<span style="color:#f39c12;"><i class="fa-solid fa-triangle-exclamation"></i> Thầy cô chưa nạp bộ đề Thử Thách Tối Thượng cho <b>${soKhoiHs ? ('Khối ' + soKhoiHs) : khoiHocSinh}</b>. Em hãy quay lại sau khi Thầy cô bổ sung đề nhé!</span>`;
+                }
+                if (qArea) qArea.style.display = 'block';
+                return;
             }
 
             let khoCauHoiBoss = [];
@@ -1123,8 +1129,10 @@
                 tieuDeBoss.innerHTML = `<i class="fa-solid fa-mountain"></i> ${tenCacBoDe[0].toUpperCase()}`;
             }
 
-            const SO_CAU_MOI_TRAN = Math.min(20, khoCauHoiBoss.length);
+            const SO_CAU_MOI_TRAN = Math.min(3, khoCauHoiBoss.length);
             danhSachCauHoi = layNgauNhienNCau(khoCauHoiBoss, SO_CAU_MOI_TRAN);
+            DAMAGE_BASE = Math.ceil(HP_MAX / SO_CAU_MOI_TRAN);
+            BOSS_DAMAGE_BASE = Math.ceil(HP_MAX / SO_CAU_MOI_TRAN);
             if (qArea) qArea.style.display = 'block';
 
             bossHP = HP_MAX;
@@ -1459,6 +1467,112 @@
             thongBaoEl.innerHTML = `<i class="fa-solid fa-mountain"></i> Em còn <b>${duLieu.soLuotConLai}</b> lượt Thử Thách Tối Thượng tuần này. Cố lên, em làm được! 🌟`;
             return true;
         }
+
+        // ============================================================
+        //  HỆ THỐNG CHỐNG GIAN LẬN AI & RỜI MÀN HÌNH (THỬ THÁCH TỐI THƯỢNG)
+        // ============================================================
+        document.addEventListener('contextmenu', function(e) {
+            let victoryArea = document.getElementById('victory-area');
+            if (victoryArea && victoryArea.style.display !== 'block') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            let victoryArea = document.getElementById('victory-area');
+            if (victoryArea && victoryArea.style.display === 'block') return;
+
+            if (e.ctrlKey || e.metaKey) {
+                let k = e.key ? e.key.toLowerCase() : '';
+                if (['c', 'v', 'u', 's', 'p', 'a'].includes(k)) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        let thoiGianPhatRoiManHinh = 0;
+        function xuLyPhatRoiManHinhBoss() {
+            let victoryArea = document.getElementById('victory-area');
+            if (victoryArea && victoryArea.style.display === 'block') return;
+            if (playerHP <= 0 || bossHP <= 0 || danhSachCauHoi.length === 0) return;
+
+            let bayGio = Date.now();
+            if (bayGio - thoiGianPhatRoiManHinh < 3000) return;
+            thoiGianPhatRoiManHinh = bayGio;
+
+            // Phạt trừ 25 sức bền do mất tập trung / rời màn hình
+            playerHP = Math.max(0, playerHP - 25);
+            capNhatHP();
+            phatAmThanhHanhDong('monster_roar');
+
+            let banner = document.getElementById('feedback-banner');
+            if (banner) {
+                banner.style.display = 'block';
+                banner.style.backgroundColor = "rgba(231,76,60,0.25)";
+                banner.style.color = "#e74c3c";
+                banner.style.border = "2px solid #e74c3c";
+                banner.innerHTML = `⚠️ MẤT TẬP TRUNG: Em vừa rời màn hình thi! Ngọn núi/Boss chớp thời cơ trừ 25 sức bền!`;
+            }
+            document.body.style.animation = "nudgeScreen 0.5s 1";
+            setTimeout(() => document.body.style.animation = "", 500);
+
+            if (playerHP <= 0) {
+                setTimeout(() => {
+                    xuLyKetThucSom();
+                }, 800);
+            }
+        }
+
+        function xuLyKetThucSom() {
+            document.getElementById('danger-screen').style.display = 'none';
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('victory-area').style.display = 'block';
+
+            dungNhacNenHoiHop();
+
+            let theTieuDe = document.getElementById('victory-title');
+            let theMoTa = document.getElementById('victory-desc');
+
+            theTieuDe.style.color = "#e74c3c";
+            document.getElementById('victory-area').style.borderColor = "#e74c3c";
+            document.getElementById('boss-avatar').innerText = '🏕️';
+            theTieuDe.innerText = "CHƯA LÊN ĐẾN ĐỈNH LẦN NÀY! 💪";
+
+            let tienDoGayDamage = Math.min(1, Math.max(0, (HP_MAX - bossHP) / HP_MAX));
+            let expAnUi = Math.floor(30 + 70 * tienDoGayDamage);
+            let diemAnUi = Math.floor(10 + 30 * tienDoGayDamage);
+
+            let ten = layTenHocSinhHienTai();
+            if (ten) {
+                let currentExp = parseInt(localStorage.getItem('exp_' + ten)) || 0;
+                localStorage.setItem('exp_' + ten, currentExp + expAnUi);
+                let currentCoin = parseInt(localStorage.getItem('coin_' + ten)) || 50;
+                localStorage.setItem('coin_' + ten, currentCoin + diemAnUi);
+                window.__fbDayDuLieuLenMay(ten);
+                window.__fbGhiNhatKyHoatDong(ten, 'boss', soCauDungBoss, soCauSaiBoss, expAnUi);
+                theMoTa.innerHTML = `
+                    🏕️ Em đã rời màn hình làm bài khiến sức bền về 0!<br>
+                    🎁 Điểm an ủi khích lệ: <b style="color:#f1c40f;">+${expAnUi} EXP & +${diemAnUi} Điểm</b>.<br>
+                    Hãy tập trung cao độ hơn ở lần thử thách tiếp theo nhé! 🌟
+                `;
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                xuLyPhatRoiManHinhBoss();
+            }
+        });
+
+        window.addEventListener('blur', function() {
+            xuLyPhatRoiManHinhBoss();
+        });
     </script>
 </body>
 </html>

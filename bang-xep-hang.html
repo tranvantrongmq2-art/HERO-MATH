@@ -296,6 +296,25 @@
             .teacher-table th, .teacher-table td { padding: 8px 8px; }
             .tab-btn-teacher { font-size: 0.65rem; padding: 6px 12px; }
         }
+
+        .btn-tab-public {
+            background: rgba(15, 23, 42, 0.85);
+            color: #94a3b8;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-tab-public:hover {
+            color: #f8fafc;
+            border-color: #38bdf8;
+            transform: translateY(-1px);
+        }
+        .btn-tab-public.active {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(59, 130, 246, 0.3));
+            color: #ffffff;
+            border-color: #22d3ee;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.35), inset 0 0 10px rgba(34, 211, 238, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -328,7 +347,37 @@
             </p>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-14 max-w-2xl mx-auto mt-6">
+        <!-- BỘ CHỌN CHẾ ĐỘ XEM CÔNG KHAI (CAO THỦ vs NỖ LỰC) -->
+        <div class="flex justify-center items-center gap-3 mb-5 flex-wrap">
+            <button id="tab-btn-exp" onclick="chuyenTabCongKhai('exp')" class="btn-tab-public active flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm tracking-wide shadow-lg">
+                <i class="fa-solid fa-trophy text-amber-400 text-base"></i> BẢNG CAO THỦ (EXP)
+            </button>
+            <button id="tab-btn-effort" onclick="chuyenTabCongKhai('effort')" class="btn-tab-public flex items-center gap-2 px-6 py-3 rounded-2xl font-black text-sm tracking-wide shadow-lg">
+                <i class="fa-solid fa-fire text-amber-500 text-base"></i> BẢNG NỖ LỰC (TUẦN NÀY)
+            </button>
+        </div>
+
+        <!-- THANH MÔ TẢ & BỘ LỌC LỚP/KHỐI -->
+        <div class="max-w-2xl mx-auto flex flex-wrap items-center justify-between gap-3 mb-8 bg-slate-900/80 border border-slate-800/90 px-4 py-3 rounded-2xl shadow-xl backdrop-blur-md">
+            <div class="flex items-center gap-2 text-xs md:text-sm text-slate-300 font-semibold" id="tab-status-desc">
+                <i class="fa-solid fa-trophy text-amber-400"></i>
+                <span>Xếp theo <b>tổng EXP tích lũy</b> & Quân hàm Free Fire toàn diện</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <label for="filter-lop-select" class="text-xs text-slate-400 font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-filter text-cyan-400"></i> Lọc:
+                </label>
+                <select id="filter-lop-select" onchange="chuyenBoLocLop(this.value)" class="bg-slate-950 border border-cyan-500/40 text-cyan-300 font-bold text-xs rounded-xl px-3 py-1.5 outline-none focus:border-cyan-400 cursor-pointer shadow-inner">
+                    <option value="all">🌐 Toàn trường (Tất cả)</option>
+                    <option value="khoi_6">📚 Khối 6</option>
+                    <option value="khoi_7">📚 Khối 7</option>
+                    <option value="khoi_8">📚 Khối 8</option>
+                    <option value="khoi_9">📚 Khối 9</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 md:gap-6 items-end mb-14 max-w-2xl mx-auto mt-2">
             <div id="podium-2" class="flex flex-col items-center cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="triggerCelebration(2, this)">
                 <div class="relative flex flex-col items-center">
                     <div class="absolute -top-10 text-2xl font-black float-anim" style="animation-delay: 0.5s;">🥈</div>
@@ -373,7 +422,7 @@
         </div>
 
         <div class="mb-5 flex justify-between items-center px-2">
-            <h2 class="text-sm md:text-base font-black tracking-wider text-slate-300 flex items-center gap-2 uppercase">
+            <h2 class="text-sm md:text-base font-black tracking-wider text-slate-300 flex items-center gap-2 uppercase" id="section-list-title">
                 <i class="fa-solid fa-ranking-star text-cyan-400"></i> Danh Sách Chiến Binh Tham Gia Vòng Đấu
             </h2>
             <span class="text-xs text-slate-400 font-bold bg-slate-900 px-3 py-1.5 rounded-md border border-slate-800 shadow-inner" id="total-warriors-count">Tổng số: 0</span>
@@ -552,6 +601,18 @@
                 try { return await window.HeroFirebaseCompat.xoaHocSinhTrenMay(ten); } catch(e) {}
             }
         };
+        window.__fbTaiNhatKyHoatDong = async (tuNgay, denNgay) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiNhatKyHoatDong === 'function') {
+                try { return await window.HeroFirebaseCompat.taiNhatKyHoatDong(tuNgay, denNgay); } catch(e) {}
+            }
+            return [];
+        };
+        window.__fbTaiBaiTuLuanTrongKhoang = async (tuNgay, denNgay) => {
+            if (window.HeroFirebaseCompat && typeof window.HeroFirebaseCompat.taiBaiTuLuanTrongKhoang === 'function') {
+                try { return await window.HeroFirebaseCompat.taiBaiTuLuanTrongKhoang(tuNgay, denNgay); } catch(e) {}
+            }
+            return [];
+        };
     </script>
     <script type="module">
         try {
@@ -593,9 +654,148 @@
             'linear-gradient(135deg, #e74c3c, #9b59b6)'
         ];
 
+        // Biến trạng thái bảng xếp hạng công khai
+        let currentPublicTab = 'exp'; // 'exp' hoặc 'effort'
+        let currentFilterLop = 'all'; // 'all', 'khoi_6', 'khoi_7', 'khoi_8', 'khoi_9', hoặc lớp cụ thể 'lop_...'
+        let duLieuNoLucTuanNay = null; // Cache nỗ lực tuần này
+
+        function layKhoiCuaHocSinh(lop) {
+            if (!lop) return 'Khối 7';
+            let s = lop.toString().toLowerCase().trim();
+            if (s.startsWith('6') || s.includes('khối 6') || s.includes('khoi 6') || s.includes('k6')) return 'Khối 6';
+            if (s.startsWith('7') || s.includes('khối 7') || s.includes('khoi 7') || s.includes('k7')) return 'Khối 7';
+            if (s.startsWith('8') || s.includes('khối 8') || s.includes('khoi 8') || s.includes('k8')) return 'Khối 8';
+            if (s.startsWith('9') || s.includes('khối 9') || s.includes('khoi 9') || s.includes('k9')) return 'Khối 9';
+            return 'Khối 7';
+        }
+
+        function capNhatDanhSachLopBoLoc() {
+            let selectEl = document.getElementById('filter-lop-select');
+            if (!selectEl) return;
+            let students = getAllStudents();
+            let uniqueClasses = new Set();
+            students.forEach(s => {
+                if (s.lop && !s.lop.toLowerCase().startsWith('khối') && s.lop !== '---') {
+                    uniqueClasses.add(s.lop.trim());
+                }
+            });
+            let currentVal = selectEl.value || currentFilterLop || 'all';
+            let baseOptions = `
+                <option value="all">🌐 Toàn trường (Tất cả)</option>
+                <option value="khoi_6">📚 Khối 6</option>
+                <option value="khoi_7">📚 Khối 7</option>
+                <option value="khoi_8">📚 Khối 8</option>
+                <option value="khoi_9">📚 Khối 9</option>
+            `;
+            let classOptions = "";
+            Array.from(uniqueClasses).sort().forEach(cls => {
+                classOptions += `<option value="lop_${cls}">🏫 Lớp ${cls}</option>`;
+            });
+            selectEl.innerHTML = classOptions ? (baseOptions + `<optgroup label="── Theo từng lớp cụ thể ──">${classOptions}</optgroup>`) : baseOptions;
+            selectEl.value = currentVal;
+        }
+
+        function chuyenTabCongKhai(tab) {
+            currentPublicTab = tab;
+            document.querySelectorAll('.btn-tab-public').forEach(btn => btn.classList.remove('active'));
+            let activeBtn = document.getElementById(`tab-btn-${tab}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            let descEl = document.getElementById('tab-status-desc');
+            if (descEl) {
+                if (tab === 'exp') {
+                    descEl.innerHTML = `<i class="fa-solid fa-trophy text-amber-400"></i> <span>Xếp theo <b>tổng EXP tích lũy</b> & Quân hàm Free Fire toàn diện</span>`;
+                } else {
+                    descEl.innerHTML = `<i class="fa-solid fa-fire text-amber-500"></i> <span><b>Bảng Nỗ Lực Tuần Này</b>: Chuyên cần (35%) · Chăm chỉ (30%) · Tiến bộ (20%) · Điểm đúng (15%)</span>`;
+                }
+            }
+            loadLeaderboardData();
+        }
+
+        function chuyenBoLocLop(val) {
+            currentFilterLop = val;
+            loadLeaderboardData();
+        }
+
+        async function napDuLieuNoLucTuanNay() {
+            try {
+                let homNay = new Date();
+                let batDau = layThuHaiCuaTuan(homNay);
+                let ketThuc = new Date(batDau);
+                ketThuc.setDate(batDau.getDate() + 6);
+
+                let soNgayTrongKy = 7;
+                let ketThucKyTruoc = new Date(batDau);
+                ketThucKyTruoc.setDate(batDau.getDate() - 1);
+                let batDauKyTruoc = new Date(ketThucKyTruoc);
+                batDauKyTruoc.setDate(ketThucKyTruoc.getDate() - 6);
+
+                let tuNgay = toISODate(batDau);
+                let denNgay = toISODate(ketThuc);
+                let tuNgayTruoc = toISODate(batDauKyTruoc);
+                let denNgayTruoc = toISODate(ketThucKyTruoc);
+
+                let [duLieuKyNay, duLieuKyTruoc] = await Promise.all([
+                    gomDuLieuHocSinhTrongKy(tuNgay, denNgay),
+                    gomDuLieuHocSinhTrongKy(tuNgayTruoc, denNgayTruoc)
+                ]);
+
+                let roster = getAllStudents();
+
+                let ketQua = roster.map(hs => {
+                    let d = duLieuKyNay[hs.ten] || { ngayThamGia: new Set(), tongLuot: 0, soCauDung: 0, soCauSai: 0, expTong: 0, diemTuLuan: [] };
+                    let dTruoc = duLieuKyTruoc[hs.ten] || { expTong: 0, diemTuLuan: [] };
+
+                    let soNgayTG = d.ngayThamGia.size;
+                    let diemChuyenCan = kepTrongKhoang((soNgayTG / soNgayTrongKy) * 10, 0, 10);
+
+                    let kyVongLuot = soNgayTrongKy * 1.5;
+                    let diemNoLuc = kepTrongKhoang((d.tongLuot / Math.max(1, kyVongLuot)) * 10, 0, 10);
+
+                    let thanhTichNay = d.expTong + (d.diemTuLuan.reduce((a, b) => a + b, 0) * 10);
+                    let thanhTichTruoc = dTruoc.expTong + (dTruoc.diemTuLuan.reduce((a, b) => a + b, 0) * 10);
+                    let diemTienBo;
+                    if (thanhTichTruoc <= 0) {
+                        diemTienBo = thanhTichNay > 0 ? 10 : 5;
+                    } else {
+                        let tyLeThayDoi = (thanhTichNay - thanhTichTruoc) / thanhTichTruoc;
+                        diemTienBo = kepTrongKhoang(5 + tyLeThayDoi * 5, 0, 10);
+                    }
+
+                    let tongCau = d.soCauDung + d.soCauSai;
+                    let diemTracNghiem = tongCau > 0 ? (d.soCauDung / tongCau) * 10 : null;
+                    let diemTuLuanTB = d.diemTuLuan.length > 0 ? (d.diemTuLuan.reduce((a, b) => a + b, 0) / d.diemTuLuan.length) : null;
+                    let diemKetQua;
+                    if (diemTracNghiem !== null && diemTuLuanTB !== null) diemKetQua = (diemTracNghiem + diemTuLuanTB) / 2;
+                    else if (diemTracNghiem !== null) diemKetQua = diemTracNghiem;
+                    else if (diemTuLuanTB !== null) diemKetQua = diemTuLuanTB;
+                    else diemKetQua = 0;
+
+                    let diem10 = diemChuyenCan * 0.35 + diemNoLuc * 0.30 + diemTienBo * 0.20 + diemKetQua * 0.15;
+
+                    return {
+                        name: hs.ten, ten: hs.ten, class: hs.lop, lop: hs.lop,
+                        diem10: Math.round(diem10 * 10) / 10,
+                        diemChuyenCan: Math.round(diemChuyenCan * 10) / 10,
+                        diemNoLuc: Math.round(diemNoLuc * 10) / 10,
+                        diemTienBo: Math.round(diemTienBo * 10) / 10,
+                        diemKetQua: Math.round(diemKetQua * 10) / 10,
+                        soNgayTG, tongLuot: d.tongLuot, soCauDung: d.soCauDung, soCauSai: d.soCauSai
+                    };
+                });
+
+                ketQua.sort((a, b) => b.diem10 - a.diem10);
+                duLieuNoLucTuanNay = ketQua;
+            } catch (e) {
+                console.warn("[Bảng Xếp Hạng] Lỗi nạp nỗ lực tuần này:", e);
+                duLieuNoLucTuanNay = [];
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', async () => {
             // Hiển thị dữ liệu từ local storage trước ngay lập tức
             loadLeaderboardData();
+            napDuLieuNoLucTuanNay();
             initFireworksEngine();
             if (document.getElementById('max-luot-lam-bai')) document.getElementById('max-luot-lam-bai').value = localStorage.getItem('so_luot_lam_bai_toi_da') || 3;
             if (document.getElementById('max-luot-vuot-ai')) document.getElementById('max-luot-vuot-ai').value = localStorage.getItem('so_luot_vuot_ai_toi_da') || 3;
@@ -631,107 +831,207 @@
             capNhatGiaoDienChonKy();
         });
 
-        function loadLeaderboardData() {
-            let finalWarriors = [];
-
-            for (let i = 0; i < localStorage.length; i++) {
-                let key = localStorage.key(i);
-                if (key && key.startsWith('exp_')) {
-                    let ten = key.replace('exp_', '');
-                    let diemExp = parseInt(localStorage.getItem(key)) || 0;
-                    
-                    // Lấy đúng LỚP CỤ THỂ (vd "9a4") từ field "classroom", KHÔNG lấy "className"
-                    // (field này chỉ là Khối, vd "Khối 9") — trước đây bị nhầm lẫn 2 field này
-                    // nên bảng xếp hạng hiển thị "Lớp: Khối 9" thay vì "Lớp: 9a4".
-                    let lop = "Khối 7";
-                    let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
-                    let timThayLop = nhatKy.find(item => item.name === ten);
-                    if (timThayLop) lop = timThayLop.classroom || timThayLop.className || "Khối 7";
-                    
-                    finalWarriors.push({ name: ten, class: lop, exp: diemExp });
-                }
-            }
-
-            finalWarriors.sort((a, b) => b.exp - a.exp);
-            document.getElementById('total-warriors-count').innerText = `Tổng số: ${finalWarriors.length} Chiến binh`;
-
-            setupPodiumCard(1, finalWarriors[0]);
-            setupPodiumCard(2, finalWarriors[1]);
-            setupPodiumCard(3, finalWarriors[2]);
-
+        async function loadLeaderboardData() {
+            capNhatDanhSachLopBoLoc();
             const listContainer = document.getElementById('leaderboard-list-container');
-            if (finalWarriors.length === 0) {
-                listContainer.innerHTML = `<div class="text-center p-8 text-slate-500 italic text-sm border border-dashed border-slate-800 rounded-xl">Vòng chơi mới đã bắt đầu hoặc sảnh chưa có học sinh tham gia.</div>`;
-                return;
-            }
+            const titleEl = document.getElementById('section-list-title');
 
-            listContainer.innerHTML = "";
-            finalWarriors.forEach((current, index) => {
-                let tier = getFreeFireTier(current.exp);
-                let tuMoi = current.name.split(" ");
-                let chuCaiDau = tuMoi[tuMoi.length - 1] ? tuMoi[tuMoi.length - 1].charAt(0).toUpperCase() : "?";
-                let bgAvatar = avatarBackgrounds[current.name.length % avatarBackgrounds.length];
+            if (currentPublicTab === 'exp') {
+                if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-trophy text-cyan-400"></i> Danh Sách Chiến Binh Cao Thủ (EXP)`;
+                let roster = getAllStudents();
 
-                /* Tối ưu cấu trúc CSS dòng để chống lỗi co font, chồng lấp chữ */
-                listContainer.innerHTML += `
-                    <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
-                        <div class="flex items-center gap-4 min-w-0">
-                            <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
-                            <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
-                                ${chuCaiDau}
-                            </div>
-                            <div class="text-left min-w-0">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <p class="font-extrabold text-base text-white truncate tracking-wide">${current.name}</p> 
-                                    <span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 shadow-sm border" style="background: ${tier.bg}; color: ${tier.color}; border-color: ${tier.color}40; text-shadow: 0 0 5px ${tier.color}50">
-                                        ${tier.name}
-                                    </span>
+                // Lọc theo lớp / khối
+                let filtered = roster.filter(s => {
+                    if (currentFilterLop === 'all') return true;
+                    if (currentFilterLop.startsWith('khoi_')) {
+                        let tenKhoi = 'Khối ' + currentFilterLop.replace('khoi_', '');
+                        return layKhoiCuaHocSinh(s.lop) === tenKhoi;
+                    }
+                    if (currentFilterLop.startsWith('lop_')) {
+                        let tenLop = currentFilterLop.replace('lop_', '');
+                        return s.lop === tenLop;
+                    }
+                    return true;
+                });
+
+                filtered.sort((a, b) => b.exp - a.exp);
+                document.getElementById('total-warriors-count').innerText = `Tổng số: ${filtered.length} Chiến binh`;
+
+                setupPodiumCard(1, filtered[0], 'exp');
+                setupPodiumCard(2, filtered[1], 'exp');
+                setupPodiumCard(3, filtered[2], 'exp');
+
+                if (filtered.length === 0) {
+                    listContainer.innerHTML = `<div class="text-center p-8 text-slate-500 italic text-sm border border-dashed border-slate-800 rounded-xl">Chưa có học sinh nào phù hợp với bộ lọc này.</div>`;
+                    return;
+                }
+
+                listContainer.innerHTML = "";
+                filtered.forEach((current, index) => {
+                    let tier = getFreeFireTier(current.exp);
+                    let tuMoi = current.ten.split(" ");
+                    let chuCaiDau = tuMoi[tuMoi.length - 1] ? tuMoi[tuMoi.length - 1].charAt(0).toUpperCase() : "?";
+                    let bgAvatar = avatarBackgrounds[current.ten.length % avatarBackgrounds.length];
+
+                    listContainer.innerHTML += `
+                        <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
+                                <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
+                                    ${chuCaiDau}
                                 </div>
-                                <p class="text-xs text-cyan-400 font-bold mt-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${current.class}</p>
+                                <div class="text-left min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <p class="font-extrabold text-base text-white truncate tracking-wide">${current.ten}</p> 
+                                        <span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 shadow-sm border" style="background: ${tier.bg}; color: ${tier.color}; border-color: ${tier.color}40; text-shadow: 0 0 5px ${tier.color}50">
+                                            ${tier.name}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-cyan-400 font-bold mt-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${current.lop}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Kinh nghiệm</span>
+                                    <span class="text-sm md:text-base font-black text-emerald-400"><i class="fa-solid fa-star text-xs mr-0.5"></i> ${current.exp} <span class="text-[10px] text-slate-400 font-medium">EXP</span></span>
+                                </div>
+                                <div class="flex flex-col items-end min-w-[75px]">
+                                    <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Tài sản</span>
+                                    <span class="text-sm md:text-base font-black text-amber-400"><i class="fa-solid fa-coins text-xs mr-0.5"></i> ${current.coin} <span class="text-[10px] text-slate-400 font-medium">Điểm</span></span>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right">
-                            <div class="flex flex-col items-end">
-                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Kinh nghiệm</span>
-                                <span class="text-sm md:text-base font-black text-emerald-400"><i class="fa-solid fa-star text-xs mr-0.5"></i> ${current.exp} <span class="text-[10px] text-slate-400 font-medium">EXP</span></span>
+                    `;
+                });
+
+            } else {
+                // TAB NỖ LỰC
+                if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-fire text-amber-400"></i> Bảng Vinh Danh Nỗ Lực Tuần Này (Cần Cù & Tiến Bộ)`;
+                
+                if (!duLieuNoLucTuanNay) {
+                    listContainer.innerHTML = `<div class="text-center p-8 text-slate-400 italic text-sm border border-slate-800 rounded-xl"><i class="fa-solid fa-spinner fa-spin text-cyan-400 mr-2"></i> Đang tổng hợp dữ liệu nỗ lực tuần này...</div>`;
+                    await napDuLieuNoLucTuanNay();
+                }
+
+                let filtered = (duLieuNoLucTuanNay || []).filter(s => {
+                    if (currentFilterLop === 'all') return true;
+                    if (currentFilterLop.startsWith('khoi_')) {
+                        let tenKhoi = 'Khối ' + currentFilterLop.replace('khoi_', '');
+                        return layKhoiCuaHocSinh(s.lop) === tenKhoi;
+                    }
+                    if (currentFilterLop.startsWith('lop_')) {
+                        let tenLop = currentFilterLop.replace('lop_', '');
+                        return s.lop === tenLop;
+                    }
+                    return true;
+                });
+
+                filtered.sort((a, b) => b.diem10 - a.diem10);
+                document.getElementById('total-warriors-count').innerText = `Tổng số: ${filtered.length} Chiến binh`;
+
+                setupPodiumCard(1, filtered[0], 'effort');
+                setupPodiumCard(2, filtered[1], 'effort');
+                setupPodiumCard(3, filtered[2], 'effort');
+
+                if (filtered.length === 0) {
+                    listContainer.innerHTML = `<div class="text-center p-8 text-slate-500 italic text-sm border border-dashed border-slate-800 rounded-xl">Chưa có dữ liệu nỗ lực phù hợp với bộ lọc này.</div>`;
+                    return;
+                }
+
+                listContainer.innerHTML = "";
+                filtered.forEach((r, index) => {
+                    let tuMoi = r.ten.split(" ");
+                    let chuCaiDau = tuMoi[tuMoi.length - 1] ? tuMoi[tuMoi.length - 1].charAt(0).toUpperCase() : "?";
+                    let bgAvatar = avatarBackgrounds[r.ten.length % avatarBackgrounds.length];
+
+                    let huyHieuNoLuc = "";
+                    if (r.diem10 >= 8.5) {
+                        huyHieuNoLuc = `<span class="text-[10px] md:text-xs font-black px-2.5 py-0.5 rounded-full shadow-sm border bg-amber-500/20 text-amber-300 border-amber-500/50 flex items-center gap-1"><i class="fa-solid fa-medal text-amber-400"></i> Ong Vàng Chăm Chỉ</span>`;
+                    } else if (r.diem10 >= 6.5) {
+                        huyHieuNoLuc = `<span class="text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm border bg-cyan-500/20 text-cyan-300 border-cyan-500/50 flex items-center gap-1">⚡ Tinh Thần Thép</span>`;
+                    } else {
+                        huyHieuNoLuc = `<span class="text-[10px] md:text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm border bg-emerald-500/20 text-emerald-300 border-emerald-500/50 flex items-center gap-1">🌱 Cố Gắng</span>`;
+                    }
+
+                    if (r.diemTienBo >= 8.0) {
+                        huyHieuNoLuc += `<span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-sm border bg-purple-500/20 text-purple-300 border-purple-500/50">📈 Tiến Bộ Vượt Bậc</span>`;
+                    }
+
+                    listContainer.innerHTML += `
+                        <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
+                                <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
+                                    ${chuCaiDau}
+                                </div>
+                                <div class="text-left min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <p class="font-extrabold text-base text-white truncate tracking-wide">${r.ten}</p> 
+                                        ${huyHieuNoLuc}
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">
+                                        <span class="text-cyan-400 font-bold"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${r.lop}</span>
+                                        <span>📅 Chuyên cần: <b class="text-slate-200">${r.soNgayTG} ngày</b> (${r.diemChuyenCan}/10)</span>
+                                        <span>📝 Luyện tập: <b class="text-slate-200">${r.tongLuot} bài</b></span>
+                                        <span>🎯 Đúng: <b class="text-emerald-400">${r.soCauDung}</b>/<b class="text-rose-400">${r.soCauSai}</b></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex flex-col items-end min-w-[75px]">
-                                <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Tài sản</span>
-                                <span class="text-sm md:text-base font-black text-amber-400"><i class="fa-solid fa-coins text-xs mr-0.5"></i> ${localStorage.getItem('coin_' + current.name) || 50} <span class="text-[10px] text-slate-400 font-medium">Điểm</span></span>
+                            <div class="flex items-center gap-3 md:gap-5 flex-shrink-0 text-right">
+                                <div class="flex flex-col items-end bg-slate-950/70 border border-cyan-500/30 px-3.5 py-1.5 rounded-xl shadow-inner">
+                                    <span class="text-[9px] font-bold uppercase text-cyan-400 tracking-wider">Điểm Nỗ Lực</span>
+                                    <span class="text-base md:text-xl font-black text-cyan-300">${r.diem10.toFixed(1)} <span class="text-xs text-amber-400 font-bold">/ 10 ⭐</span></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
-        function setupPodiumCard(rank, player) {
+        function setupPodiumCard(rank, player, tabMode = 'exp') {
             if (!player) {
                 document.getElementById(`top${rank}-name`).innerText = "Đang chờ...";
                 document.getElementById(`top${rank}-class`).innerText = "---";
-                document.getElementById(`top${rank}-exp`).innerHTML = "0 EXP<br><span style='color: #ffeb3b'><i class='fa-solid fa-coins text-[10px]'></i> 0 Điểm</span>";
-                document.getElementById(`top${rank}-ff-tier`).innerText = "Tập Sự";
-                document.getElementById(`top${rank}-ff-tier`).style.color = "#94a3b8";
+                document.getElementById(`top${rank}-exp`).innerHTML = tabMode === 'effort' 
+                    ? "0.0 / 10 ⭐<br><span style='color: #64748b; font-size:10px;'>Chưa có dữ liệu</span>"
+                    : "0 EXP<br><span style='color: #ffeb3b'><i class='fa-solid fa-coins text-[10px]'></i> 0 Điểm</span>";
+                let tierEl = document.getElementById(`top${rank}-ff-tier`);
+                tierEl.innerText = tabMode === 'effort' ? "Chăm Chỉ" : "Tập Sự";
+                tierEl.style.color = "#94a3b8";
+                tierEl.style.borderColor = "#334155";
                 document.getElementById(`top${rank}-avatar`).innerText = "?";
                 document.getElementById(`top${rank}-avatar`).style.background = "#334155";
                 return;
             }
 
-            document.getElementById(`top${rank}-name`).innerText = player.name;
-            document.getElementById(`top${rank}-class`).innerText = `Lớp: ${player.class}`;
-            let pCoins = localStorage.getItem('coin_' + player.name) || 50;
-            document.getElementById(`top${rank}-exp`).innerHTML = `${player.exp} EXP<br><span style="color: #ffd700"><i class="fa-solid fa-coins text-[10px]"></i> ${pCoins} Điểm</span>`;
+            let ten = player.ten || player.name;
+            let lop = player.lop || player.class;
+            document.getElementById(`top${rank}-name`).innerText = ten;
+            document.getElementById(`top${rank}-class`).innerText = `Lớp: ${lop}`;
+            if (tabMode === 'effort') {
+                let diem10 = typeof player.diem10 === 'number' ? player.diem10.toFixed(1) : "0.0";
+                document.getElementById(`top${rank}-exp`).innerHTML = `<span class="text-cyan-300 font-black text-sm md:text-base">${diem10} / 10 ⭐</span><br><span style="color: #fcd34d; font-size: 11px; font-weight: 700;"><i class="fa-solid fa-fire text-[10px]"></i> ${player.soNgayTG || 0} ngày · ${player.tongLuot || 0} bài</span>`;
+                let tierEl = document.getElementById(`top${rank}-ff-tier`);
+                if (player.diem10 >= 8.5) {
+                    tierEl.innerText = "🐝 Ong Vàng"; tierEl.style.color = "#fbbf24"; tierEl.style.borderColor = "#f59e0b80";
+                } else if (player.diem10 >= 6.5) {
+                    tierEl.innerText = "⚡ Tinh Thần Thép"; tierEl.style.color = "#38bdf8"; tierEl.style.borderColor = "#0284c780";
+                } else {
+                    tierEl.innerText = "🌱 Cố Gắng"; tierEl.style.color = "#34d399"; tierEl.style.borderColor = "#05966980";
+                }
+            } else {
+                let pCoins = localStorage.getItem('coin_' + ten) || 50;
+                document.getElementById(`top${rank}-exp`).innerHTML = `${player.exp} EXP<br><span style="color: #ffd700"><i class="fa-solid fa-coins text-[10px]"></i> ${pCoins} Điểm</span>`;
+                let ffTier = getFreeFireTier(player.exp);
+                let tierEl = document.getElementById(`top${rank}-ff-tier`);
+                tierEl.innerText = ffTier.name; tierEl.style.color = ffTier.color; tierEl.style.borderColor = ffTier.color + "60";
+            }
 
-            let ffTier = getFreeFireTier(player.exp);
-            let tierEl = document.getElementById(`top${rank}-ff-tier`);
-            tierEl.innerText = ffTier.name;
-            tierEl.style.color = ffTier.color;
-            tierEl.style.borderColor = ffTier.color + "60";
-
-            let arr = player.name.split(" ");
+            let arr = ten.split(" ");
             let lastWord = arr[arr.length - 1];
             document.getElementById(`top${rank}-avatar`).innerText = lastWord ? lastWord.charAt(0).toUpperCase() : "?";
-            document.getElementById(`top${rank}-avatar`).style.background = avatarBackgrounds[player.name.length % avatarBackgrounds.length];
+            document.getElementById(`top${rank}-avatar`).style.background = avatarBackgrounds[ten.length % avatarBackgrounds.length];
         }
 
         function playPodiumVictoryFanfare(rank) {
@@ -1102,17 +1402,25 @@
 
         // Gom dữ liệu log + bài tự luận thành 1 map theo tên học sinh, trong 1 khoảng ngày
         async function gomDuLieuHocSinhTrongKy(tuNgay, denNgay) {
-            let [logs, baiTuLuan] = await Promise.all([
-                window.__fbTaiNhatKyHoatDong(tuNgay, denNgay),
-                window.__fbTaiBaiTuLuanTrongKhoang(tuNgay, denNgay)
-            ]);
+            let logs = [];
+            let baiTuLuan = [];
+            try {
+                let res = await Promise.all([
+                    window.__fbTaiNhatKyHoatDong(tuNgay, denNgay),
+                    window.__fbTaiBaiTuLuanTrongKhoang(tuNgay, denNgay)
+                ]);
+                logs = res[0] || [];
+                baiTuLuan = res[1] || [];
+            } catch(e) {
+                console.warn("[Bảng Xếp Hạng] Lỗi tải dữ liệu nỗ lực:", e);
+            }
 
             let map = {}; // ten -> { ngayThamGia:Set, tongLuot, soCauDung, soCauSai, expTong, diemTuLuan: [] }
             function layHoacTao(ten) {
                 if (!map[ten]) map[ten] = { ngayThamGia: new Set(), tongLuot: 0, soCauDung: 0, soCauSai: 0, expTong: 0, diemTuLuan: [] };
                 return map[ten];
             }
-            logs.forEach(l => {
+            if (Array.isArray(logs) && logs.length > 0) logs.forEach(l => {
                 if (!l.ten) return;
                 let hs = layHoacTao(l.ten);
                 if (l.ngay) hs.ngayThamGia.add(l.ngay);
@@ -1120,7 +1428,35 @@
                 hs.soCauDung += l.soCauDung || 0;
                 hs.soCauSai += l.soCauSai || 0;
                 hs.expTong += l.expNhan || 0;
-            });
+            }); else {
+                let nhatKyLocal = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
+                nhatKyLocal.forEach(nk => {
+                    if (!nk.name) return;
+                    let thoiGianStr = nk.time || nk.dateTime || '';
+                    let d = new Date(thoiGianStr);
+                    let ngayISO = !isNaN(d.getTime()) ? toISODate(d) : toISODate(new Date());
+                    if (ngayISO >= tuNgay && ngayISO <= denNgay) {
+                        let hs = layHoacTao(nk.name);
+                        hs.ngayThamGia.add(ngayISO);
+                        hs.tongLuot += 1;
+                    }
+                });
+                for (let i = 0; i < localStorage.length; i++) {
+                    let k = localStorage.key(i);
+                    if (k && k.startsWith('exp_')) {
+                        let ten = k.replace('exp_', '');
+                        let exp = parseInt(localStorage.getItem(k)) || 0;
+                        if (exp > 0) {
+                            let hs = layHoacTao(ten);
+                            if (hs.ngayThamGia.size === 0) hs.ngayThamGia.add(toISODate(new Date()));
+                            let uocLuongLuot = Math.max(1, Math.round(exp / 35));
+                            if (hs.tongLuot === 0) hs.tongLuot = uocLuongLuot;
+                            if (hs.soCauDung === 0) hs.soCauDung = Math.round(exp / 12);
+                            if (hs.expTong === 0) hs.expTong = exp;
+                        }
+                    }
+                }
+            }
             baiTuLuan.forEach(b => {
                 if (!b.hocSinh) return;
                 let hs = layHoacTao(b.hocSinh);
