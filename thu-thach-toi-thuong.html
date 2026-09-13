@@ -647,7 +647,7 @@
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 ambientGain = audioCtx.createGain();
-                ambientGain.gain.setValueAtTime(0.07, audioCtx.currentTime);
+                ambientGain.gain.setValueAtTime(0, audioCtx.currentTime); // Đã tắt tiếng rè rè nền (giữ nguyên cấu trúc logic)
 
                 ambientNode1 = audioCtx.createOscillator();
                 ambientNode1.type = 'sine';
