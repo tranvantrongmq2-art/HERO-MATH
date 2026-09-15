@@ -2517,23 +2517,44 @@
                 }
             } catch (e) {}
 
-            document.getElementById('txt-student-name').innerText = tenLuu;
-            document.getElementById('txt-student-class').innerText = lopLuu || '—';
+            let lopCuThe = '';
 
-            let lopCuThe = sessionStorage.getItem('hoc_school_student_classroom') || '';
+            // ƯU TIÊN SỐ 1: hồ sơ gốc trong math_hero_users_v2 (nơi Thầy chỉnh sửa ở admin).
+            // Nếu Thầy đổi Khối/Lớp thì phải ghi đè lên bản đã lưu trong session lúc đăng nhập,
+            // nếu không học sinh sẽ mãi thấy lớp cũ.
+            try {
+                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
+                let ud = users[tenLuu];
+                if (ud && typeof ud === 'object') {
+                    if (ud.class) {
+                        lopLuu = ud.class;
+                        sessionStorage.setItem('hoc_school_student_class', lopLuu);
+                        localStorage.setItem('hoc_school_student_class', lopLuu);
+                    }
+                    if (typeof ud.classroom === 'string') {
+                        lopCuThe = ud.classroom;
+                        sessionStorage.setItem('hoc_school_student_classroom', lopCuThe);
+                    }
+                }
+            } catch (e) {}
+
+            // ƯU TIÊN SỐ 2: nhật ký đăng nhập
             if (!lopCuThe) {
                 let nhatKy = JSON.parse(localStorage.getItem('nhat_ky_dang_nhap')) || [];
                 let myLog = [...nhatKy].reverse().find(it => it.name === tenLuu);
                 if (myLog && myLog.classroom) lopCuThe = myLog.classroom;
             }
+
+            // ƯU TIÊN SỐ 3: bản lưu tạm trong session
             if (!lopCuThe) {
-                let users = JSON.parse(localStorage.getItem('math_hero_users_v2')) || {};
-                let ud = users[tenLuu];
-                if (ud && typeof ud === 'object' && ud.classroom) lopCuThe = ud.classroom;
+                lopCuThe = sessionStorage.getItem('hoc_school_student_classroom') || '';
             }
             if (lopCuThe) {
                 sessionStorage.setItem('hoc_school_student_classroom', lopCuThe);
             }
+
+            document.getElementById('txt-student-name').innerText = tenLuu;
+            document.getElementById('txt-student-class').innerText = lopLuu || '—';
             document.getElementById('txt-student-classroom').innerText = lopCuThe ? lopCuThe.toUpperCase() : '—';
             let mangCacTu = tenLuu.split(" ");
             let tuCuoiCung = mangCacTu[mangCacTu.length - 1];

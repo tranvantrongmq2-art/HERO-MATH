@@ -1694,7 +1694,7 @@ $$a^2 + b^2 = c^2$$
                                 <th>Họ và Tên</th>
                                 <th>Khối</th>
                                 <th>Lớp</th>
-                                <th>Mật Mã</th>
+                                <th style="width: 78px; max-width: 78px;">Mật Mã</th>
                                 <th style="text-align: right;">EXP</th>
                                 <th style="text-align: right;">Điểm</th>
                                 <th style="text-align: center;">Lượt LB</th>
@@ -2065,6 +2065,60 @@ $$a^2 + b^2 = c^2$$
             });
         }
 
+        // Các key TOÀN CỤC: chỉ admin mới được ghi, hồ sơ riêng của học sinh không được đụng vào
+        const KHOA_TOAN_CUC_CAM_GHI_DE = [
+            'math_hero_users_v2',
+            'danh_sach_hs_da_xoa',
+            'nhat_ky_dang_nhap',
+            'so_luot_lam_bai_toi_da',
+            'so_luot_boss_toi_da',
+            'so_luot_vong_quay_toi_da',
+            'so_luot_vuot_ai_toi_da'
+        ];
+
+        // Danh sách "bia mộ": tên học sinh đã bị xóa, không cho phép tự xuất hiện lại
+        function layDanhSachDaXoa() {
+            const ds = safeJsonParse('danh_sach_hs_da_xoa', []);
+            return Array.isArray(ds) ? ds : [];
+        }
+
+        function ghiNhoHocSinhDaXoa(tenHs) {
+            const ds = layDanhSachDaXoa();
+            if (!ds.includes(tenHs)) {
+                ds.push(tenHs);
+                safeJsonSet('danh_sach_hs_da_xoa', ds);
+            }
+        }
+
+        function boGhiNhoHocSinhDaXoa(tenHs) {
+            const ds = layDanhSachDaXoa().filter(t => t !== tenHs);
+            safeJsonSet('danh_sach_hs_da_xoa', ds);
+        }
+
+        // Xóa sạch những học sinh nằm trong "bia mộ" khỏi danh sách hiện tại
+        function donDepHocSinhDaXoa() {
+            const ds = layDanhSachDaXoa();
+            if (ds.length === 0) return false;
+
+            const users = safeJsonParse('math_hero_users_v2', {});
+            let coThayDoi = false;
+            ds.forEach(ten => {
+                if (users[ten]) {
+                    delete users[ten];
+                    coThayDoi = true;
+                }
+            });
+            if (coThayDoi) safeJsonSet('math_hero_users_v2', users);
+
+            // Dọn luôn nhật ký đăng nhập để tên cũ không hiện lại ở các bảng khác
+            const nhatKy = safeJsonParse('nhat_ky_dang_nhap', []);
+            if (Array.isArray(nhatKy)) {
+                const conLai = nhatKy.filter(it => !it || !ds.includes(it.name));
+                if (conLai.length !== nhatKy.length) safeJsonSet('nhat_ky_dang_nhap', conLai);
+            }
+            return coThayDoi;
+        }
+
         function capNhatHuyHieuSync(trangThai, text) {
             const badge = document.getElementById('sync-status-badge');
             if (!badge) return;
@@ -2093,10 +2147,15 @@ $$a^2 + b^2 = c^2$$
                             const duLieu = hs.data || {};
                             Object.keys(duLieu).forEach(key => {
                                 if (key.startsWith('_')) return;
+                                // KHÔNG cho hồ sơ riêng của học sinh ghi đè các key TOÀN CỤC
+                                // (đây là nguyên nhân học sinh đã xóa bị "sống lại")
+                                if (KHOA_TOAN_CUC_CAM_GHI_DE.includes(key)) return;
                                 localStorage.setItem(key, duLieu[key]);
                             });
                         });
                     }
+                    // Quét lại, loại bỏ những học sinh Thầy đã xóa nhưng Cloud trả về
+                    donDepHocSinhDaXoa();
                 }
                 capNhatHuyHieuSync(true, 'Firebase Sẵn Sàng');
                 console.log("[Admin] Tải dữ liệu từ Firebase thành công.");
@@ -3527,6 +3586,7 @@ $$a^2 + b^2 = c^2$$
             if (!tbody) return;
             tbody.innerHTML = "";
 
+            donDepHocSinhDaXoa();
             const users = safeJsonParse('math_hero_users_v2', {});
             let userNames = Object.keys(users);
 
@@ -3634,7 +3694,7 @@ $$a^2 + b^2 = c^2$$
                         <td style="font-weight:bold; color:#fff;">${hs.name}</td>
                         <td><span style="color:#3498db; font-weight:bold;">${hs.class}</span></td>
                         <td><span style="color:#2ecc71; font-weight:bold;">${hs.classroom}</span></td>
-                        <td style="color:#e74c3c; font-family: monospace; letter-spacing: 1px;">${hs.pass}</td>
+                        <td title="${String(hs.pass).replace(/"/g, '&quot;')}" style="color:#e74c3c; font-family: monospace; letter-spacing: 0; font-size: 0.8rem; width: 78px; max-width: 78px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${hs.pass}</td>
                         <td style="text-align: right; color:#f1c40f; font-weight: bold;"><i class="fa-solid fa-star"></i> ${hs.exp}</td>
                         <td style="text-align: right; color:#ffeb3b; font-weight: bold;"><i class="fa-solid fa-coins"></i> ${hs.coin}</td>
                         <td style="text-align: center;">
@@ -3744,7 +3804,30 @@ $$a^2 + b^2 = c^2$$
                 pass: pass
             };
             safeJsonSet('math_hero_users_v2', users);
+
+            // Nếu tên này từng bị xóa thì gỡ khỏi "bia mộ", không thì vừa thêm xong lại bị dọn mất
+            boGhiNhoHocSinhDaXoa(ten);
+
+            // Cập nhật Khối/Lớp trong nhật ký đăng nhập để trang index của học sinh đọc đúng
+            const nhatKy = safeJsonParse('nhat_ky_dang_nhap', []);
+            if (Array.isArray(nhatKy)) {
+                let coSua = false;
+                nhatKy.forEach(it => {
+                    if (it && it.name === ten) {
+                        it.class = lop;
+                        it.classroom = lopCuThe;
+                        coSua = true;
+                    }
+                });
+                if (coSua) safeJsonSet('nhat_ky_dang_nhap', nhatKy);
+            }
+
+            // Dấu mốc thời gian để trang học sinh biết hồ sơ vừa được Thầy chỉnh
+            localStorage.setItem('moc_cap_nhat_hs_' + ten, Date.now().toString());
+
             dongBoToanCuc('math_hero_users_v2');
+            dongBoToanCuc('danh_sach_hs_da_xoa');
+            dongBoToanCuc('nhat_ky_dang_nhap');
 
             localStorage.setItem('exp_' + ten, exp);
             localStorage.setItem('coin_' + ten, coin);
@@ -3756,11 +3839,19 @@ $$a^2 + b^2 = c^2$$
         }
 
         function xoaChiTietWarriors(tenHs) {
-            customConfirm(`Thầy có chắc chắn muốn xóa TOÀN BỘ dữ liệu của tài khoản "${tenHs}" không?`, () => {
+            customConfirm(`Thầy có chắc chắn muốn xóa TOÀN BỘ dữ liệu của tài khoản "${tenHs}" không?`, async () => {
                 let users = safeJsonParse('math_hero_users_v2', {});
                 delete users[tenHs];
                 safeJsonSet('math_hero_users_v2', users);
-                dongBoToanCuc('math_hero_users_v2');
+
+                // Ghi vào "bia mộ" TRƯỚC khi đẩy lên Cloud, tránh bị Cloud trả về lại
+                ghiNhoHocSinhDaXoa(tenHs);
+
+                // Xóa luôn khỏi nhật ký đăng nhập
+                const nhatKy = safeJsonParse('nhat_ky_dang_nhap', []);
+                if (Array.isArray(nhatKy)) {
+                    safeJsonSet('nhat_ky_dang_nhap', nhatKy.filter(it => !it || it.name !== tenHs));
+                }
 
                 localStorage.removeItem('exp_' + tenHs);
                 localStorage.removeItem('coin_' + tenHs);
@@ -3772,7 +3863,13 @@ $$a^2 + b^2 = c^2$$
                 localStorage.removeItem('luot_vuot_ai_' + tenHs);
                 localStorage.removeItem('ruong_do_' + tenHs);
 
-                xoaHocSinhFirebase(tenHs);
+                // Chờ xóa xong trên Cloud RỒI mới đẩy danh sách mới lên và vẽ lại bảng
+                await xoaHocSinhFirebase(tenHs);
+                await dongBoToanCuc('math_hero_users_v2');
+                await dongBoToanCuc('danh_sach_hs_da_xoa');
+                await dongBoToanCuc('nhat_ky_dang_nhap');
+
+                donDepHocSinhDaXoa();
                 showToast(`Đã xóa sạch tài khoản "${tenHs}"!`, "success");
                 taiLogHocSinh();
             });
