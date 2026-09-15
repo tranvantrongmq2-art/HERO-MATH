@@ -385,10 +385,10 @@
                 </div>
                 <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[120px] md:min-h-[150px] justify-between shadow-2xl relative border-cyan-400">
                     <span class="absolute top-2 left-2 text-cyan-400 font-black text-xs md:text-sm">#2</span>
-                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top2-name">Đang chờ...</p>
+                    <p class="font-extrabold text-sm text-white mt-2 w-full break-words leading-tight px-1" id="top2-name">Đang chờ...</p>
                     <p class="text-cyan-400 font-bold text-xs" id="top2-class">---</p>
                     <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-cyan-300 font-bold mt-1 shadow-inner" id="top2-exp">0 EXP</div>
-                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top2-ff-tier">Tập Sự</span>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full max-w-full break-words whitespace-normal leading-tight mt-1 bg-slate-950 uppercase tracking-wider" id="top2-ff-tier">Tập Sự</span>
                 </div>
             </div>
 
@@ -399,10 +399,10 @@
                 </div>
                 <div class="w-full bg-slate-900 border-t-4 rounded-t-xl mt-4 p-4 text-center flex flex-col items-center min-h-[150px] md:min-h-[190px] justify-between shadow-2xl relative border-yellow-500">
                     <span class="absolute top-2 left-2 text-yellow-400 font-black text-xs md:text-sm">#1</span>
-                    <p class="font-black text-base text-yellow-400 mt-2 truncate w-full tracking-wide" id="top1-name">Đang chờ...</p>
+                    <p class="font-black text-base text-yellow-400 mt-2 w-full break-words leading-tight tracking-wide px-1" id="top1-name">Đang chờ...</p>
                     <p class="text-emerald-400 font-bold text-xs" id="top1-class">---</p>
                     <div class="bg-yellow-950/40 border border-yellow-600/50 px-3 py-1 rounded text-xs text-yellow-400 font-black mt-1 shadow-inner" id="top1-exp">0 EXP</div>
-                    <span class="text-[9px] font-black text-yellow-400 border border-yellow-500 px-2 py-0.5 rounded-full mt-1 bg-yellow-950/60 uppercase tracking-widest" id="top1-ff-tier">Tập Sự</span>
+                    <span class="text-[9px] font-black text-yellow-400 border border-yellow-500 px-2 py-0.5 rounded-full max-w-full break-words whitespace-normal leading-tight mt-1 bg-yellow-950/60 uppercase tracking-widest" id="top1-ff-tier">Tập Sự</span>
                 </div>
             </div>
 
@@ -413,10 +413,10 @@
                 </div>
                 <div class="w-full bg-slate-900/90 border-t-4 rounded-t-xl mt-4 p-3.5 text-center flex flex-col items-center min-h-[105px] md:min-h-[135px] justify-between shadow-2xl relative border-pink-500">
                     <span class="absolute top-2 left-2 text-pink-400 font-black text-xs md:text-sm">#3</span>
-                    <p class="font-extrabold text-sm text-white mt-2 truncate w-full" id="top3-name">Đang chờ...</p>
+                    <p class="font-extrabold text-sm text-white mt-2 w-full break-words leading-tight px-1" id="top3-name">Đang chờ...</p>
                     <p class="text-pink-400 font-bold text-xs" id="top3-class">---</p>
                     <div class="bg-slate-950 px-2.5 py-1 rounded text-xs text-pink-300 font-bold mt-1 shadow-inner" id="top3-exp">0 EXP</div>
-                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full mt-1 bg-slate-950 uppercase tracking-wider" id="top3-ff-tier">Tập Sự</span>
+                    <span class="text-[9px] font-bold text-slate-400 border border-slate-700 px-2 py-0.5 rounded-full max-w-full break-words whitespace-normal leading-tight mt-1 bg-slate-950 uppercase tracking-wider" id="top3-ff-tier">Tập Sự</span>
                 </div>
             </div>
         </div>
@@ -874,15 +874,15 @@
                     let bgAvatar = avatarBackgrounds[current.ten.length % avatarBackgrounds.length];
 
                     listContainer.innerHTML += `
-                        <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
-                            <div class="flex items-center gap-4 min-w-0">
+                        <div class="glass-row flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl gap-3 sm:gap-4">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0 w-full sm:w-auto">
                                 <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
                                 <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
                                     ${chuCaiDau}
                                 </div>
                                 <div class="text-left min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <p class="font-extrabold text-base text-white truncate tracking-wide">${current.ten}</p> 
+                                        <p class="font-extrabold text-base text-white tracking-wide break-words leading-snug">${current.ten}</p> 
                                         <span class="text-[10px] md:text-xs font-bold px-2 py-0.5 rounded flex-shrink-0 shadow-sm border" style="background: ${tier.bg}; color: ${tier.color}; border-color: ${tier.color}40; text-shadow: 0 0 5px ${tier.color}50">
                                             ${tier.name}
                                         </span>
@@ -890,7 +890,7 @@
                                     <p class="text-xs text-cyan-400 font-bold mt-0.5"><i class="fa-solid fa-graduation-cap mr-1"></i>Lớp: ${current.lop}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right">
+                            <div class="flex items-center gap-4 md:gap-8 flex-shrink-0 text-right w-full sm:w-auto justify-end pl-11 sm:pl-0">
                                 <div class="flex flex-col items-end">
                                     <span class="text-[9px] font-bold uppercase text-slate-500 tracking-wider">Kinh nghiệm</span>
                                     <span class="text-sm md:text-base font-black text-emerald-400"><i class="fa-solid fa-star text-xs mr-0.5"></i> ${current.exp} <span class="text-[10px] text-slate-400 font-medium">EXP</span></span>
@@ -958,15 +958,15 @@
                     }
 
                     listContainer.innerHTML += `
-                        <div class="glass-row flex items-center justify-between p-4 rounded-xl gap-4">
-                            <div class="flex items-center gap-4 min-w-0">
+                        <div class="glass-row flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl gap-3 sm:gap-4">
+                            <div class="flex items-center gap-3 sm:gap-4 min-w-0 w-full sm:w-auto">
                                 <span class="text-base font-black ${index < 3 ? 'text-cyan-400' : 'text-slate-500'} w-8 flex-shrink-0 text-center">#${index + 1}</span>
                                 <div class="w-11 h-11 rounded-full flex items-center justify-center font-black text-white text-base shadow-md flex-shrink-0" style="background: ${bgAvatar}">
                                     ${chuCaiDau}
                                 </div>
                                 <div class="text-left min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <p class="font-extrabold text-base text-white truncate tracking-wide">${r.ten}</p> 
+                                        <p class="font-extrabold text-base text-white tracking-wide break-words leading-snug">${r.ten}</p> 
                                         ${huyHieuNoLuc}
                                     </div>
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400 mt-1">
@@ -977,7 +977,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-3 md:gap-5 flex-shrink-0 text-right">
+                            <div class="flex items-center gap-3 md:gap-5 flex-shrink-0 text-right w-full sm:w-auto justify-end pl-11 sm:pl-0">
                                 <div class="flex flex-col items-end bg-slate-950/70 border border-cyan-500/30 px-3.5 py-1.5 rounded-xl shadow-inner">
                                     <span class="text-[9px] font-bold uppercase text-cyan-400 tracking-wider">Điểm Nỗ Lực</span>
                                     <span class="text-base md:text-xl font-black text-cyan-300">${r.diem10.toFixed(1)} <span class="text-xs text-amber-400 font-bold">/ 10 ⭐</span></span>
